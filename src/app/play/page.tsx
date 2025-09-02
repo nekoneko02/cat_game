@@ -1,11 +1,26 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import GameCanvas from '@/components/GameCanvas';
-import { Toy } from '@/types/cat';
+import type { ToyType } from '@/domain/entities/Toy';
+import { PhaserGame } from '@/types/game';
+import { CatState } from '@/lib/session';
 
-const availableToys: Toy[] = [
+interface ToyDisplay {
+  id: ToyType;
+  name: string;
+  type: ToyType;
+  attributes: {
+    appearance: string;
+    material: string;
+    sound: string;
+    color: string;
+  };
+}
+
+const availableToys: ToyDisplay[] = [
   {
     id: 'ball',
     name: 'ボール',
@@ -42,51 +57,149 @@ const availableToys: Toy[] = [
 ];
 
 export default function PlayPage() {
-  const [selectedToy, setSelectedToy] = useState<Toy | null>(null);
-  const [bondingLevel, setBondingLevel] = useState(10);
-  const gameRef = useRef<Phaser.Game | null>(null);
+  const [selectedToy, setSelectedToy] = useState<ToyDisplay | null>(null);
+  const [catState, setCatState] = useState<CatState | null>(null);
+  const [catName, setCatName] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const gameRef = useRef<PhaserGame | null>(null);
+  const router = useRouter();
 
-  const handleToySelect = (toy: Toy) => {
-    setSelectedToy(toy);
-    
-    // Function to add toy
-    const addToyToGame = () => {
-      if (gameRef.current) {
-        const scene = gameRef.current.scene.getScene('CatGame');
+  useEffect(() => {
+    checkSessionAndLoadCatState();
+  }, []);
+
+  // おもちゃ選択変更時の処理（ゲーム初期化後のおもちゃ変更のみ）
+  useEffect(() => {
+    if (gameRef.current && selectedToy) {
+      const waitForScene = () => {
+        const scene = gameRef.current?.scene.getScene('CatGame');
         if (scene && 'addToy' in scene) {
-          (scene as any).addToy(toy.type);
+          (scene as any).addToy(selectedToy.type);
+        } else if (!scene) {
+          setTimeout(waitForScene, 100);
         }
-      } else {
-        // Wait a bit and try again
-        setTimeout(addToyToGame, 100);
+      };
+      waitForScene();
+    }
+  }, [selectedToy]);
+
+  const checkSessionAndLoadCatState = async () => {
+    try {
+      const response = await fetch('/api/cat-state',
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      );
+      if (response.status === 401) {
+        router.push('/signup');
+        return;
       }
-    };
-    
-    addToyToGame();
+      
+      const data = await response.json();
+      if (data.catState) {
+        setCatState(data.catState);
+      }
+      if (data.catName) {
+        setCatName(data.catName);
+      }
+    } catch (error) {
+      console.error('Failed to load cat state:', error);
+      router.push('/signup');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleStopPlaying = () => {
+  const saveCatState = useCallback(async () => {
+    if (!gameRef.current) return;
+    
+    try {
+      const scene = gameRef.current.scene.getScene('CatGame');
+      if (scene && 'getCurrentCatState' in scene) {
+        const currentState = (scene as any).getCurrentCatState();
+        const catStateToSave: CatState = {
+          bonding: currentState.bonding,
+          playfulness: currentState.playfulness,
+          fear: currentState.fear,
+          personality: currentState.personality,
+          preferences: currentState.preferences
+        };
+        
+        await fetch('/api/cat-state', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ catState: catStateToSave }),
+        });
+      }
+    } catch (error) {
+      console.error('Failed to save cat state:', error);
+    }
+  }, []);
+
+  const handleToySelect = async (toy: ToyDisplay) => {
+    if (selectedToy) {
+      await saveCatState();
+    }
+    setSelectedToy(toy);
+  };
+
+  const handleStopPlaying = async () => {
+    await saveCatState();
     setSelectedToy(null);
     
     if (gameRef.current) {
       const scene = gameRef.current.scene.getScene('CatGame');
       if (scene && 'removeToy' in scene) {
-        (scene as any).removeToy();
+        scene.removeToy();
       }
     }
   };
 
-  const handleGameReady = (game: any) => {
+  const handleGameReady = useCallback((game: PhaserGame) => {
     gameRef.current = game;
     
-    // Set up bonding level callback
-    const scene = game.scene.getScene('CatGame');
-    if (scene && 'setBondingCallback' in scene) {
-      (scene as any).setBondingCallback((newBondingLevel: number) => {
-        setBondingLevel(newBondingLevel);
-      });
-    }
-  };
+    // シーンが利用可能になるまで少し待機
+    const waitForScene = () => {
+      const scene = game.scene.getScene('CatGame');
+      
+      if (!scene) {
+        // シーンがまだ利用できない場合、少し待って再試行
+        setTimeout(waitForScene, 100);
+        return;
+      }
+      
+      if ('endGame' in scene) {
+        window.addEventListener('beforeunload', async () => {
+          await saveCatState();
+          (scene as any).endGame();
+        });
+      }
+
+      // 選択されたおもちゃがある場合は自動的に追加
+      if (selectedToy && 'addToy' in scene) {
+        (scene as any).addToy(selectedToy.type);
+      }
+    };
+    
+    waitForScene();
+  }, [selectedToy, saveCatState]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">ゲームを準備しています...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -100,30 +213,25 @@ export default function PlayPage() {
           </p>
         </div>
 
-        {/* Bonding Level Display */}
-        <div className="bg-white rounded-lg shadow-md p-4 text-center">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">なつき度</h3>
-          <div className="flex items-center justify-center space-x-2">
-            <div className="flex">
-              {[...Array(10)].map((_, i) => (
-                <span
-                  key={i}
-                  className={`text-2xl ${
-                    i < bondingLevel ? 'text-pink-500' : 'text-gray-300'
-                  }`}
-                >
-                  ❤️
-                </span>
-              ))}
-            </div>
-            <span className="text-gray-600 font-medium">
-              {bondingLevel}/10
-            </span>
-          </div>
-        </div>
-
         {/* Game Canvas */}
-        <GameCanvas onGameReady={handleGameReady} />
+        {selectedToy ? (
+          <GameCanvas 
+            onGameReady={handleGameReady} 
+            initialCatState={catState || undefined}
+            catName={catName || undefined}
+            onGameEnd={saveCatState}
+          />
+        ) : (
+          <div className="w-full flex justify-center">
+            <div className="w-[800px] h-[600px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
+              <div className="text-center text-gray-500">
+                <div className="text-4xl mb-4">🎾</div>
+                <p className="text-lg font-medium">おもちゃを選んでゲームを開始してください</p>
+                <p className="text-sm mt-2">下からおもちゃを選ぶとねこちゃんが現れます</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Toy Selection */}
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -179,7 +287,7 @@ export default function PlayPage() {
             <li>• おもちゃを選んでゲーム画面に表示させます</li>
             <li>• マウスを動かしておもちゃを動かしましょう</li>
             <li>• ねこちゃんがおもちゃに興味を示すか観察してください</li>
-            <li>• 遊んでくれるとなつき度が上がります</li>
+            <li>• 遊んでくれるとなつき度が上がります（ゲーム画面左上に表示）</li>
           </ul>
         </div>
       </div>

@@ -1,0 +1,100 @@
+{
+  "cats": [
+    {
+      "key": "idle",
+      "frames": [
+        "/assets/cats/idle.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 2
+    },
+    {
+      "key": "showBelly",
+      "frames": [
+        "/assets/cats/showBelly_1.png",
+        "/assets/cats/showBelly_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 4
+    },
+    {
+      "key": "chase",
+      "frames": [
+        "/assets/cats/running_1.png",
+        "/assets/cats/running_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 8
+    },
+    {
+      "key": "play",
+      "frames": [
+        "/assets/cats/play_1.png",
+        "/assets/cats/play_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 8
+    },
+    {
+      "key": "sit",
+      "frames": [
+        "/assets/cats/sit_1.png",
+        "/assets/cats/sit_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 3
+    },
+    {
+      "key": "scared",
+      "frames": [
+        "/assets/cats/scared_1.png",
+        "/assets/cats/scared_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "running",
+      "frames": [
+        "/assets/cats/running_1.png",
+        "/assets/cats/running_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "escape",
+      "frames": [
+        "/assets/cats/escape_1.png",
+        "/assets/cats/escape_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "lieDown",
+      "frames": [
+        "/assets/cats/lieDown_1.png",
+        "/assets/cats/lieDown_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    }
+  ],
+  "toys": [
+    {
+      "key": "toy_ball",
+      "url": "/assets/toys/ball.png",
+      "type": "image"
+    }
+  ]
+}

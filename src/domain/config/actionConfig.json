@@ -1,0 +1,65 @@
+{
+  "stepOneActions": {
+    "showBelly": {
+      "name": "お腹見せ",
+      "description": "お腹を見せてリラックスする",
+      "inputs": ["valence", "safety", "social"],
+      "weights": [0.333, 0.333, 0.333, -0.5],
+      "duration": 3000
+    },
+    "playWithToy": {
+      "name": "おもちゃにじゃれる・追いかける",
+      "description": "おもちゃに向かって遊ぶ",
+      "inputs": ["valence", "arousal"],
+      "weights": [0.5, 0.5 , 0],
+      "duration": 3000
+    },
+    "sit": {
+      "name": "お座り",
+      "description": "座って休む",
+      "inputs": [],
+      "weights": [0],
+      "duration": 3000
+    },
+    "runAway": {
+      "name": "逃げる・隠れる",
+      "description": "ユーザーから離れて隠れる",
+      "inputs": ["valence", "safety"],
+      "weights": [-0.5, -0.5, 0],
+      "duration": 3000
+    }
+  },
+  "emotionCalculation": {
+    "valence": {
+      "inputs": ["bonding", "fear"],
+      "weights": [0.5, -0.5, 0]
+    },
+    "arousal": {
+      "inputs": ["playfulness"],
+      "weights": [1, 0]
+    },
+    "safety": {
+      "inputs": ["bonding", "fear"],
+      "weights": [0.5, -0.5, 0]
+    },
+    "social": {
+      "inputs": ["bonding"],
+      "weights": [1, 0]
+    },
+    "discomfort": {
+      "inputs": [],
+      "weights": [0]
+    }
+  },
+  "probabilityCalculation": {
+    "method": "softmax",
+    "temperature": 0.3,
+    "minimumProbability": 0.01
+  },
+  "externalStateInfluence": {
+    "fear": {
+      "inputs": ["userPresence"],
+      "weights": [-0.01]
+    }
+  }
+}

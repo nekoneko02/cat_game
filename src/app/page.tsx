@@ -25,10 +25,10 @@ export default function Home() {
             一緒に遊んで、なつき度を上げて、特別な関係を築きましょう。
           </p>
           <Link
-            href="/play"
+            href="/signup"
             className="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 px-6 rounded-full transition-colors inline-block"
           >
-            ねこと遊ぶ
+            ゲームを始める
           </Link>
         </div>
 

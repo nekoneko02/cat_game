@@ -8,15 +8,7 @@ export interface CatState {
     discomfort: number;
   };
   internalStates: {
-    hunger: number;
-    thirst: number;
-    fatigue: number;
-    sleepiness: number;
-    health: number;
-    excretion: number;
     bonding: number;
-    anxiety: number;
-    curiosity: number;
     playfulness: number;
     fear: number;
   };
