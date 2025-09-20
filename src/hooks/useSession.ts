@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logError } from '@/lib/log';
 
 interface SessionData {
   authenticated: boolean;
@@ -20,7 +21,7 @@ export function useSession() {
       const data = await response.json();
       setSession(data);
     } catch (error) {
-      console.error('Session check failed:', error);
+      logError('Session check failed', { error: error instanceof Error ? error.message : String(error) });
       setSession({ authenticated: false });
     } finally {
       setLoading(false);

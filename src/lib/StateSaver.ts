@@ -1,5 +1,6 @@
 import { CatState } from './session';
 import { apiClient } from './ApiClient';
+import { logError, logWarn } from './log';
 
 export interface SaveResult {
   success: boolean;
@@ -46,7 +47,7 @@ export class StateSaver {
 
       return result;
     } catch (error) {
-      console.error('Failed to save cat state:', error);
+      logError('Failed to save cat state', { error: error instanceof Error ? error.message : String(error) });
       return {
         success: false,
         error: error instanceof Error ? error.message : '保存に失敗しました'
@@ -71,7 +72,7 @@ export class StateSaver {
         catName: response.data?.catName || null
       };
     } catch (error) {
-      console.error('Failed to load cat state:', error);
+      logError('Failed to load cat state', { error: error instanceof Error ? error.message : String(error) });
       return {
         success: false,
         error: error instanceof Error ? error.message : '読み込みに失敗しました'
@@ -91,7 +92,7 @@ export class StateSaver {
       if (currentState) {
         const result = await this.saveCatState(currentState);
         if (!result.success) {
-          console.warn('Auto-save failed:', result.error);
+          logWarn('Auto-save failed', { error: result.error });
         }
       }
     }, this.config.autoSaveInterval);

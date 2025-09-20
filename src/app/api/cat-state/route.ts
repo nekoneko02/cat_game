@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 import { sessionOptions, CatState } from '@/lib/session';
+import { logWithRequest } from '@/lib/log';
 
 export async function GET(request: NextRequest) {
   try {
+    logWithRequest(request, 'info', 'Get cat state request', {
+      url: '/api/cat-state',
+      method: 'GET',
+    });
+
     const response = NextResponse.json({});
     const session = await getIronSession(request, response, sessionOptions);
 
     if (!(session as unknown as { username?: string }).username) {
+      logWithRequest(request, 'warn', 'Get cat state failed: not authenticated');
       return NextResponse.json(
         { error: '認証が必要です' },
         { status: 401 }
@@ -15,12 +22,19 @@ export async function GET(request: NextRequest) {
     }
 
     const sessionData = session as unknown as { catState?: CatState; catName?: string };
+    logWithRequest(request, 'info', 'Get cat state successful', {
+      hasCatState: !!sessionData.catState,
+      hasCatName: !!sessionData.catName,
+    });
     return NextResponse.json({
       catState: sessionData.catState || null,
       catName: sessionData.catName || null
     });
   } catch (error) {
-    console.error('Get cat state error:', error);
+    logWithRequest(request, 'error', 'Get cat state error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
       { error: '状態の取得に失敗しました' },
       { status: 500 }
@@ -32,7 +46,7 @@ export async function POST(request: NextRequest) {
   try {
     const requestBody = await request.text();
     if (!requestBody.trim()) {
-      console.log('Empty request body, skipping cat state save');
+      logWithRequest(request, 'info', 'Empty request body, skipping cat state save');
       return NextResponse.json({ success: true, message: 'No data to save' });
     }
 
@@ -68,7 +82,10 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('Save cat state error:', error);
+    logWithRequest(request, 'error', 'Save cat state error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
       { error: '状態の保存に失敗しました' },
       { status: 500 }

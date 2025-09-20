@@ -7,6 +7,7 @@ import { GameManager } from '@/lib/GameManager';
 import { apiClient } from '@/lib/ApiClient';
 import { GameIcon } from '@/components/GameIcon';
 import { IMAGE_IDS } from '@/constants/images';
+import { logDebug, logError, logInfo } from '@/lib/log';
 
 interface GameCanvasProps {
   onGameReady?: (game: PhaserGame, gameManager: GameManager) => void;
@@ -30,14 +31,14 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
         if (!gameRef.current) return;
 
         gameManagerRef.current = new GameManager();
-        console.log('GameCanvas: Created new GameManager instance');
+        logDebug('GameCanvas: Created new GameManager instance');
 
         // ゲーム開始時に最新の猫状態を取得
         let initialCatGameConfig: CatState | undefined = undefined;
         try {
-          console.log('GameCanvas: Calling getCatState API...');
+          logDebug('GameCanvas: Calling getCatState API...');
           const response = await apiClient.getCatState();
-          console.log('GameCanvas: getCatState response:', response);
+          logDebug('GameCanvas: getCatState response', { response });
 
           if (response.success && response.data?.catState) {
             // CatStateをCatGameConfigに変換
@@ -48,20 +49,18 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
               personality: response.data.catState.personality,
               preferences: response.data.catState.preferences
             };
-            console.log('GameCanvas: Using loaded cat state:', initialCatGameConfig);
+            logInfo('GameCanvas: Using loaded cat state', { initialCatGameConfig });
           } else {
-            // ユースケースに従ってエラーを通知
             const errorMessage = 'ねこの情報が取得できませんでした';
-            console.error('GameCanvas: Cat state retrieval failed:', response.error);
+            logError('GameCanvas: Cat state retrieval failed', { error: response.error });
             if (onCatStateError) {
               onCatStateError(errorMessage);
               return; // ゲーム初期化を中断
             }
           }
         } catch (error) {
-          // ユースケースに従ってエラーを通知
           const errorMessage = 'ねこの情報が取得できませんでした';
-          console.error('GameCanvas: Failed to load initial cat state:', error);
+          logError('GameCanvas: Failed to load initial cat state', { error: error instanceof Error ? error.message : String(error) });
           if (onCatStateError) {
             onCatStateError(errorMessage);
             return; // ゲーム初期化を中断
@@ -100,7 +99,7 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
           setLoadError('ゲームの開始に失敗しました。');
         }
       } catch (error) {
-        console.error('Failed to initialize game:', error);
+        logError('Failed to initialize game', { error: error instanceof Error ? error.message : String(error) });
         if (mounted) {
           setLoadError('ゲームの初期化に失敗しました。ページを再読み込みしてください。');
         }

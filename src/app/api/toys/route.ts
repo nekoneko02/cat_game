@@ -1,18 +1,29 @@
 import { NextResponse } from 'next/server';
 import { getToysForApiClient } from '@/constants/toys';
+import { logInfo, logError } from '@/lib/log';
 
 export async function GET() {
   try {
-    // toys.tsから一元管理されたおもちゃ情報を取得
+    logInfo('Toys API request', {
+      url: '/api/toys',
+      method: 'GET',
+    });
+
     const toys = getToysForApiClient();
+
+    logInfo('Toys API successful', {
+      toysCount: toys.length,
+    });
 
     return NextResponse.json({
       toys: toys
     });
   } catch (error) {
-    console.error('Error fetching toys from toys.ts:', error);
+    logError('Error fetching toys', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
 
-    // フォールバック: エラー時は空配列を返す
     return NextResponse.json({
       toys: []
     }, { status: 500 });

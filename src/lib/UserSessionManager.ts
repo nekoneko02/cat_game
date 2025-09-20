@@ -1,4 +1,5 @@
 import { User, PlaySession, SessionAction } from '@/domain/entities/User';
+import { logWarn } from './log';
 
 /**
  * ユーザーセッション管理
@@ -109,7 +110,7 @@ export class UserSessionManager {
 
       return new User(parsed.id, parsed.name, playHistory);
     } catch (error) {
-      console.warn('Failed to load user from session:', error);
+      logWarn('Failed to load user from session', { error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   }
@@ -140,7 +141,7 @@ export class UserSessionManager {
 
       sessionStorage.setItem('tanuki-neko-user', JSON.stringify(userData));
     } catch (error) {
-      console.warn('Failed to save user to session:', error);
+      logWarn('Failed to save user to session', { error: error instanceof Error ? error.message : String(error) });
     }
   }
 

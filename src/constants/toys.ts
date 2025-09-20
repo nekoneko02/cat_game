@@ -57,10 +57,11 @@ export const getToysForApiClient = () => {
   return TOYS.map(toy => ({
     id: toy.id,
     name: toy.name,
-    attributes: toy.attributes || {
-      color: '不明',
-      material: '不明',
-      sound: '不明'
+    attributes: {
+      appearance: '可愛い',
+      material: toy.attributes?.material || '不明',
+      sound: toy.attributes?.sound || '不明',
+      color: toy.attributes?.color || '不明'
     }
   }));
 };

@@ -1,3 +1,5 @@
+import { logWarn, logError } from './log';
+
 /**
  * アセット設定の型定義
  */
@@ -74,7 +76,7 @@ export class AssetManager {
    * このメソッドは assets.json が読み込めない場合のみ使用される
    */
   private async generateDefaultManifest(): Promise<AssetManifest> {
-    console.warn('assets.json が読み込めませんでした。最小限のフォールバック設定を使用します。');
+    logWarn('assets.json が読み込めませんでした。最小限のフォールバック設定を使用します。');
     return {
       cats: {
         assets: [],
@@ -124,7 +126,7 @@ export class AssetManager {
       
       // エラーハンドリング
       scene.load.on('loaderror', (file: { key: string; url: string }) => {
-        console.warn(`Failed to load asset: ${file.key} from ${file.url}`);
+        logWarn('Failed to load asset', { key: file.key, url: file.url });
       });
       
       // ねこのアセット読み込み
@@ -141,7 +143,7 @@ export class AssetManager {
             scene.load.image(asset.key, asset.url);
           }
         } catch (error) {
-          console.warn(`Failed to queue asset ${asset.key}:`, error);
+          logWarn('Failed to queue asset', { assetKey: asset.key, error: error instanceof Error ? error.message : String(error) });
         }
       }
 
@@ -150,7 +152,7 @@ export class AssetManager {
         try {
           scene.load.image(asset.key, asset.url);
         } catch (error) {
-          console.warn(`Failed to queue toy asset ${asset.key}:`, error);
+          logWarn('Failed to queue toy asset', { assetKey: asset.key, error: error instanceof Error ? error.message : String(error) });
         }
       }
 
@@ -159,7 +161,7 @@ export class AssetManager {
         try {
           scene.load.image(asset.key, asset.url);
         } catch (error) {
-          console.warn(`Failed to queue UI asset ${asset.key}:`, error);
+          logWarn('Failed to queue UI asset', { assetKey: asset.key, error: error instanceof Error ? error.message : String(error) });
         }
       }
 
@@ -191,7 +193,7 @@ export class AssetManager {
       try {
         // テクスチャが存在するかチェック
         if (!scene.textures.exists(animConfig.textureKey)) {
-          console.warn(`Texture not found for animation ${animConfig.key}: ${animConfig.textureKey}`);
+          logWarn('Texture not found for animation', { animationKey: animConfig.key, textureKey: animConfig.textureKey });
           return;
         }
 
@@ -205,7 +207,7 @@ export class AssetManager {
           repeat: animConfig.repeat
         });
       } catch (error) {
-        console.error(`Failed to create animation ${animConfig.key}:`, error);
+        logError('Failed to create animation', { animationKey: animConfig.key, error: error instanceof Error ? error.message : String(error) });
       }
     });
   }

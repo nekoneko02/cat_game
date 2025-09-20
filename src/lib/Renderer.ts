@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 // ToyType removed - using asset keys directly
 import { AssetLoader } from './AssetLoader';
+import { logError } from './log';
 
 export interface SpriteConfig {
   key: string;
@@ -58,7 +59,7 @@ export class Renderer {
         usedFallback
       };
     } catch (error) {
-      console.error('Failed to create cat sprite:', error);
+      logError('Failed to create cat sprite', { error: error instanceof Error ? error.message : String(error) });
       return this.createFallbackCatSprite(scene, x, y);
     }
   }
@@ -90,7 +91,7 @@ export class Renderer {
         usedFallback
       };
     } catch (error) {
-      console.error(`Failed to create toy sprite for ${toyKey}:`, error);
+      logError('Failed to create toy sprite', { toyKey, error: error instanceof Error ? error.message : String(error) });
       return this.createFallbackToySprite(scene, toyKey, x, y);
     }
   }

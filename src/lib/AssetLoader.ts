@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import assetsConfig from '../../public/config/assets.json';
 import { getToyAssetsForPhaser } from '@/constants/toys';
+import { logError, logWarn } from './log';
 
 export interface AssetLoadResult {
   success: boolean;
@@ -19,7 +20,7 @@ export class AssetLoader {
 
     return new Promise((resolve) => {
       scene.load.on('loaderror', (file: { key: string; url: string }) => {
-        console.error(`Failed to load asset: ${file.key} from ${file.url}`);
+        logError('Failed to load asset', { key: file.key, url: file.url });
         failedAssets.push(file.key);
       });
 
@@ -101,13 +102,13 @@ export class AssetLoader {
             frame: 0
           });
         } else {
-          console.warn(`Frame texture not found: ${frameKey}`);
+          logWarn('Frame texture not found', { frameKey });
         }
       });
 
       // 有効なフレームがない場合はスキップ
       if (validFrames.length === 0) {
-        console.warn(`No valid frames found for animation: ${catConfig.key}`);
+        logWarn('No valid frames found for animation', { animationKey: catConfig.key });
         continue;
       }
 
@@ -119,7 +120,7 @@ export class AssetLoader {
           repeat: -1
         });
       } catch (error) {
-        console.error(`Failed to create animation ${catConfig.key}:`, error);
+        logError('Failed to create animation', { animationKey: catConfig.key, error: error instanceof Error ? error.message : String(error) });
       }
     }
   }

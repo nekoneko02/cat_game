@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import { PhaserGame, CatGameScene } from '@/types/game';
 import { CatState } from './session';
 import { StateSaver } from './StateSaver';
+import { logDebug, logError, logInfo } from './log';
 
 export interface GameConfig {
   initialCatState?: CatState;
@@ -59,7 +60,7 @@ export class GameManager {
         sceneManager.remove('CatGame');
       }
 
-      console.log('GameManager: Starting game with config:', config);
+      logDebug('GameManager: Starting game with config', { config });
 
       // Sceneを追加（configはコンストラクタには渡さない）
       sceneManager.add('CatGame', CatGameClass, false);
@@ -71,7 +72,7 @@ export class GameManager {
         onGameEnd: this.handleGameEnd.bind(this)
       };
 
-      console.log('GameManager: Starting scene with data:', initData);
+      logDebug('GameManager: Starting scene with data', { initData });
       sceneManager.start('CatGame', initData);
 
       this.setState(GameState.PLAYING);
@@ -88,7 +89,7 @@ export class GameManager {
 
       return true;
     } catch (error) {
-      console.error('Failed to start game:', error);
+      logError('Failed to start game', { error: error instanceof Error ? error.message : String(error) });
       this.setState(GameState.ERROR);
       return false;
     }
@@ -116,7 +117,7 @@ export class GameManager {
       await this.destroyExistingGame();
       this.setState(GameState.IDLE);
     } catch (error) {
-      console.error('Error ending game:', error);
+      logError('Error ending game', { error: error instanceof Error ? error.message : String(error) });
       this.setState(GameState.ERROR);
     }
   }
@@ -141,16 +142,14 @@ export class GameManager {
 
   addToyToGame(toyKey: string): boolean {
     const scene = this.getGameScene();
-    console.log('GameManager.addToyToGame called with toyKey:', toyKey);
-    console.log('Scene exists:', !!scene);
-    console.log('Scene has addToy method:', scene && 'addToy' in scene);
+    logDebug('GameManager.addToyToGame called', { toyKey, hasScene: !!scene, hasAddToyMethod: scene && 'addToy' in scene });
 
     if (scene && 'addToy' in scene) {
       (scene as unknown as { addToy: (key: string) => void }).addToy(toyKey);
-      console.log('Successfully called addToy on scene');
+      logInfo('Successfully called addToy on scene', { toyKey });
       return true;
     }
-    console.log('Failed to add toy to game');
+    logDebug('Failed to add toy to game', { toyKey, hasScene: !!scene });
     return false;
   }
 
@@ -266,7 +265,7 @@ export class GameManager {
         await this.stateSaver.saveGameEnd(catState);
       }
     } catch (error) {
-      console.error('Failed to save game state:', error);
+      logError('Failed to save game state', { error: error instanceof Error ? error.message : String(error) });
     }
   }
 

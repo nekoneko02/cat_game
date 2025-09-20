@@ -16,6 +16,7 @@ import { GameIcon } from '@/components/GameIcon';
 import { ToyImage } from '@/components/ToyImage';
 import { IMAGE_IDS } from '@/constants/images';
 import { getToyAsset } from '@/constants/toys';
+import { logDebug, logError, logInfo } from '@/lib/log';
 
 export default function PlayPage() {
   const [toyKey, setToyKey] = useState<string | null>(null);
@@ -32,12 +33,12 @@ export default function PlayPage() {
   const saveCatState = useCallback(async () => {
     // ゲームが初期化されていない場合は何もしない
     if (!gameManagerRef.current || !stateSaverRef.current) {
-      console.log('PlayPage: Game not initialized, skipping cat state save');
+      logDebug('PlayPage: Game not initialized, skipping cat state save');
       return;
     }
 
     try {
-      console.log('PlayPage: Getting current cat state from game...');
+      logDebug('PlayPage: Getting current cat state from game...');
       const currentState = gameManagerRef.current.getCurrentCatState() as {
         bonding: number;
         playfulness: number;
@@ -46,7 +47,7 @@ export default function PlayPage() {
         preferences: Preferences;
       } | null;
 
-      console.log('PlayPage: Current game state:', currentState);
+      logDebug('PlayPage: Current game state', { currentState });
 
       if (currentState) {
         const catStateToSave: CatState = {
@@ -57,20 +58,20 @@ export default function PlayPage() {
           preferences: currentState.preferences
         };
 
-        console.log('PlayPage: Saving cat state:', catStateToSave);
+        logDebug('PlayPage: Saving cat state', { catStateToSave });
         const result = await stateSaverRef.current.saveCatState(catStateToSave);
-        console.log('PlayPage: Save result:', result);
+        logDebug('PlayPage: Save result', { result });
 
         if (!result.success) {
-          console.error('PlayPage: Failed to save cat state:', result.error);
+          logError('PlayPage: Failed to save cat state', { error: result.error });
         } else {
-          console.log('PlayPage: Cat state saved successfully');
+          logInfo('PlayPage: Cat state saved successfully');
         }
       } else {
-        console.log('PlayPage: No current cat state to save');
+        logDebug('PlayPage: No current cat state to save');
       }
     } catch (error) {
-      console.error('PlayPage: Failed to save cat state:', error);
+      logError('PlayPage: Failed to save cat state', { error: error instanceof Error ? error.message : String(error) });
     }
   }, []);
 
@@ -88,7 +89,7 @@ export default function PlayPage() {
       const response = await apiClient.getCatState();
 
       if (!response.success) {
-        console.error('Failed to load cat state:', response.error);
+        logError('Failed to load cat state', { error: response.error });
         if (response.error?.includes('認証')) {
           router.push('/signup');
           return;
@@ -99,7 +100,7 @@ export default function PlayPage() {
         setCatName(response.data.catName);
       }
     } catch (error) {
-      console.error('Failed to load cat state:', error);
+      logError('Failed to load cat state', { error: error instanceof Error ? error.message : String(error) });
       router.push('/signup');
     } finally {
       setLoading(false);
@@ -117,7 +118,7 @@ export default function PlayPage() {
     checkSessionAndLoadCatState();
     // GameManagerはGameCanvasから受け取るので作成しない
     stateSaverRef.current = new StateSaver();
-    console.log('PlayPage: Created new StateSaver instance');
+    logDebug('PlayPage: Created new StateSaver instance');
   }, [checkSessionAndLoadCatState, searchParams, router]);
 
   // おもちゃ追加処理は handleGameReady で実行
@@ -146,24 +147,23 @@ export default function PlayPage() {
   };
 
   const handleCatStateError = useCallback((error: string) => {
-    console.error('Cat state error:', error);
-    alert(error); // 簡易的なエラー表示（本来はUIコンポーネントを使用）
-    router.push('/toy-selection'); // おもちゃ選択画面に戻る
+    logError('Cat state error', { error });
+    alert(error);
+    router.push('/toy-selection');
   }, [router]);
 
   const handleGameReady = useCallback((game: PhaserGame, gameManager: GameManager) => {
     gameRef.current = game;
     gameManagerRef.current = gameManager; // GameCanvasからの正しいGameManagerインスタンスを使用
 
-    console.log('handleGameReady called with toyKey:', toyKey);
-    console.log('Received GameManager from GameCanvas:', !!gameManager);
+    logDebug('handleGameReady called', { toyKey, hasGameManager: !!gameManager });
 
     if (toyKey && gameManager) {
-      console.log('Attempting to add toy after 100ms delay');
+      logDebug('Attempting to add toy after 100ms delay');
       setTimeout(() => {
-        console.log('Timeout triggered, calling addToyToGame');
+        logDebug('Timeout triggered, calling addToyToGame');
         const result = gameManager.addToyToGame(toyKey);
-        console.log('addToyToGame result:', result);
+        logDebug('addToyToGame result', { result });
       }, 100);
     }
   }, [toyKey]);

@@ -8,6 +8,7 @@ import { GameIcon } from '@/components/GameIcon';
 import { ToyImage } from '@/components/ToyImage';
 import { IMAGE_IDS } from '@/constants/images';
 import { getToysForApiClient } from '@/constants/toys';
+import { logDebug, logError, logWarn, logInfo } from '@/lib/log';
 
 // toys.tsから自動生成されるフォールバックおもちゃデータ
 const fallbackToys: ToyData[] = getToysForApiClient();
@@ -24,20 +25,20 @@ export default function ToySelectionPage() {
 
   const loadToys = async () => {
     try {
-      console.log('Loading toys from API...');
+      logDebug('Loading toys from API...');
       const response = await apiClient.getToys();
-      console.log('API response:', response);
+      logDebug('API response', { response });
 
       if (response.success && response.data?.toys) {
-        console.log('Successfully loaded toys:', response.data.toys);
+        logInfo('Successfully loaded toys', { toysCount: response.data.toys.length });
         setToys(response.data.toys);
       } else {
-        console.warn('API failed or no toys data, using fallback:', response.error);
+        logWarn('API failed or no toys data, using fallback', { error: response.error });
         setError('おもちゃの情報を正しく読み込めませんでした。組み込みのおもちゃを表示します。');
         setToys(fallbackToys);
       }
     } catch (err) {
-      console.error('Failed to load toys:', err);
+      logError('Failed to load toys', { error: err instanceof Error ? err.message : String(err) });
       setError('おもちゃの情報を正しく読み込めませんでした。組み込みのおもちゃを表示します。');
       setToys(fallbackToys);
     } finally {
@@ -60,7 +61,7 @@ export default function ToySelectionPage() {
 
       router.push(`/play?toy=${toy.id}`);
     } catch (err) {
-      console.error('Failed to start game:', err);
+      logError('Failed to start game', { error: err instanceof Error ? err.message : String(err), toyId: toy.id });
       setError('ゲームを開始できませんでした。');
     }
   };

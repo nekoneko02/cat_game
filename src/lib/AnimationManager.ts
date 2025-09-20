@@ -1,4 +1,5 @@
 import { AssetManager, AnimationConfig } from './AssetManager';
+import { logWarn, logError } from './log';
 
 /**
  * アニメーション再生状態
@@ -35,7 +36,7 @@ export class AnimationManager {
     const animConfig = this.assetManager.getAnimationConfig(animationKey);
     
     if (!animConfig) {
-      console.warn(`Animation config not found: ${animationKey}`);
+      logWarn('Animation config not found', { animationKey });
       // フォールバック: 静的フレームを設定
       if (sprite.scene.textures.exists('fallback_cat')) {
         return this.setStaticFrame(sprite, 'fallback_cat', 0);
@@ -52,14 +53,14 @@ export class AnimationManager {
     try {
       // アニメーションが存在するかチェック
       if (!sprite.scene.anims.exists(animationKey)) {
-        console.warn(`Animation not found in scene: ${animationKey}`);
+        logWarn('Animation not found in scene', { animationKey });
         // フォールバック: テクスチャが存在するなら静的フレームを設定
         if (sprite.scene.textures.exists(animConfig.textureKey)) {
           return this.setStaticFrame(sprite, animConfig.textureKey, animConfig.frameStart);
         } else if (sprite.scene.textures.exists('fallback_cat')) {
           return this.setStaticFrame(sprite, 'fallback_cat', 0);
         } else {
-          console.warn(`No suitable texture found for animation: ${animationKey}`);
+          logWarn('No suitable texture found for animation', { animationKey });
           return false;
         }
       }
@@ -89,14 +90,14 @@ export class AnimationManager {
 
       return true;
     } catch (error) {
-      console.error(`Failed to play animation ${animationKey}:`, error);
+      logError('Failed to play animation', { animationKey, error: error instanceof Error ? error.message : String(error) });
       // フォールバック: 静的フレームを設定
       if (animConfig && sprite.scene.textures.exists(animConfig.textureKey)) {
         return this.setStaticFrame(sprite, animConfig.textureKey, animConfig.frameStart);
       } else if (sprite.scene.textures.exists('fallback_cat')) {
         return this.setStaticFrame(sprite, 'fallback_cat', 0);
       } else {
-        console.error(`No fallback texture available for: ${animationKey}`);
+        logError('No fallback texture available for animation', { animationKey });
         return false;
       }
     }
@@ -113,7 +114,7 @@ export class AnimationManager {
     const animationKey = this.getAnimationKeyForAction(actionName);
     
     if (!animationKey) {
-      console.warn(`No animation mapping for action: ${actionName}`);
+      logWarn('No animation mapping for action', { actionName });
       return false;
     }
 
@@ -256,7 +257,7 @@ export class AnimationManager {
 
       return true;
     } catch (error) {
-      console.error(`Failed to set static frame: ${textureKey}`, error);
+      logError('Failed to set static frame', { textureKey, error: error instanceof Error ? error.message : String(error) });
       return false;
     }
   }

@@ -1,42 +1,50 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { GameIcon } from '@/components/GameIcon';
 import { IMAGE_IDS } from '@/constants/images';
+import { apiClient } from '@/lib/ApiClient';
+import { logError } from '@/lib/log';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  const checkSession = useCallback(async () => {
+    try {
+      const response = await apiClient.getCatState();
+      if (!response.success || !response.data?.catState) {
+        if (window.location.pathname !== '/' && window.location.pathname !== '/signup') {
+          router.push('/');
+        }
+      }
+    } catch {
+      if (window.location.pathname !== '/' && window.location.pathname !== '/signup') {
+        router.push('/');
+      }
+    }
+  }, [router]);
 
   useEffect(() => {
     checkSession();
-  }, []);
-
-  const checkSession = async () => {
-    try {
-      const response = await fetch('/api/cat-state');
-      if (response.ok) {
-        setIsLoggedIn(true);
-        // セッション情報があればユーザー情報も表示したいが、今回は簡単にログイン状態のみチェック
-      }
-    } catch (_error) {
-      setIsLoggedIn(false);
-    }
-  };
+  }, [checkSession]);
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setIsLoggedIn(false);
-      router.push('/');
+      const response = await apiClient.logout();
+      if (response.success) {
+        router.push('/');
+      } else {
+        logError('Logout failed', { error: response.error });
+      }
     } catch (error) {
-      console.error('Logout failed:', error);
+      logError('Logout failed', { error: error instanceof Error ? error.message : String(error) });
+      router.push('/');
     }
   };
   return (
@@ -48,14 +56,12 @@ export default function Layout({ children }: LayoutProps) {
             たぬきねこ
           </Link>
           
-          {isLoggedIn && (
-            <button
-              onClick={handleLogout}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm transition-colors"
-            >
-              ログアウト
-            </button>
-          )}
+          <button
+            onClick={handleLogout}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm transition-colors"
+          >
+            ログアウト
+          </button>
         </div>
       </header>
       

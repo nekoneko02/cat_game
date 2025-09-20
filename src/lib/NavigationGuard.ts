@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useCallback } from 'react';
+import { logError } from './log';
 
 export interface NavigationGuardConfig {
   message: string;
@@ -67,7 +68,7 @@ export class NavigationGuard {
         try {
           await this.callbacks.onBeforeUnload();
         } catch (error) {
-          console.error('Error in onBeforeUnload callback:', error);
+          logError('Error in onBeforeUnload callback', { error: error instanceof Error ? error.message : String(error) });
         }
       }
 

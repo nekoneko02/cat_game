@@ -1,5 +1,6 @@
 import { SessionOptions } from 'iron-session';
 import { Personality, Preferences } from '@/domain/entities/Cat';
+import { logError } from './log';
 
 export interface CatState {
   bonding: number;
@@ -10,13 +11,21 @@ export interface CatState {
 }
 
 
+const getSessionPassword = (): string => {
+  const password = process.env.SESSION_PASSWORD;
+  if (!password) {
+    logError('[SECURITY INCIDENT] SESSION_PASSWORD environment variable is not set. Using fallback password which is not secure for production.');
+    return 'complex_password_at_least_32_characters_long_for_security';
+  }
+  return password;
+};
+
 export const sessionOptions: SessionOptions = {
-  password: process.env.SESSION_PASSWORD || 'complex_password_at_least_32_characters_long_for_security',
+  password: getSessionPassword(),
   cookieName: 'cat-game-session',
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 60 * 60 * 24 * 7, // 1週間
     sameSite: 'lax',
   },
 };

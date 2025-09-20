@@ -15,6 +15,7 @@ import { DebugOverlay } from './DebugOverlay';
 import { AnimationCommand } from '@/types/AnimationCommand';
 import { GameTimeManager } from './GameTimeManager';
 import assetsConfig from '../../public/config/assets.json';
+import { logDebug, logError, logWarn, logInfo } from '@/lib/log';
 
 export interface CatGameConfig {
   bonding: number;
@@ -46,9 +47,8 @@ export default class CatGame extends Phaser.Scene {
 
   constructor() {
     super({ key: 'CatGame' });
-    console.log('CatGame: Constructor called');
+    logDebug('CatGame: Constructor called');
 
-    // 基本的なマネージャーのみ初期化（猫の初期化はinit()で行う）
     this.sessionManager = UserSessionManager.getInstance();
     this.assetLoader = new AssetLoader();
     this.animationManager = new AnimationManager();
@@ -56,20 +56,18 @@ export default class CatGame extends Phaser.Scene {
   }
 
   init(data: { initialCatState?: object; catName?: string; onGameEnd?: () => Promise<void> }) {
-    console.log('CatGame: init() called with data:', data);
+    logDebug('CatGame: init() called', { data });
 
-    // GameTimeManagerを作成
     this.gameTimeManager = new GameTimeManager();
     this.gameRenderer = new Renderer(this.assetLoader);
 
     if (data?.initialCatState) {
-      console.log('CatGame: Using initial cat state:', data.initialCatState);
-      this.cat = this.createCatFromConfig(data.initialCatState as any, data.catName);
-      console.log('CatGame: Created cat with loaded state. Bonding:', this.cat.getInternalState().bonding);
+      logInfo('CatGame: Using initial cat state', { initialCatState: data.initialCatState });
+      this.cat = this.createCatFromConfig(data.initialCatState as CatGameConfig, data.catName);
+      logInfo('CatGame: Created cat with loaded state', { bonding: this.cat.getInternalState().bonding });
     } else {
-      // ユースケースに従い、猫状態が取得できない場合はエラーとする
       const errorMessage = 'ねこの内部状態が取得できないため、ゲームを開始できません';
-      console.error('CatGame: ' + errorMessage);
+      logError('CatGame: ' + errorMessage);
       throw new Error(errorMessage);
     }
 
@@ -98,10 +96,10 @@ export default class CatGame extends Phaser.Scene {
       this.assetsReady = result.success;
 
       if (!result.success && result.failedAssets.length > 0) {
-        console.warn('Some assets failed to load:', result.failedAssets);
+        logWarn('Some assets failed to load', { failedAssets: result.failedAssets });
       }
     } catch (error) {
-      console.error('Failed to load assets:', error);
+      logError('Failed to load assets', { error: error instanceof Error ? error.message : String(error) });
       this.assetsReady = false;
     }
   }
@@ -117,7 +115,7 @@ export default class CatGame extends Phaser.Scene {
     this.catSprite = catResult.sprite;
 
     if (catResult.usedFallback) {
-      console.warn('Using fallback cat sprite');
+      logWarn('Using fallback cat sprite');
     }
 
     this.gameTimeManager.reset();
@@ -242,22 +240,22 @@ export default class CatGame extends Phaser.Scene {
       if (this.anims.exists(animationKey)) {
         this.catSprite.play(animationKey, true);
       } else {
-        console.warn(`Animation not found: ${animationKey}`);
+        logWarn('Animation not found', { animationKey });
       }
     } catch (error) {
-      console.error(`Error playing animation ${animationKey}:`, error);
+      logError('Error playing animation', { animationKey, error: error instanceof Error ? error.message : String(error) });
     }
   }
 
   public addToy(toyKey: string) {
-    console.log('CatGame.addToy called with toyKey:', toyKey);
+    logDebug('CatGame.addToy called', { toyKey });
 
     if (this.toySprite) {
       this.toySprite.destroy();
     }
 
     this.toy = Toy.create(toyKey, 400, 300);
-    console.log('Toy created:', !!this.toy);
+    logDebug('Toy created', { haseToy: !!this.toy });
 
     if (this.assetsReady && this.textures.exists(toyKey)) {
       this.createToySprite(toyKey);
@@ -338,7 +336,7 @@ export default class CatGame extends Phaser.Scene {
       personality: this.cat.personality,
       preferences: this.cat.preferences
     };
-    console.log('CatGame: getCurrentCatState returning:', currentState);
+    logDebug('CatGame: getCurrentCatState returning', { currentState });
     return currentState;
   }
 
