@@ -27,6 +27,13 @@
 - エラーログ・警告ログは適切に出力、意味のない情報ログは削除
 - 調査用の一時的なログは許容
 
+### アーキテクチャ設計
+- Next.js（アプリ全体のフレームワーク）とPhaser（1ゲーム1Sceneのステートレス実装）の3層構成
+- 共通モジュール（ApiClient・GameManager・StateSaver等）による疎結合連携
+- Next.jsで画面遷移・API呼び出し・内部状態管理、Phaserで描画・入力処理・ロジック実行を担当
+- API呼び出しは必ずApiClientのラッパー関数を使用、UI側は直接fetchしない
+- 1ゲーム画面 = 1Next.jsページ + 1Phaser.Scene具象クラス
+
 ## 実装時の注意点
 
 1. コード作成前に`DEVELOPMENT_GUIDELINES.md`の内容を確認

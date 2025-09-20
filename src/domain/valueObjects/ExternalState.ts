@@ -7,7 +7,6 @@ export class ExternalState {
   constructor(
     public readonly toyPresence: boolean,      // おもちゃの存在
     public readonly toyDistance: number,       // おもちゃとの距離
-    public readonly toyType: string | null,    // おもちゃの種類
     public readonly userPresence: boolean,     // ユーザーの存在
     public readonly isPlaying: boolean         // 現在遊び中かどうか
   ) {}
@@ -15,11 +14,10 @@ export class ExternalState {
   /**
    * おもちゃ状態を更新した新しいインスタンスを返す
    */
-  updateToy(presence: boolean, distance: number = 0, type: string | null = null): ExternalState {
+  updateToy(presence: boolean, distance: number = 0): ExternalState {
     return new ExternalState(
       presence,
       distance,
-      type,
       this.userPresence,
       this.isPlaying
     );
@@ -32,7 +30,6 @@ export class ExternalState {
     return new ExternalState(
       this.toyPresence,
       this.toyDistance,
-      this.toyType,
       this.userPresence,
       isPlaying
     );
@@ -45,7 +42,6 @@ export class ExternalState {
     return new ExternalState(
       this.toyPresence,
       this.toyDistance,
-      this.toyType,
       presence,
       this.isPlaying
     );
@@ -58,7 +54,6 @@ export class ExternalState {
     return new ExternalState(
       false, // toyPresence - おもちゃの存在
       0,     // toyDistance - おもちゃとの距離
-      null,  // toyType - おもちゃの種類
       true,  // userPresence - ユーザーの存在
       false  // isPlaying - 現在遊び中かどうか
     );

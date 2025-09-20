@@ -45,9 +45,13 @@ export class Cat {
     private externalState: ExternalState,
     public readonly personality: Personality,
     public readonly preferences: Preferences,
-    private lastUpdateTime: number = 0
+    private lastUpdateTime: number = 0,
+    gameTimeManager?: GameTimeManager
   ) {
     this.actionProbabilityCalculator = new ActionProbabilityCalculator();
+    if (gameTimeManager) {
+      this._gameTimeManager = gameTimeManager;
+    }
   }
 
   /**
@@ -55,7 +59,7 @@ export class Cat {
    */
   private getGameTimeManager(): GameTimeManager {
     if (!this._gameTimeManager) {
-      this._gameTimeManager = GameTimeManager.getInstance();
+      this._gameTimeManager = new GameTimeManager();
     }
     return this._gameTimeManager;
   }
@@ -305,7 +309,7 @@ export class Cat {
   /**
    * デフォルトねこを作成
    */
-  static createDefault(name: string = 'たぬきねこ'): Cat {
+  static createDefault(name: string = 'たぬきねこ', gameTimeManager?: GameTimeManager): Cat {
     return new Cat(
       'cat-' + performance.now(),
       name,
@@ -324,7 +328,8 @@ export class Cat {
         movementDirections: ['horizontal', 'vertical'],
         randomness: 0.6
       },
-      0
+      0,
+      gameTimeManager
     );
   }
 }

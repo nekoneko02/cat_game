@@ -7,16 +7,17 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.json({});
     const session = await getIronSession(request, response, sessionOptions);
 
-    if (!session.username) {
+    if (!(session as unknown as { username?: string }).username) {
       return NextResponse.json(
         { error: '認証が必要です' },
         { status: 401 }
       );
     }
 
+    const sessionData = session as unknown as { catState?: CatState; catName?: string };
     return NextResponse.json({
-      catState: session.catState || null,
-      catName: session.catName || null
+      catState: sessionData.catState || null,
+      catName: sessionData.catName || null
     });
   } catch (error) {
     console.error('Get cat state error:', error);
@@ -29,7 +30,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { catState } = await request.json();
+    const requestBody = await request.text();
+    if (!requestBody.trim()) {
+      console.log('Empty request body, skipping cat state save');
+      return NextResponse.json({ success: true, message: 'No data to save' });
+    }
+
+    const { catState } = JSON.parse(requestBody);
     
     if (!catState || typeof catState !== 'object') {
       return NextResponse.json(
@@ -41,7 +48,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ success: true });
     const session = await getIronSession(request, response, sessionOptions);
 
-    if (!session.username) {
+    if (!(session as unknown as { username?: string }).username) {
       return NextResponse.json(
         { error: '認証が必要です' },
         { status: 401 }
@@ -52,11 +59,11 @@ export async function POST(request: NextRequest) {
       bonding: Math.max(-1, Math.min(1, catState.bonding || 0)),
       playfulness: Math.max(-1, Math.min(1, catState.playfulness || 0)),
       fear: Math.max(-1, Math.min(1, catState.fear || 0)),
-      personality: catState.personality || session.catState?.personality || {},
-      preferences: catState.preferences || session.catState?.preferences || {}
+      personality: catState.personality || (session as unknown as { catState?: CatState }).catState?.personality || {},
+      preferences: catState.preferences || (session as unknown as { catState?: CatState }).catState?.preferences || {}
     };
 
-    session.catState = validatedCatState;
+    (session as unknown as { catState: CatState }).catState = validatedCatState;
     await session.save();
 
     return response;

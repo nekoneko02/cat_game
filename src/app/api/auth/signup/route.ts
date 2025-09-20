@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
-import { sessionOptions, createDefaultCatState } from '@/lib/session';
+import { sessionOptions, createDefaultCatState, CatState } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,9 +37,9 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ success: true });
     const session = await getIronSession(request, response, sessionOptions);
 
-    session.username = username.trim();
-    session.catName = catName.trim();
-    session.catState = createDefaultCatState();
+    (session as unknown as { username: string; catName: string; catState: CatState }).username = username.trim();
+    (session as unknown as { username: string; catName: string; catState: CatState }).catName = catName.trim();
+    (session as unknown as { username: string; catName: string; catState: CatState }).catState = createDefaultCatState();
     
     await session.save();
 

@@ -1,123 +1,50 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Layout from '@/components/Layout';
 import GameCanvas from '@/components/GameCanvas';
-import type { ToyType } from '@/domain/entities/Toy';
+// ToyType removed - using asset keys directly
 import { PhaserGame } from '@/types/game';
 import { CatState } from '@/lib/session';
-
-interface ToyDisplay {
-  id: ToyType;
-  name: string;
-  type: ToyType;
-  attributes: {
-    appearance: string;
-    material: string;
-    sound: string;
-    color: string;
-  };
-}
-
-const availableToys: ToyDisplay[] = [
-  {
-    id: 'ball',
-    name: 'ボール',
-    type: 'ball',
-    attributes: {
-      appearance: 'round',
-      material: 'rubber',
-      sound: 'bounce',
-      color: 'red',
-    },
-  },
-  {
-    id: 'feather',
-    name: 'フェザー',
-    type: 'feather',
-    attributes: {
-      appearance: 'fluffy',
-      material: 'feather',
-      sound: 'rustle',
-      color: 'colorful',
-    },
-  },
-  {
-    id: 'mouse',
-    name: 'ねずみ',
-    type: 'mouse',
-    attributes: {
-      appearance: 'small',
-      material: 'fabric',
-      sound: 'squeak',
-      color: 'gray',
-    },
-  },
-];
+import { apiClient } from '@/lib/ApiClient';
+import { StateSaver } from '@/lib/StateSaver';
+import { GameManager } from '@/lib/GameManager';
+import { useNavigationGuard } from '@/lib/NavigationGuard';
+import { Personality, Preferences } from '@/domain/entities/Cat';
 
 export default function PlayPage() {
-  const [selectedToy, setSelectedToy] = useState<ToyDisplay | null>(null);
+  const [toyKey, setToyKey] = useState<string | null>(null);
   const [catState, setCatState] = useState<CatState | null>(null);
   const [catName, setCatName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showPauseMenu, setShowPauseMenu] = useState(false);
   const gameRef = useRef<PhaserGame | null>(null);
+  const gameManagerRef = useRef<GameManager | null>(null);
+  const stateSaverRef = useRef<StateSaver | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    checkSessionAndLoadCatState();
-  }, []);
-
-  // おもちゃ選択変更時の処理（ゲーム初期化後のおもちゃ変更のみ）
-  useEffect(() => {
-    if (gameRef.current && selectedToy) {
-      const waitForScene = () => {
-        const scene = gameRef.current?.scene.getScene('CatGame');
-        if (scene && 'addToy' in scene) {
-          (scene as any).addToy(selectedToy.type);
-        } else if (!scene) {
-          setTimeout(waitForScene, 100);
-        }
-      };
-      waitForScene();
-    }
-  }, [selectedToy]);
-
-  const checkSessionAndLoadCatState = async () => {
-    try {
-      const response = await fetch('/api/cat-state',
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      );
-      if (response.status === 401) {
-        router.push('/signup');
-        return;
-      }
-      
-      const data = await response.json();
-      if (data.catState) {
-        setCatState(data.catState);
-      }
-      if (data.catName) {
-        setCatName(data.catName);
-      }
-    } catch (error) {
-      console.error('Failed to load cat state:', error);
-      router.push('/signup');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const searchParams = useSearchParams();
 
   const saveCatState = useCallback(async () => {
-    if (!gameRef.current) return;
-    
+    // ゲームが初期化されていない場合は何もしない
+    if (!gameManagerRef.current || !stateSaverRef.current) {
+      console.log('PlayPage: Game not initialized, skipping cat state save');
+      return;
+    }
+
     try {
-      const scene = gameRef.current.scene.getScene('CatGame');
-      if (scene && 'getCurrentCatState' in scene) {
-        const currentState = (scene as any).getCurrentCatState();
+      console.log('PlayPage: Getting current cat state from game...');
+      const currentState = gameManagerRef.current.getCurrentCatState() as {
+        bonding: number;
+        playfulness: number;
+        fear: number;
+        personality: Personality;
+        preferences: Preferences;
+      } | null;
+
+      console.log('PlayPage: Current game state:', currentState);
+
+      if (currentState) {
         const catStateToSave: CatState = {
           bonding: currentState.bonding,
           playfulness: currentState.playfulness,
@@ -125,68 +52,117 @@ export default function PlayPage() {
           personality: currentState.personality,
           preferences: currentState.preferences
         };
-        
-        await fetch('/api/cat-state', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ catState: catStateToSave }),
-        });
+
+        console.log('PlayPage: Saving cat state:', catStateToSave);
+        const result = await stateSaverRef.current.saveCatState(catStateToSave);
+        console.log('PlayPage: Save result:', result);
+
+        if (!result.success) {
+          console.error('PlayPage: Failed to save cat state:', result.error);
+        } else {
+          console.log('PlayPage: Cat state saved successfully');
+        }
+      } else {
+        console.log('PlayPage: No current cat state to save');
       }
     } catch (error) {
-      console.error('Failed to save cat state:', error);
+      console.error('PlayPage: Failed to save cat state:', error);
     }
   }, []);
 
-  const handleToySelect = async (toy: ToyDisplay) => {
-    if (selectedToy) {
+  // NavigationGuardを設定
+  useNavigationGuard(!!toyKey, {
+    onBeforeUnload: saveCatState,
+    onRouteChange: async () => {
       await saveCatState();
+      return true;
     }
-    setSelectedToy(toy);
-  };
+  });
 
-  const handleStopPlaying = async () => {
+  const checkSessionAndLoadCatState = useCallback(async () => {
+    try {
+      const response = await apiClient.getCatState();
+
+      if (!response.success) {
+        console.error('Failed to load cat state:', response.error);
+        if (response.error?.includes('認証')) {
+          router.push('/signup');
+          return;
+        }
+      }
+
+      if (response.data?.catName) {
+        setCatName(response.data.catName);
+      }
+    } catch (error) {
+      console.error('Failed to load cat state:', error);
+      router.push('/signup');
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const toyParam = searchParams.get('toy');
+    if (!toyParam) {
+      router.push('/toy-selection');
+      return;
+    }
+
+    setToyKey(toyParam);
+    checkSessionAndLoadCatState();
+    // GameManagerはGameCanvasから受け取るので作成しない
+    stateSaverRef.current = new StateSaver();
+    console.log('PlayPage: Created new StateSaver instance');
+  }, [checkSessionAndLoadCatState, searchParams, router]);
+
+  // おもちゃ追加処理は handleGameReady で実行
+
+  const handleExitGame = async () => {
     await saveCatState();
-    setSelectedToy(null);
-    
-    if (gameRef.current) {
-      const scene = gameRef.current.scene.getScene('CatGame');
-      if (scene && 'removeToy' in scene) {
-        scene.removeToy();
-      }
+    if (gameManagerRef.current) {
+      gameManagerRef.current.removeToyFromGame();
+    }
+    router.push('/toy-selection');
+  };
+
+  const handlePauseGame = () => {
+    setShowPauseMenu(true);
+    // ゲームポーズ処理（GameManagerに追加が必要）
+    if (gameManagerRef.current) {
+      gameManagerRef.current.pauseGame();
     }
   };
 
-  const handleGameReady = useCallback((game: PhaserGame) => {
-    gameRef.current = game;
-    
-    // シーンが利用可能になるまで少し待機
-    const waitForScene = () => {
-      const scene = game.scene.getScene('CatGame');
-      
-      if (!scene) {
-        // シーンがまだ利用できない場合、少し待って再試行
-        setTimeout(waitForScene, 100);
-        return;
-      }
-      
-      if ('endGame' in scene) {
-        window.addEventListener('beforeunload', async () => {
-          await saveCatState();
-          (scene as any).endGame();
-        });
-      }
+  const handleResumeGame = () => {
+    setShowPauseMenu(false);
+    if (gameManagerRef.current) {
+      gameManagerRef.current.resumeGame();
+    }
+  };
 
-      // 選択されたおもちゃがある場合は自動的に追加
-      if (selectedToy && 'addToy' in scene) {
-        (scene as any).addToy(selectedToy.type);
-      }
-    };
-    
-    waitForScene();
-  }, [selectedToy, saveCatState]);
+  const handleCatStateError = useCallback((error: string) => {
+    console.error('Cat state error:', error);
+    alert(error); // 簡易的なエラー表示（本来はUIコンポーネントを使用）
+    router.push('/toy-selection'); // おもちゃ選択画面に戻る
+  }, [router]);
+
+  const handleGameReady = useCallback((game: PhaserGame, gameManager: GameManager) => {
+    gameRef.current = game;
+    gameManagerRef.current = gameManager; // GameCanvasからの正しいGameManagerインスタンスを使用
+
+    console.log('handleGameReady called with toyKey:', toyKey);
+    console.log('Received GameManager from GameCanvas:', !!gameManager);
+
+    if (toyKey && gameManager) {
+      console.log('Attempting to add toy after 100ms delay');
+      setTimeout(() => {
+        console.log('Timeout triggered, calling addToyToGame');
+        const result = gameManager.addToyToGame(toyKey);
+        console.log('addToyToGame result:', result);
+      }, 100);
+    }
+  }, [toyKey]);
 
   if (loading) {
     return (
@@ -201,96 +177,94 @@ export default function PlayPage() {
     );
   }
 
+  if (!toyKey) {
+    return null;
+  }
+
+  const toyName = toyKey === 'toy_ball' ? 'ボール' :
+                  toyKey === 'toy_feather' ? 'フェザー' : 'ねずみ';
+  const toyEmoji = toyKey === 'toy_ball' ? '🎾' :
+                   toyKey === 'toy_feather' ? '🪶' : '🐭';
+
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            🐱 ねこと遊ぶ
-          </h1>
-          <p className="text-gray-600">
-            おもちゃを選んでねこちゃんと遊びましょう！
-          </p>
+      <div className="space-y-4">
+        {/* Game Header */}
+        <div className="flex items-center justify-between bg-white rounded-lg shadow-md p-4">
+          <div className="flex items-center space-x-3">
+            <span className="text-2xl">{toyEmoji}</span>
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">
+                {toyName}で遊ぶ
+              </h1>
+              <p className="text-sm text-gray-600">
+                {catName || 'ねこちゃん'}と楽しく遊びましょう！
+              </p>
+            </div>
+          </div>
+          <div className="flex space-x-2">
+            <button
+              onClick={handlePauseGame}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm transition-colors"
+            >
+              ⏸️ ポーズ
+            </button>
+            <button
+              onClick={handleExitGame}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm transition-colors"
+            >
+              🚪 終了
+            </button>
+          </div>
         </div>
 
         {/* Game Canvas */}
-        {selectedToy ? (
-          <GameCanvas 
-            onGameReady={handleGameReady} 
-            initialCatState={catState || undefined}
-            catName={catName || undefined}
-            onGameEnd={saveCatState}
-          />
-        ) : (
-          <div className="w-full flex justify-center">
-            <div className="w-[800px] h-[600px] border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
-              <div className="text-center text-gray-500">
-                <div className="text-4xl mb-4">🎾</div>
-                <p className="text-lg font-medium">おもちゃを選んでゲームを開始してください</p>
-                <p className="text-sm mt-2">下からおもちゃを選ぶとねこちゃんが現れます</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Toy Selection */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            おもちゃを選んでください
-          </h3>
-          
-          {selectedToy && (
-            <div className="mb-4 p-3 bg-pink-50 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-pink-800">
-                  🎾 {selectedToy.name}で遊んでいます
-                </span>
-                <button
-                  onClick={handleStopPlaying}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm"
-                >
-                  終了
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-3 gap-4">
-            {availableToys.map((toy) => (
-              <button
-                key={toy.id}
-                onClick={() => handleToySelect(toy)}
-                disabled={selectedToy?.id === toy.id}
-                className={`p-4 rounded-lg border-2 transition-colors ${
-                  selectedToy?.id === toy.id
-                    ? 'border-pink-500 bg-pink-50 text-pink-700'
-                    : 'border-gray-200 hover:border-pink-300 hover:bg-pink-50'
-                }`}
-              >
-                <div className="text-3xl mb-2">
-                  {toy.type === 'ball' ? '🎾' : 
-                   toy.type === 'feather' ? '🪶' : '🐭'}
-                </div>
-                <div className="font-medium">{toy.name}</div>
-                <div className="text-sm text-gray-600 mt-1">
-                  {toy.attributes.color}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        <GameCanvas
+          onGameReady={handleGameReady}
+          catName={catName || undefined}
+          onGameEnd={saveCatState}
+          onCatStateError={handleCatStateError}
+        />
 
         {/* Game Instructions */}
         <div className="bg-blue-50 rounded-lg p-4">
           <h4 className="font-semibold text-blue-800 mb-2">遊び方</h4>
           <ul className="text-blue-700 text-sm space-y-1">
-            <li>• おもちゃを選んでゲーム画面に表示させます</li>
             <li>• マウスを動かしておもちゃを動かしましょう</li>
             <li>• ねこちゃんがおもちゃに興味を示すか観察してください</li>
             <li>• 遊んでくれるとなつき度が上がります（ゲーム画面左上に表示）</li>
+            <li>• ポーズボタンでゲームを一時停止できます</li>
           </ul>
         </div>
       </div>
+
+      {/* Pause Menu Modal */}
+      {showPauseMenu && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
+              ゲームを一時停止中
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              どうしますか？
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={handleResumeGame}
+                className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition-colors"
+              >
+                ゲームを再開
+              </button>
+              <button
+                onClick={handleExitGame}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md transition-colors"
+              >
+                ゲームを終了
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

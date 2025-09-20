@@ -1,6 +1,5 @@
 import { SessionOptions } from 'iron-session';
 import { Personality, Preferences } from '@/domain/entities/Cat';
-import { InternalState } from '@/domain/valueObjects/InternalState';
 
 export interface CatState {
   bonding: number;
@@ -10,11 +9,6 @@ export interface CatState {
   preferences: Preferences;
 }
 
-export interface SessionData {
-  username?: string;
-  catName?: string;
-  catState?: CatState;
-}
 
 export const sessionOptions: SessionOptions = {
   password: process.env.SESSION_PASSWORD || 'complex_password_at_least_32_characters_long_for_security',
@@ -49,5 +43,9 @@ export function createDefaultCatState(): CatState {
 }
 
 declare module 'iron-session' {
-  interface IronSessionData extends SessionData {}
+  interface IronSessionData {
+    username?: string;
+    catName?: string;
+    catState?: CatState;
+  }
 }

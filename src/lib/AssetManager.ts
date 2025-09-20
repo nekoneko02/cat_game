@@ -41,20 +41,9 @@ export interface AssetManifest {
  * 特定のディレクトリ構造に基づいてアセットを自動読み込み
  */
 export class AssetManager {
-  private static instance: AssetManager | null = null;
   private assetManifest: AssetManifest | null = null;
 
-  private constructor() {}
-
-  /**
-   * シングルトンインスタンス取得
-   */
-  static getInstance(): AssetManager {
-    if (!AssetManager.instance) {
-      AssetManager.instance = new AssetManager();
-    }
-    return AssetManager.instance;
-  }
+  constructor() {}
 
   /**
    * アセットマニフェストを読み込み
@@ -80,118 +69,20 @@ export class AssetManager {
   }
 
   /**
-   * デフォルトのアセット設定を生成
+   * 最小限のフォールバック用アセット設定を生成
+   * NOTE: 正式な設定は /public/config/assets.json で管理される
+   * このメソッドは assets.json が読み込めない場合のみ使用される
    */
   private async generateDefaultManifest(): Promise<AssetManifest> {
+    console.warn('assets.json が読み込めませんでした。最小限のフォールバック設定を使用します。');
     return {
       cats: {
-        assets: [
-          {
-            key: 'cat_idle',
-            url: '/assets/cats/cat_idle.png',
-            type: 'spritesheet',
-            frameConfig: {
-              frameWidth: 64,
-              frameHeight: 64,
-              startFrame: 0,
-              endFrame: 3
-            }
-          },
-          {
-            key: 'cat_showBelly',
-            url: '/assets/cats/cat_showBelly.png',
-            type: 'spritesheet',
-            frameConfig: {
-              frameWidth: 64,
-              frameHeight: 64,
-              startFrame: 0,
-              endFrame: 3
-            }
-          },
-          {
-            key: 'cat_chase',
-            url: '/assets/cats/cat_chase.png',
-            type: 'spritesheet',
-            frameConfig: {
-              frameWidth: 64,
-              frameHeight: 64,
-              startFrame: 0,
-              endFrame: 3
-            }
-          },
-          {
-            key: 'cat_sit',
-            url: '/assets/cats/cat_sit.png',
-            type: 'spritesheet',
-            frameConfig: {
-              frameWidth: 64,
-              frameHeight: 64,
-              startFrame: 0,
-              endFrame: 3
-            }
-          },
-          {
-            key: 'cat_scared',
-            url: '/assets/cats/cat_scared.png',
-            type: 'spritesheet',
-            frameConfig: {
-              frameWidth: 64,
-              frameHeight: 64,
-              startFrame: 0,
-              endFrame: 3
-            }
-          }
-        ],
-        animations: [
-          {
-            key: 'idle',
-            textureKey: 'cat_idle',
-            frameStart: 0,
-            frameEnd: 3,
-            frameRate: 2,
-            repeat: -1,
-            duration: 2000
-          },
-          {
-            key: 'showBelly',
-            textureKey: 'cat_showBelly',
-            frameStart: 0,
-            frameEnd: 3,
-            frameRate: 4,
-            repeat: 0,
-            duration: 2000
-          },
-          {
-            key: 'chase',
-            textureKey: 'cat_chase',
-            frameStart: 0,
-            frameEnd: 3,
-            frameRate: 8,
-            repeat: -1,
-            duration: 1500
-          },
-          {
-            key: 'sit',
-            textureKey: 'cat_sit',
-            frameStart: 0,
-            frameEnd: 3,
-            frameRate: 3,
-            repeat: 0,
-            duration: 1500
-          },
-          {
-            key: 'scared',
-            textureKey: 'cat_scared',
-            frameStart: 0,
-            frameEnd: 3,
-            frameRate: 6,
-            repeat: 2,
-            duration: 1000
-          }
-        ]
+        assets: [],
+        animations: []
       },
       toys: {
         assets: [
+          // 最小限のフォールバック用おもちゃ
           {
             key: 'toy_ball',
             url: '/assets/toys/ball.png',

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="8kowRNA_SFG8u6XrDtM2" name="Page-1">
-        <mxGraphModel dx="5760" dy="7490" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="720" dy="3824" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -705,7 +705,7 @@
                 <mxCell id="304" value="ねこと出会う" style="shape=folder;fontStyle=1;tabWidth=110;tabHeight=30;tabPosition=left;html=1;boundedLbl=1;labelInHeader=1;container=0;collapsible=0;whiteSpace=wrap;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="15" y="-930" width="2125" height="870" as="geometry"/>
                 </mxCell>
-                <mxCell id="305" value="&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;#### UC: ねこと出会う&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、全てのねこマスタを取得し、ねこを選択肢として「ねこと出会う」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、ねこを選択する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、「ねこプロフィール設定」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、ねこの名前を入力し、「&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;決定」ボタンを押す&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- システムは、ねこを保存し、登録完了メッセージとともに「ホーム画面」を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&amp;nbsp;**代替コース**&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーはログインしていない：「UC: ログインする」をinvokeする&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ねこが取得できない：選択可能なねこがいない旨（不具合）とともにエラー画面を表示する。&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーはねこを選択せずに終了する/名前を入力する前に終了する：システムは、ページを離れると保存されない旨をポップアップ表示する。&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーが入力したねこの名前が0文字 or 11文字以上：名前が長すぎる旨を表示し、「猫プロフィール設定」画面を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- システムはねこの保存に失敗する：システムは、ねこの保存に失敗した旨（リトライを促す・不具合）とともにエラー画面を表示する。&lt;/span&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
+                <mxCell id="305" value="&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;#### UC: ねこと出会う&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、全てのねこマスタを取得し、ねこを選択肢として「ねこと出会う」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、ねこを選択する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、「ねこプロフィール設定」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、ねこの名前を入力し、「&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;決定」ボタンを押す&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- システムは、ねことねこ状態を保存し、登録完了メッセージとともに「ホーム画面」を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&amp;nbsp;**代替コース**&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーはログインしていない：「UC: ログインする」をinvokeする&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ねこが取得できない：選択可能なねこがいない旨（不具合）とともにエラー画面を表示する。&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーはねこを選択せずに終了する/名前を入力する前に終了する：システムは、ページを離れると保存されない旨をポップアップ表示する。&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーが入力したねこの名前が0文字 or 11文字以上：名前が長すぎる旨を表示し、「猫プロフィール設定」画面を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- システムはねこの保存に失敗する：システムは、ねこの保存に失敗した旨（リトライを促す・不具合）とともにエラー画面を表示する。&lt;/span&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="40.41" y="-880" width="327.53" height="346.92" as="geometry"/>
                 </mxCell>
                 <mxCell id="306" value="&lt;div&gt;&lt;span style=&quot;&quot;&gt;#### UC: エラーを表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;- 各処理中にエラーが発生した&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- システムは、エラーログを保存する。システムは、エラーメッセージとともに「エラー画面」を表示する。&lt;/div&gt;&lt;div&gt;- ユーザーは&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(0, 0, 0); font-size: 11px; text-align: center; text-wrap-mode: nowrap;&quot;&gt;「直前の画面に戻る&lt;/span&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;」ボタンを押す&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- システムは、直前の画面を（入力値は可能な限りそのままで）表示する。&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp;**代替コース**&amp;nbsp;&lt;/div&gt;&lt;div&gt;- システムはエラーログの保存に失敗する：エラーログの保存はせずに、エラーメッセージの表示に進む&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
@@ -868,6 +868,9 @@
                             <mxPoint x="1021" y="-110"/>
                         </Array>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="509" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="347" target="508">
+                    <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="347" value="ねこを保存する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="985.5" y="-270" width="70" height="80" as="geometry"/>
@@ -1352,6 +1355,9 @@
                 </mxCell>
                 <mxCell id="506" value="エラー画面" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" vertex="1" parent="1">
                     <mxGeometry x="1460" y="-584.9999999999999" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="508" value="ねこ状態" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1210.5" y="-370" width="80" height="80" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

@@ -3,22 +3,14 @@
  * 実時間からの影響を受けずにゲーム内時間を管理
  */
 export class GameTimeManager {
-  private static instance: GameTimeManager | null = null;
   private gameStartTime: number = 0;
   private accumulatedTime: number = 0;
   private lastUpdateTime: number = 0;
   private isPaused: boolean = false;
   private timeScale: number = 1.0;
 
-  private constructor() {
+  constructor() {
     this.reset();
-  }
-
-  static getInstance(): GameTimeManager {
-    if (!GameTimeManager.instance) {
-      GameTimeManager.instance = new GameTimeManager();
-    }
-    return GameTimeManager.instance;
   }
 
   /**

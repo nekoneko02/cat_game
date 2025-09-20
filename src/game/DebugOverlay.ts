@@ -135,8 +135,6 @@ export class DebugOverlay {
     yOffset += lineHeight;
     this.addText(`toyDistance: ${externalState.toyDistance.toFixed(1)}`, leftMargin, yOffset, '#ffffff');
     yOffset += lineHeight;
-    this.addText(`toyType: ${externalState.toyType || 'none'}`, leftMargin, yOffset, '#ffffff');
-    yOffset += lineHeight;
     this.addText(`userPresence: ${externalState.userPresence}`, leftMargin, yOffset, '#ffffff');
     yOffset += lineHeight;
     this.addText(`isPlaying: ${externalState.isPlaying}`, leftMargin, yOffset, '#ffffff');

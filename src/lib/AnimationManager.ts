@@ -21,7 +21,7 @@ export class AnimationManager {
   private currentState: AnimationState | null = null;
 
   constructor() {
-    this.assetManager = AssetManager.getInstance();
+    this.assetManager = new AssetManager();
   }
 
   /**

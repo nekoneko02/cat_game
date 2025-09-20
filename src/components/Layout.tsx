@@ -10,8 +10,6 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [catName, setCatName] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -25,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
         setIsLoggedIn(true);
         // セッション情報があればユーザー情報も表示したいが、今回は簡単にログイン状態のみチェック
       }
-    } catch (error) {
+    } catch (_error) {
       setIsLoggedIn(false);
     }
   };
@@ -68,7 +66,7 @@ export default function Layout({ children }: LayoutProps) {
             <Link href="/" className="hover:text-pink-600 transition-colors">
               ホーム
             </Link>
-            <Link href="/play" className="hover:text-pink-600 transition-colors">
+            <Link href="/toy-selection" className="hover:text-pink-600 transition-colors">
               ねこと遊ぶ
             </Link>
           </div>
