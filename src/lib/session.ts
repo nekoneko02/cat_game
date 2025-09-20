@@ -42,6 +42,12 @@ export function createDefaultCatState(): CatState {
   };
 }
 
+export interface SessionData {
+  username?: string;
+  catName?: string;
+  catState?: CatState;
+}
+
 declare module 'iron-session' {
   interface IronSessionData {
     username?: string;

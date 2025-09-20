@@ -31,7 +31,7 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
         console.log('GameCanvas: Created new GameManager instance');
 
         // ゲーム開始時に最新の猫状態を取得
-        let initialCatGameConfig: any = undefined;
+        let initialCatGameConfig: CatState | undefined = undefined;
         try {
           console.log('GameCanvas: Calling getCatState API...');
           const response = await apiClient.getCatState();
@@ -44,8 +44,7 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
               playfulness: response.data.catState.playfulness,
               fear: response.data.catState.fear,
               personality: response.data.catState.personality,
-              preferences: response.data.catState.preferences,
-              catName: catName || 'たぬきねこ'
+              preferences: response.data.catState.preferences
             };
             console.log('GameCanvas: Using loaded cat state:', initialCatGameConfig);
           } else {

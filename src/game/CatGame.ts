@@ -28,16 +28,16 @@ export interface CatGameConfig {
 export default class CatGame extends Phaser.Scene {
   private catSprite!: Phaser.Physics.Arcade.Sprite;
   private toySprite?: Phaser.Physics.Arcade.Sprite;
-  private cat: Cat;
+  private cat!: Cat;
   private toy?: Toy;
   private sessionManager: UserSessionManager;
   private assetLoader: AssetLoader;
   private animationManager: AnimationManager;
-  private gameRenderer: Renderer;
+  private gameRenderer!: Renderer;
   private inputControls: InputControls;
   private debugOverlay: DebugOverlay | null = null;
   private onBondingChange?: (bonding: number) => void;
-  private gameTimeManager: GameTimeManager;
+  private gameTimeManager!: GameTimeManager;
   private lastBondingLevel: number = 1;
   private bondingDisplay?: Phaser.GameObjects.Group;
   private bondingText?: Phaser.GameObjects.Text;
@@ -55,7 +55,7 @@ export default class CatGame extends Phaser.Scene {
     this.inputControls = new InputControls();
   }
 
-  init(data: { initialCatState?: any; catName?: string; onGameEnd?: () => Promise<void> }) {
+  init(data: { initialCatState?: object; catName?: string; onGameEnd?: () => Promise<void> }) {
     console.log('CatGame: init() called with data:', data);
 
     // GameTimeManagerを作成
@@ -64,7 +64,7 @@ export default class CatGame extends Phaser.Scene {
 
     if (data?.initialCatState) {
       console.log('CatGame: Using initial cat state:', data.initialCatState);
-      this.cat = this.createCatFromConfig(data.initialCatState, data.catName);
+      this.cat = this.createCatFromConfig(data.initialCatState as any, data.catName);
       console.log('CatGame: Created cat with loaded state. Bonding:', this.cat.getInternalState().bonding);
     } else {
       // ユースケースに従い、猫状態が取得できない場合はエラーとする
