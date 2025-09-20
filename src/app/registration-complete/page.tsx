@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/hooks/useSession';
+import { GameIcon } from '@/components/GameIcon';
+import { IMAGE_IDS } from '@/constants/images';
 
 export default function RegistrationCompletePage() {
   const router = useRouter();
@@ -25,7 +27,7 @@ export default function RegistrationCompletePage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-100 to-pink-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl">🐱</div>
+          <GameIcon imageId={IMAGE_IDS.LOADING_CAT_ICON} size="2xl" fallbackEmoji="🐱" />
           <p className="mt-2 text-gray-600">読み込み中...</p>
         </div>
       </div>
@@ -39,7 +41,9 @@ export default function RegistrationCompletePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-pink-100 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-md text-center">
-        <div className="text-6xl mb-6">🎉</div>
+        <div className="mb-6">
+          <GameIcon imageId={IMAGE_IDS.REGISTRATION_CELEBRATION} size="6xl" fallbackEmoji="🎉" />
+        </div>
 
         <h1 className="text-2xl font-bold text-gray-800 mb-4">
           登録完了！

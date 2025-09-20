@@ -12,6 +12,10 @@ import { StateSaver } from '@/lib/StateSaver';
 import { GameManager } from '@/lib/GameManager';
 import { useNavigationGuard } from '@/lib/NavigationGuard';
 import { Personality, Preferences } from '@/domain/entities/Cat';
+import { GameIcon } from '@/components/GameIcon';
+import { ToyImage } from '@/components/ToyImage';
+import { IMAGE_IDS } from '@/constants/images';
+import { getToyAsset } from '@/constants/toys';
 
 export default function PlayPage() {
   const [toyKey, setToyKey] = useState<string | null>(null);
@@ -181,10 +185,8 @@ export default function PlayPage() {
     return null;
   }
 
-  const toyName = toyKey === 'toy_ball' ? 'ボール' :
-                  toyKey === 'toy_feather' ? 'フェザー' : 'ねずみ';
-  const toyEmoji = toyKey === 'toy_ball' ? '🎾' :
-                   toyKey === 'toy_feather' ? '🪶' : '🐭';
+  const toyAsset = getToyAsset(toyKey);
+  const toyName = toyAsset ? toyAsset.name : 'おもちゃ';
 
   return (
     <Layout>
@@ -192,7 +194,7 @@ export default function PlayPage() {
         {/* Game Header */}
         <div className="flex items-center justify-between bg-white rounded-lg shadow-md p-4">
           <div className="flex items-center space-x-3">
-            <span className="text-2xl">{toyEmoji}</span>
+            <ToyImage toyId={toyKey} size="xl" />
             <div>
               <h1 className="text-xl font-bold text-gray-800">
                 {toyName}で遊ぶ
@@ -207,13 +209,14 @@ export default function PlayPage() {
               onClick={handlePauseGame}
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm transition-colors"
             >
-              ⏸️ ポーズ
+              ポーズ
             </button>
             <button
               onClick={handleExitGame}
               className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm transition-colors"
             >
-              🚪 終了
+              <GameIcon imageId={IMAGE_IDS.PLAY_EXIT_DOOR} size="sm" fallbackEmoji="🚪" className="inline mr-1" />
+              終了
             </button>
           </div>
         </div>

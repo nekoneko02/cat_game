@@ -5,6 +5,8 @@ import { PhaserGame } from '@/types/game';
 import { CatState } from '@/lib/session';
 import { GameManager } from '@/lib/GameManager';
 import { apiClient } from '@/lib/ApiClient';
+import { GameIcon } from '@/components/GameIcon';
+import { IMAGE_IDS } from '@/constants/images';
 
 interface GameCanvasProps {
   onGameReady?: (game: PhaserGame, gameManager: GameManager) => void;
@@ -129,7 +131,10 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
       {loadError && (
         <div className="absolute inset-0 flex items-center justify-center bg-red-50 z-10">
           <div className="text-red-600 text-center">
-            <div className="mb-4">⚠️ エラー</div>
+            <div className="mb-4 flex items-center justify-center gap-2">
+              <GameIcon imageId={IMAGE_IDS.ERROR_WARNING} size="md" fallbackEmoji="⚠️" />
+              エラー
+            </div>
             <div>{loadError}</div>
           </div>
         </div>

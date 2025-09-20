@@ -90,10 +90,10 @@
       "frameRate": 6
     }
   ],
-  "toys": [
+  "ui": [
     {
-      "key": "toy_ball",
-      "url": "/assets/toys/ball.png",
+      "key": "game_heart_small",
+      "url": "/assets/icons/heart-small.svg",
       "type": "image"
     }
   ]

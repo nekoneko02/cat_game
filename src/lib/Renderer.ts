@@ -110,10 +110,18 @@ export class Renderer {
     bondingDisplay.add(title);
 
     for (let i = 0; i < 10; i++) {
-      const heart = scene.add.text(35 + i * 17, 50, '♥', {
-        fontSize: '16px',
-        color: '#ff69b4'
-      }).setOrigin(0.5);
+      // ハート画像が利用可能な場合は画像を使用、そうでなければテキストを使用
+      let heart: Phaser.GameObjects.GameObject;
+      if (scene.textures.exists('game_heart_small')) {
+        heart = scene.add.image(35 + i * 17, 50, 'game_heart_small').setOrigin(0.5);
+        heart.setScale(0.5); // アイコンサイズを調整
+        heart.setTint(0xff69b4); // ピンク色に着色
+      } else {
+        heart = scene.add.text(35 + i * 17, 50, '♡', {
+          fontSize: '16px',
+          color: '#ff69b4'
+        }).setOrigin(0.5);
+      }
       bondingDisplay.add(heart);
     }
 
@@ -130,17 +138,34 @@ export class Renderer {
   }
 
   updateBondingDisplay(bondingDisplay: Phaser.GameObjects.Group, bondingLevel: number): void {
-    const hearts = bondingDisplay.children.entries.filter(child =>
-      child instanceof Phaser.GameObjects.Text && child.text === '♥'
-    ) as Phaser.GameObjects.Text[];
+    // ハート要素を取得（画像またはテキスト）
+    const hearts = bondingDisplay.children.entries.filter(child => {
+      if (child instanceof Phaser.GameObjects.Image && child.texture.key === 'game_heart_small') {
+        return true;
+      }
+      if (child instanceof Phaser.GameObjects.Text && child.text === '♡') {
+        return true;
+      }
+      return false;
+    });
 
     hearts.forEach((heart, index) => {
       if (index < bondingLevel) {
-        heart.setColor('#ff69b4');
-        heart.setAlpha(1.0);
+        if (heart instanceof Phaser.GameObjects.Image) {
+          heart.setTint(0xff69b4); // ピンク色
+          heart.setAlpha(1.0);
+        } else if (heart instanceof Phaser.GameObjects.Text) {
+          heart.setColor('#ff69b4');
+          heart.setAlpha(1.0);
+        }
       } else {
-        heart.setColor('#666666');
-        heart.setAlpha(0.5);
+        if (heart instanceof Phaser.GameObjects.Image) {
+          heart.setTint(0x666666); // グレー色
+          heart.setAlpha(0.5);
+        } else if (heart instanceof Phaser.GameObjects.Text) {
+          heart.setColor('#666666');
+          heart.setAlpha(0.5);
+        }
       }
     });
 

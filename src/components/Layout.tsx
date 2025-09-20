@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { GameIcon } from '@/components/GameIcon';
+import { IMAGE_IDS } from '@/constants/images';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -41,8 +43,9 @@ export default function Layout({ children }: LayoutProps) {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-pink-50">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-gray-800 hover:text-pink-600 transition-colors">
-            🐱 たぬきねこ
+          <Link href="/" className="text-2xl font-bold text-gray-800 hover:text-pink-600 transition-colors flex items-center gap-2">
+            <GameIcon imageId={IMAGE_IDS.HEADER_CAT_ICON} size="lg" fallbackEmoji="🐱" />
+            たぬきねこ
           </Link>
           
           {isLoggedIn && (

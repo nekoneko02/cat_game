@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from '@/hooks/useSession';
 import { CatMaster } from '@/types/CatMaster';
 import Image from 'next/image';
+import { GameIcon } from '@/components/GameIcon';
+import { IMAGE_IDS } from '@/constants/images';
 
 export default function CatProfilePage() {
   const [catMaster, setCatMaster] = useState<CatMaster | null>(null);
@@ -124,7 +126,7 @@ export default function CatProfilePage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-100 to-pink-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl">🐱</div>
+          <GameIcon imageId={IMAGE_IDS.LOADING_CAT_ICON} size="2xl" fallbackEmoji="🐱" />
           <p className="mt-2 text-gray-600">読み込み中...</p>
         </div>
       </div>

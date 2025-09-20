@@ -78,7 +78,7 @@ export class DebugOverlay {
     yOffset += lineHeight * 1.5;
 
     // なつき度（目立つように表示）
-    this.addText(`🐾 Bonding Level: ${bondingLevel}/10`, leftMargin, yOffset, '#ffff00', '16px');
+    this.addText(`Bonding Level: ${bondingLevel}/10`, leftMargin, yOffset, '#ffff00', '16px');
     yOffset += lineHeight * 1.5;
 
     // 現在のアクション

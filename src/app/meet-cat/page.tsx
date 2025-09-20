@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useSession } from '@/hooks/useSession';
 import { CatMaster } from '@/types/CatMaster';
 import Image from 'next/image';
+import { GameIcon } from '@/components/GameIcon';
+import { IMAGE_IDS } from '@/constants/images';
 
 export default function MeetCatPage() {
   const [catMasters, setCatMasters] = useState<CatMaster[]>([]);
@@ -71,7 +73,7 @@ export default function MeetCatPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-100 to-pink-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl">🐱</div>
+          <GameIcon imageId={IMAGE_IDS.LOADING_CAT_ICON} size="2xl" fallbackEmoji="🐱" />
           <p className="mt-2 text-gray-600">読み込み中...</p>
         </div>
       </div>
@@ -86,7 +88,9 @@ export default function MeetCatPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-100 to-pink-100 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-md text-center">
-          <div className="text-6xl mb-4">😿</div>
+          <div className="mb-4">
+            <GameIcon imageId={IMAGE_IDS.CAT_SELECTION_SAD} size="6xl" fallbackEmoji="😿" />
+          </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             エラーが発生しました
           </h1>
@@ -110,7 +114,9 @@ export default function MeetCatPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-100 to-pink-100 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-md text-center">
-          <div className="text-6xl mb-4">😿</div>
+          <div className="mb-4">
+            <GameIcon imageId={IMAGE_IDS.CAT_SELECTION_SAD} size="6xl" fallbackEmoji="😿" />
+          </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             ねこが見つかりません
           </h1>
@@ -178,7 +184,7 @@ export default function MeetCatPage() {
                   </div>
                   {selectedCat?.id === cat.id && (
                     <div className="text-blue-500">
-                      ✓
+                      <GameIcon imageId={IMAGE_IDS.CAT_SELECTION_CHECK} size="md" fallbackEmoji="✓" />
                     </div>
                   )}
                 </div>

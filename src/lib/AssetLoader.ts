@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import assetsConfig from '../../public/config/assets.json';
+import { getToyAssetsForPhaser } from '@/constants/toys';
 
 export interface AssetLoadResult {
   success: boolean;
@@ -38,6 +39,7 @@ export class AssetLoader {
 
       this.loadCatAssets(scene);
       this.loadToyAssets(scene);
+      this.loadUIAssets(scene);
 
       if (scene.load.totalToLoad === 0) {
         this.createAnimationsFromConfig(scene);
@@ -64,9 +66,21 @@ export class AssetLoader {
   }
 
   private loadToyAssets(scene: Phaser.Scene): void {
-    for (const toyConfig of assetsConfig.toys) {
+    // toys.tsから一元管理されたおもちゃアセットを読み込み
+    const toyAssets = getToyAssetsForPhaser();
+    for (const toyConfig of toyAssets) {
       if (toyConfig.type === 'image' && !this.loadedAssets.has(toyConfig.key)) {
         scene.load.image(toyConfig.key, toyConfig.url);
+      }
+    }
+  }
+
+  private loadUIAssets(scene: Phaser.Scene): void {
+    if (assetsConfig.ui) {
+      for (const uiConfig of assetsConfig.ui) {
+        if (uiConfig.type === 'image' && !this.loadedAssets.has(uiConfig.key)) {
+          scene.load.image(uiConfig.key, uiConfig.url);
+        }
       }
     }
   }

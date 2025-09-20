@@ -4,19 +4,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import { apiClient, type ToyData } from '@/lib/ApiClient';
+import { GameIcon } from '@/components/GameIcon';
+import { ToyImage } from '@/components/ToyImage';
+import { IMAGE_IDS } from '@/constants/images';
+import { getToysForApiClient } from '@/constants/toys';
 
-const fallbackToys: ToyData[] = [
-  {
-    id: 'toy_ball',
-    name: 'ボール（組み込み）',
-    attributes: {
-      appearance: 'round',
-      material: 'rubber',
-      sound: 'bounce',
-      color: 'red',
-    },
-  },
-];
+// toys.tsから自動生成されるフォールバックおもちゃデータ
+const fallbackToys: ToyData[] = getToysForApiClient();
 
 export default function ToySelectionPage() {
   const [toys, setToys] = useState<ToyData[]>([]);
@@ -88,8 +82,9 @@ export default function ToySelectionPage() {
     <Layout>
       <div className="space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            🎾 おもちゃ選択
+          <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
+            <GameIcon imageId={IMAGE_IDS.HOME_FEATURE_TOY} size="3xl" fallbackEmoji="🎾" />
+            おもちゃ選択
           </h1>
           <p className="text-gray-600">
             ねこちゃんと遊ぶおもちゃを選んでください
@@ -119,9 +114,8 @@ export default function ToySelectionPage() {
               className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 border-2 hover:border-pink-300"
             >
               <div className="text-center">
-                <div className="text-6xl mb-4">
-                  {toy.id === 'toy_ball' ? '🎾' :
-                   toy.id === 'toy_feather' ? '🪶' : '🐭'}
+                <div className="mb-4 flex justify-center">
+                  <ToyImage toyId={toy.id} size="6xl" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">
                   {toy.name}
