@@ -1,0 +1,42 @@
+@startuml API共通処理シーケンス図
+
+participant "クライアント" as Client
+participant "API Gateway" as Gateway
+participant "認証サービス" as Auth
+participant "ログサービス" as Log
+participant "メインAPI" as MainAPI
+
+Client -> Gateway: API リクエスト
+activate Gateway
+
+note right of Gateway: ホワイトリストチェック
+alt ログイン不要API（/login等）
+    Gateway -> Gateway: ホワイトリストで確認
+else ログイン必須API
+    Gateway -> Auth: ログインチェック
+    activate Auth
+    Auth --> Gateway: 認証結果
+    deactivate Auth
+
+    alt 認証失敗
+        Gateway --> Client: 401 Unauthorized
+        deactivate Gateway
+    end
+end
+
+note right of Gateway: アクセスログ送信（非同期）
+Gateway ->> Log: /log（アクセスログ保存）
+activate Log
+Log --> Gateway: ログ保存完了（非同期）
+deactivate Log
+
+note right of Gateway: メインAPI実行
+Gateway -> MainAPI: 本筋のAPI実行
+activate MainAPI
+MainAPI --> Gateway: API実行結果
+deactivate MainAPI
+
+Gateway --> Client: レスポンス
+deactivate Gateway
+
+@enduml
