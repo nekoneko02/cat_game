@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { GameIcon } from '@/components/GameIcon';
 import { IMAGE_IDS } from '@/constants/images';
 import { apiClient } from '@/lib/ApiClient';
-import { logError } from '@/lib/log';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,7 +14,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const router = useRouter();
 
-  const checkSession = useCallback(async () => {
+  const checkSessionData = useCallback(async () => {
     try {
       const response = await apiClient.getCatState();
       if (!response.success || !response.data?.catState) {
@@ -31,22 +30,9 @@ export default function Layout({ children }: LayoutProps) {
   }, [router]);
 
   useEffect(() => {
-    checkSession();
-  }, [checkSession]);
+    checkSessionData();
+  }, [checkSessionData]);
 
-  const handleLogout = async () => {
-    try {
-      const response = await apiClient.logout();
-      if (response.success) {
-        router.push('/');
-      } else {
-        logError('Logout failed', { error: response.error });
-      }
-    } catch (error) {
-      logError('Logout failed', { error: error instanceof Error ? error.message : String(error) });
-      router.push('/');
-    }
-  };
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-pink-50">
       <header className="bg-white shadow-sm border-b">
@@ -56,12 +42,12 @@ export default function Layout({ children }: LayoutProps) {
             たぬきねこ
           </Link>
           
-          <button
-            onClick={handleLogout}
+          <Link
+            href="/logout"
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm transition-colors"
           >
             ログアウト
-          </button>
+          </Link>
         </div>
       </header>
       

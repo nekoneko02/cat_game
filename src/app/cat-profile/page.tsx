@@ -182,7 +182,7 @@ function CatProfileContent() {
                 id="catName"
                 value={catName}
                 onChange={(e) => setCatName(e.target.value)}
-                placeholder="例：たぬきねこ、みけちゃん など"
+                placeholder="例：たぬきねこ、みけ など"
                 maxLength={10}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
