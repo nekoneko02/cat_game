@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import assetsConfig from '../../public/config/assets.json';
+import { getAllToyKeys } from '@/constants/toys';
 import { getToyAssetsForPhaser } from '@/constants/toys';
 import { logError, logWarn } from './log';
 
@@ -134,8 +135,9 @@ export class AssetLoader {
   }
 
   getToyAssetKey(toyType: string): string {
-    const toyConfig = assetsConfig.toys.find(toy => toy.key === `toy_${toyType}`);
-    return toyConfig?.key || 'toy_ball';
+    const toyKeys = getAllToyKeys();
+    const targetKey = `toy_${toyType}`;
+    return toyKeys.includes(targetKey) ? targetKey : 'toy_ball';
   }
 
   getFirstCatFrameKey(): string {
