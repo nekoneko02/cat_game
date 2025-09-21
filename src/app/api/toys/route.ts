@@ -1,31 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getToysForApiClient } from '@/constants/toys';
-import { logInfo, logError } from '@/lib/log';
+import { withPublicApi, ApiContext } from '@/lib/apiCommon';
 
-export async function GET() {
-  try {
-    logInfo('Toys API request', {
-      url: '/api/toys',
-      method: 'GET',
-    });
+async function getToysHandler(_request: NextRequest, _context: ApiContext) {
+  const toys = getToysForApiClient();
 
-    const toys = getToysForApiClient();
-
-    logInfo('Toys API successful', {
-      toysCount: toys.length,
-    });
-
-    return NextResponse.json({
-      toys: toys
-    });
-  } catch (error) {
-    logError('Error fetching toys', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-
-    return NextResponse.json({
-      toys: []
-    }, { status: 500 });
-  }
+  return NextResponse.json({
+    toys: toys
+  });
 }
+
+export const GET = withPublicApi(getToysHandler);
