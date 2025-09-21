@@ -111,19 +111,18 @@ export class Renderer {
     bondingDisplay.add(title);
 
     for (let i = 0; i < 10; i++) {
-      // ハート画像が利用可能な場合は画像を使用、そうでなければテキストを使用
-      let heart: Phaser.GameObjects.GameObject;
       if (scene.textures.exists('game_heart_small')) {
-        heart = scene.add.image(35 + i * 17, 50, 'game_heart_small').setOrigin(0.5);
-        heart.setScale(0.5); // アイコンサイズを調整
-        heart.setTint(0xff69b4); // ピンク色に着色
+        const heart = scene.add.image(35 + i * 17, 50, 'game_heart_small').setOrigin(0.5);
+        heart.setScale(0.5);
+        heart.setTint(0xff69b4);
+        bondingDisplay.add(heart);
       } else {
-        heart = scene.add.text(35 + i * 17, 50, '♡', {
+        const heart = scene.add.text(35 + i * 17, 50, '♡', {
           fontSize: '16px',
           color: '#ff69b4'
         }).setOrigin(0.5);
+        bondingDisplay.add(heart);
       }
-      bondingDisplay.add(heart);
     }
 
     const bondingText = scene.add.text(120, 65, '1/10', {

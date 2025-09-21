@@ -1,9 +1,16 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, Suspense } from 'react';
+import dynamicImport from 'next/dynamic';
+
+export const dynamic = 'force-dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Layout from '@/components/Layout';
-import GameCanvas from '@/components/GameCanvas';
+
+const GameCanvas = dynamicImport(() => import('@/components/GameCanvas'), {
+  ssr: false,
+  loading: () => <div>Loading game...</div>
+});
 // ToyType removed - using asset keys directly
 import { PhaserGame } from '@/types/game';
 import { CatState } from '@/lib/session';
@@ -18,7 +25,7 @@ import { IMAGE_IDS } from '@/constants/images';
 import { getToyAsset } from '@/constants/toys';
 import { logDebug, logError, logInfo } from '@/lib/log';
 
-export default function PlayPage() {
+function PlayPageContent() {
   const [toyKey, setToyKey] = useState<string | null>(null);
   const [catState, setCatState] = useState<CatState | null>(null);
   const [catName, setCatName] = useState<string | null>(null);
@@ -269,5 +276,13 @@ export default function PlayPage() {
         </div>
       )}
     </Layout>
+  );
+}
+
+export default function PlayPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PlayPageContent />
+    </Suspense>
   );
 }

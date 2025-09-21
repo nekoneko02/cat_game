@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from '@/hooks/useSession';
 import { GameIcon } from '@/components/GameIcon';
 import { IMAGE_IDS } from '@/constants/images';
 
-export default function SignupConfirmPage() {
+export const dynamic = 'force-dynamic';
+
+function SignupConfirmContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -125,5 +127,13 @@ export default function SignupConfirmPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignupConfirmPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignupConfirmContent />
+    </Suspense>
   );
 }

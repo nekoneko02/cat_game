@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+
+export const dynamic = 'force-dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from '@/hooks/useSession';
 import { CatMaster } from '@/types/CatMaster';
@@ -8,7 +10,7 @@ import Image from 'next/image';
 import { GameIcon } from '@/components/GameIcon';
 import { IMAGE_IDS } from '@/constants/images';
 
-export default function CatProfilePage() {
+function CatProfileContent() {
   const [catMaster, setCatMaster] = useState<CatMaster | null>(null);
   const [catName, setCatName] = useState('');
   const [loading, setLoading] = useState(true);
@@ -218,5 +220,13 @@ export default function CatProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CatProfilePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CatProfileContent />
+    </Suspense>
   );
 }
