@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(mkdir:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(powershell:*)",
+      "Bash(npx tsc:*)",
+      "Bash(dir \"C:\\Users\\takaf\\workspace\\cat_game\\public\\assets\\toys\")",
+      "Bash(dir \"C:\\Users\\takaf\\workspace\\cat_game\\public\\assets\\cats\")",
+      "Bash(find:*)",
+      "Bash(dir \"C:\\Users\\takaf\\workspace\\cat_game\\public\\assets\")"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,9 @@
-# たぬきねこ 🐱
+# たぬきねこ
 
 バーチャル猫との癒しの時間を楽しむWebゲームアプリケーション
+[playはこちら](https://main.dgcstwg5n9o6c.amplifyapp.com)
+
+![Cat Game Screenshot](./docs/images/screenshot_home_screen.png)
 
 ## プロジェクト概要
 
@@ -9,9 +12,15 @@
 ### 主な機能
 
 - **おもちゃで遊ぶ** - 様々なおもちゃを使って猫と遊ぶ
-- **愛でる（一緒に過ごす）** - 猫の近くでのんびり過ごす
 - **なつき度システム** - 猫との絆を深めるシステム
-- **ねこAI学習** - 猫があなたとの関わりから学習し、行動が変化
+- **ねこAI学習** - 猫があなたとの関わりから学習し、行動が変化（プロトタイプでは簡易版のみ）
+
+![image](./docs/images/screenshot_playing_with_toy.png)
+
+### リリース履歴
+- 2025年9月21日: プロトタイプ版公開
+  - [プレスリリース](./docs/press_release_prototype.md)
+  - GitHubタグ: [v0.1.0](https://github.com/nekoneko02/cat_game/releases/tag/v0.1.0)
 
 ## 技術スタック
 
@@ -54,7 +63,7 @@ Phaser (ゲーム実行層)
 
 ```bash
 # リポジトリをクローン
-git clone [repository-url]
+git clone https://github.com/nekoneko02/cat_game.git
 cd cat_game
 
 # 依存関係をインストール
@@ -126,9 +135,7 @@ npm run lint
 - **親和性**: ユーザーとの親密度（-1: 嫌悪 ～ 1: 親愛）
 
 ### 学習機能
-- ユーザーの行動パターンを記録・学習
 - セッション毎に猫の行動が進化
-- 個々のユーザーに適応した反応を生成
 
 ## ライセンス
 

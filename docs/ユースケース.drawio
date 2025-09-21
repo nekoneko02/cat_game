@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="8kowRNA_SFG8u6XrDtM2" name="Page-1">
-        <mxGraphModel dx="720" dy="3824" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1088" dy="3859" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -15,7 +15,7 @@
                         <mxPoint y="30" as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="4" value="&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;#### UC: 開始する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムはホーム画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーはフッターの「遊ぶ」ボタンを押す&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、全てのおもちゃを取得して、「おもちゃ選択」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、一つのおもちゃを選択する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、外部状態を初期化して、ねこの内部状態を取得し、「おもちゃで遊ぶ」画面を表示して、ゲームを起動する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;&amp;nbsp; - UC: 「ゲームをする」をinvokeする&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;**代替コース**&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーがログインしていない：システムは、ログイン画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- 初めに、ホーム画面以外の画面を表示している：フッターのあるすべての画面において、ユーザーはフッターの「遊ぶ」ボタンを押す&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- おもちゃが存在しない：システムは、組み込みのおもちゃのみを選択肢として、正しくおもちゃが読み込めなかった旨とともに表示する（フォールバック）&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- 「おもちゃ選択」画面で終了やブラウザバッグをする：何もせずに、ホーム画面（もしくは最初に表示していた画面）に戻る&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ねこの内部状態が取得できない：システムは、ねこの情報が取得できない旨を表示し、「おもちゃ選択」画面を表示する&lt;/font&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
+                <mxCell id="4" value="&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;#### UC: 開始する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムはホーム画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーはフッターの「遊ぶ」ボタンを押す&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、全てのおもちゃを取得して、「おもちゃ選択」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、一つのおもちゃを選択する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、外部状態を初期化して、ねこの内部状態を取得し、「おもちゃで遊ぶ」画面を表示して、ゲームを起動する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;&amp;nbsp; - UC: 「ゲームをする」をinvokeする&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;**代替コース**&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーがログインしていない：システムは、ログイン画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- 初めに、ホーム画面以外の画面を表示している：フッターのあるすべての画面において、ユーザーはフッターの「遊ぶ」ボタンを押す&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- おもちゃが存在しない：システムは、組み込みのおもちゃのみを選択肢として、正しくおもちゃが読み込めなかった旨とともに表示する（フォールバック）&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- 「おもちゃ選択」画面で終了やブラウザバッグをする：何もせずに、ホーム画面（もしくは最初に表示していた画面）に戻る&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ねこの内部状態が取得できない：システムは、ねこの情報が取得できない旨を表示し、「おもちゃ選択」画面を表示する（スコープ1では対象外。※未ログインの場合と同一視）&lt;/font&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="42.47" y="53.08" width="327.53" height="386.92" as="geometry"/>
                 </mxCell>
                 <mxCell id="19" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;endArrow=classic;" parent="1" source="7" target="8" edge="1">
@@ -705,8 +705,8 @@
                 <mxCell id="304" value="ねこと出会う" style="shape=folder;fontStyle=1;tabWidth=110;tabHeight=30;tabPosition=left;html=1;boundedLbl=1;labelInHeader=1;container=0;collapsible=0;whiteSpace=wrap;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="15" y="-930" width="2125" height="870" as="geometry"/>
                 </mxCell>
-                <mxCell id="305" value="&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;#### UC: ねこと出会う&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、全てのねこマスタを取得し、ねこを選択肢として「ねこと出会う」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、ねこを選択する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、「ねこプロフィール設定」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、ねこの名前を入力し、「&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;決定」ボタンを押す&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- システムは、ねことねこ状態を保存し、登録完了メッセージとともに「ホーム画面」を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&amp;nbsp;**代替コース**&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーはログインしていない：「UC: ログインする」をinvokeする&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ねこが取得できない：選択可能なねこがいない旨（不具合）とともにエラー画面を表示する。&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーはねこを選択せずに終了する/名前を入力する前に終了する：システムは、ページを離れると保存されない旨をポップアップ表示する。&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーが入力したねこの名前が0文字 or 11文字以上：名前が長すぎる旨を表示し、「猫プロフィール設定」画面を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- システムはねこの保存に失敗する：システムは、ねこの保存に失敗した旨（リトライを促す・不具合）とともにエラー画面を表示する。&lt;/span&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="40.41" y="-880" width="327.53" height="346.92" as="geometry"/>
+                <mxCell id="305" value="&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;#### UC: ねこと出会う&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、全てのねこマスタを取得し、ねこを選択肢として「ねこと出会う」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、ねこを選択する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、「ねこプロフィール設定」画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、ねこの名前を入力し、「&lt;/font&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;決定」ボタンを押す&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- システムは、ねことねこ状態を保存し、登録完了メッセージとともに「ホーム画面」を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&amp;nbsp;**代替コース**&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーはサインアップしていない：「UC: サインアップする」をinvokeする&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーは既にねこと出会う済み：ホーム画面を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ねこが取得できない：選択可能なねこがいない旨（不具合）とともにエラー画面を表示する&lt;/span&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;（スコープ1では外部接続がないため、実装対象外とする）&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーはねこを選択せずに終了する/名前を入力する前に終了する：システムは、ページを離れると保存されない旨をポップアップ表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーが入力したねこの名前が0文字 or 11文字以上：名前が長すぎる旨を表示し、「猫プロフィール設定」画面を表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- システムはねこの保存に失敗する：システムは、ねこの保存に失敗した旨（リトライを促す・不具合）とともにエラー画面を表示する（スコープ1では省略する）&lt;/span&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="40.41" y="-880" width="327.53" height="390" as="geometry"/>
                 </mxCell>
                 <mxCell id="306" value="&lt;div&gt;&lt;span style=&quot;&quot;&gt;#### UC: エラーを表示する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;- 各処理中にエラーが発生した&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- システムは、エラーログを保存する。システムは、エラーメッセージとともに「エラー画面」を表示する。&lt;/div&gt;&lt;div&gt;- ユーザーは&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(0, 0, 0); font-size: 11px; text-align: center; text-wrap-mode: nowrap;&quot;&gt;「直前の画面に戻る&lt;/span&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;」ボタンを押す&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- システムは、直前の画面を（入力値は可能な限りそのままで）表示する。&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp;**代替コース**&amp;nbsp;&lt;/div&gt;&lt;div&gt;- システムはエラーログの保存に失敗する：エラーログの保存はせずに、エラーメッセージの表示に進む&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="2178" y="-1530" width="336.67" height="220" as="geometry"/>
@@ -752,17 +752,15 @@
                 <mxCell id="314" value="No&lt;br&gt;invoke" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;endArrow=classic;" parent="1" source="312" target="313" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="315" value="Yes" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;endArrow=classic;" parent="1" source="312" target="310" edge="1">
+                <mxCell id="315" value="Yes" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;endArrow=classic;" parent="1" source="312" target="510" edge="1">
                     <mxGeometry relative="1" as="geometry">
-                        <Array as="points">
-                            <mxPoint x="580" y="-750"/>
-                        </Array>
+                        <Array as="points"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="312" value="ユーザーはログイン済みか？" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="545" y="-890" width="70" height="80" as="geometry"/>
+                    <mxGeometry x="470" y="-895" width="70" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="313" value="UC: ログインする" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;fillColor=#FFFFCC;" parent="1" vertex="1">
+                <mxCell id="313" value="UC: サインアップする" style="ellipse;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;fillColor=#FFFFCC;" parent="1" vertex="1">
                     <mxGeometry x="835" y="-890" width="140" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="317" value="ねこの種" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
@@ -869,7 +867,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="509" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="347" target="508">
+                <mxCell id="509" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="347" target="508" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="347" value="ねこを保存する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
@@ -1125,7 +1123,7 @@
                 <mxCell id="439" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="426" target="438" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="465" value="ログアウト" style="edgeStyle=orthogonalEdgeStyle;html=1;curved=1;" edge="1" parent="1" source="426" target="424">
+                <mxCell id="465" value="ログアウト" style="edgeStyle=orthogonalEdgeStyle;html=1;curved=1;" parent="1" source="426" target="424" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="1400" y="-1315"/>
@@ -1143,7 +1141,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="466" value="ログアウト" style="shape=connector;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="433" target="424">
+                <mxCell id="466" value="ログアウト" style="shape=connector;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="433" target="424" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="433" value="仮ログイン中（ねこと出会う前）" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" parent="1" vertex="1">
@@ -1165,124 +1163,124 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="442" value="ログアウト" style="shape=folder;fontStyle=1;tabWidth=110;tabHeight=30;tabPosition=left;html=1;boundedLbl=1;labelInHeader=1;container=0;collapsible=0;whiteSpace=wrap;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="442" value="ログアウト" style="shape=folder;fontStyle=1;tabWidth=110;tabHeight=30;tabPosition=left;html=1;boundedLbl=1;labelInHeader=1;container=0;collapsible=0;whiteSpace=wrap;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="10" y="-2740" width="1050" height="870" as="geometry"/>
                 </mxCell>
-                <mxCell id="443" value="&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;#### UC: ログアウトする&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、「ホーム画面」を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、「ログアウト」ボタンを押す&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、セッションを破棄し、ログイン画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&amp;nbsp;**代替コース**&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーは、ホーム画面以外の「ログアウト」ボタンを押す：同じ処理をする&lt;/span&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;（セッションを破棄し、ログイン画面を表示する）&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- ユーザーは未ログインである：同じ処理をする（セッションを破棄し、ログイン画面を表示する）&lt;/div&gt;&lt;div&gt;- ユーザーはログアウトボタンは押していないが、ログイン後、一定時間が経過する：同じ処理をする&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="443" value="&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;#### UC: ログアウトする&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、「ホーム画面」を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、「ログアウト」ボタンを押す&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、「ログアウト確認」画面を表示する（スコープ1のみ、再ログインができない旨を表示する）&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- ユーザーは、「ログアウト」ボタンを押す&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- システムは、セッションを破棄し、ログイン画面を表示する&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;&amp;nbsp;**代替コース**&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63);&quot;&gt;- ユーザーは、ホーム画面以外の「ログアウト」ボタンを押す：同じ処理をする&lt;/span&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: transparent;&quot;&gt;（セッションを破棄し、ログイン画面を表示する）&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- ユーザーは未ログインである：同じ処理をする（セッションを破棄し、ログイン画面を表示する）&lt;/div&gt;&lt;div&gt;- ユーザーは、「ログアウト確認」画面で、「ゲームに戻る」ボタンを押す&lt;/div&gt;&lt;div&gt;- ユーザーはログアウトボタンは押していないが、ログイン後、一定時間が経過する：同じ処理をする（スコープ1では有効期間なしとする）&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="30.000000000000004" y="-2690" width="327.53" height="346.92" as="geometry"/>
                 </mxCell>
-                <mxCell id="456" style="edgeStyle=none;html=1;" edge="1" parent="1" source="444" target="445">
+                <mxCell id="456" style="edgeStyle=none;html=1;" parent="1" source="444" target="445" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="444" value="ユーザー" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+                <mxCell id="444" value="ユーザー" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" parent="1" vertex="1">
                     <mxGeometry x="395" y="-2550" width="30" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="445" value="ホーム画面" style="shape=umlBoundary;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="445" value="ホーム画面" style="shape=umlBoundary;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="490" y="-2550" width="100" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="447" style="edgeStyle=none;html=1;" edge="1" parent="1" source="446" target="445">
+                <mxCell id="447" style="edgeStyle=none;html=1;" parent="1" source="446" target="445" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="446" value="表示する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="446" value="表示する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="490" y="-2680" width="70" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="448" value="セッション" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="448" value="セッション" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="645" y="-2440" width="80" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="450" style="edgeStyle=none;html=1;" edge="1" parent="1" source="449" target="448">
+                <mxCell id="450" style="edgeStyle=none;html=1;" parent="1" source="449" target="448" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="453" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="449" target="452">
+                <mxCell id="453" value="" style="edgeStyle=none;html=1;" parent="1" source="449" target="452" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="449" value="セッションを破棄する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="449" value="セッションを破棄する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="780" y="-2550" width="70" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="451" style="edgeStyle=none;html=1;" edge="1" parent="1" source="445" target="449">
+                <mxCell id="451" style="edgeStyle=none;html=1;" parent="1" source="445" target="449" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="700" y="-2510" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="457" value="「ログアウト」ボタンを押す" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="451">
+                <mxCell id="457" value="「ログアウト」ボタンを押す" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="451" vertex="1" connectable="0">
                     <mxGeometry x="0.0475" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="455" style="edgeStyle=orthogonalEdgeStyle;html=1;curved=1;" edge="1" parent="1" source="452" target="454">
+                <mxCell id="455" style="edgeStyle=orthogonalEdgeStyle;html=1;curved=1;" parent="1" source="452" target="454" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="940" y="-2300"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="452" value="表示する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="452" value="表示する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="905" y="-2550" width="70" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="454" value="サインアップ画面" style="shape=umlBoundary;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="454" value="サインアップ画面" style="shape=umlBoundary;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="495" y="-2345" width="100" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="460" value="ホーム画面以外" style="shape=umlBoundary;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="460" value="ホーム画面以外" style="shape=umlBoundary;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="695" y="-2690" width="100" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="461" style="edgeStyle=none;html=1;" edge="1" parent="1" source="462" target="460">
+                <mxCell id="461" style="edgeStyle=none;html=1;" parent="1" source="462" target="460" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="462" value="表示する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="462" value="表示する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="575" y="-2710" width="70" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="463" style="edgeStyle=none;html=1;" edge="1" parent="1" source="460" target="449">
+                <mxCell id="463" style="edgeStyle=none;html=1;" parent="1" source="460" target="449" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="600" y="-2500" as="sourcePoint"/>
                         <mxPoint x="790" y="-2500" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="464" value="「ログアウト」ボタンを押す" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="463">
+                <mxCell id="464" value="「ログアウト」ボタンを押す" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="463" vertex="1" connectable="0">
                     <mxGeometry x="0.0475" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="467" value="管理者向け" style="shape=folder;fontStyle=1;tabWidth=110;tabHeight=30;tabPosition=left;html=1;boundedLbl=1;labelInHeader=1;container=0;collapsible=0;whiteSpace=wrap;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="467" value="管理者向け" style="shape=folder;fontStyle=1;tabWidth=110;tabHeight=30;tabPosition=left;html=1;boundedLbl=1;labelInHeader=1;container=0;collapsible=0;whiteSpace=wrap;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="3500" y="-1670" width="1200" height="430" as="geometry"/>
                 </mxCell>
-                <mxCell id="468" value="&lt;div&gt;&lt;span style=&quot;&quot;&gt;#### UC: アクセス記録を閲覧する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;- 管理者は、マネージドなストレージサービスにアクセスし、アクセス記録を閲覧する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;※閲覧機能は標準機能を用いるため、開発のスコープ外とする&lt;/span&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="468" value="&lt;div&gt;&lt;span style=&quot;&quot;&gt;#### UC: アクセス記録を閲覧する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;- 管理者は、マネージドなストレージサービスにアクセスし、アクセス記録を閲覧する&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;※閲覧機能は標準機能を用いるため、開発のスコープ外とする&lt;/span&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="3530" y="-1620" width="336.67" height="220" as="geometry"/>
                 </mxCell>
-                <mxCell id="474" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="469" target="471">
+                <mxCell id="474" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="469" target="471" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="469" value="管理者" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" vertex="1" parent="1">
+                <mxCell id="469" value="管理者" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="1" vertex="1">
                     <mxGeometry x="3940" y="-1460" width="30" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="473" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;dashed=1;dashPattern=1 4;" edge="1" parent="1" source="471" target="472">
+                <mxCell id="473" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;dashed=1;dashPattern=1 4;" parent="1" source="471" target="472" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="471" value="ストレージサービスの画面" style="shape=umlBoundary;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" vertex="1" parent="1">
+                <mxCell id="471" value="ストレージサービスの画面" style="shape=umlBoundary;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="1" vertex="1">
                     <mxGeometry x="4060" y="-1470" width="100" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="472" value="アクセス記録" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" vertex="1" parent="1">
+                <mxCell id="472" value="アクセス記録" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="1" vertex="1">
                     <mxGeometry x="4260" y="-1470" width="70" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="484" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;endArrow=classic;" edge="1" parent="1" source="182" target="482">
+                <mxCell id="484" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;endArrow=classic;" parent="1" source="182" target="482" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="690" y="1930" as="targetPoint"/>
                         <mxPoint x="1058" y="1860" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="485" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" vertex="1" connectable="0" parent="484">
+                <mxCell id="485" value="Yes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="484" vertex="1" connectable="0">
                     <mxGeometry x="-0.0022" y="-3" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="482" value="表示する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="482" value="表示する" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="835" y="1870" width="70" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="488" value="" style="ellipse;shape=ellipse;fillColor=#000000;strokeColor=#000000;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="488" value="" style="ellipse;shape=ellipse;fillColor=#000000;strokeColor=#000000;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1647.5" y="-836.92" width="30" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="495" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="489" target="494">
+                <mxCell id="495" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="489" target="494" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="500" value="&lt;div&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;ねこと出会う済の場合&lt;/span&gt;&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" target="498">
+                <mxCell id="500" value="&lt;div&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;ねこと出会う済の場合&lt;/span&gt;&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" target="498" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="1662" y="-820" as="sourcePoint"/>
                         <Array as="points">
@@ -1291,19 +1289,19 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="505" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="489" target="494">
+                <mxCell id="505" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="489" target="494" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="507" value="ねこの種の&lt;div&gt;取得エラー&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="489" target="506">
+                <mxCell id="507" value="ねこの種の&lt;div&gt;取得エラー&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="489" target="506" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="489" value="仮ログイン中" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="489" value="仮ログイン中" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1602.5" y="-689.9999999999999" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="490" style="labelBackgroundColor=none;" edge="1" parent="1" source="488" target="489">
+                <mxCell id="490" style="labelBackgroundColor=none;" parent="1" source="488" target="489" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="503" value="ねこと出会う済の場合" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="491" target="498">
+                <mxCell id="503" value="ねこと出会う済の場合" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="491" target="498" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="1980" y="-720"/>
@@ -1311,21 +1309,21 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="491" value="未ログイン" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="491" value="未ログイン" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1797.5" y="-749.9999999999999" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="492" value="未ログイン" style="labelBackgroundColor=none;" edge="1" parent="1" source="488" target="491">
+                <mxCell id="492" value="未ログイン" style="labelBackgroundColor=none;" parent="1" source="488" target="491" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="1687.5" y="-602.4137931034483" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="493" value="ログイン成功" style="labelBackgroundColor=none;" edge="1" parent="1" source="491" target="489">
+                <mxCell id="493" value="ログイン成功" style="labelBackgroundColor=none;" parent="1" source="491" target="489" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="497" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="494" target="496">
+                <mxCell id="497" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="494" target="496" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="501" value="途中離脱" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="494" target="489">
+                <mxCell id="501" value="途中離脱" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="494" target="489" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="1790" y="-520"/>
@@ -1333,13 +1331,13 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="494" value="ねこ選択中" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="494" value="ねこ選択中" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1602.5" y="-549.9999999999999" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="499" value="保存" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="496" target="498">
+                <mxCell id="499" value="保存" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="496" target="498" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="502" value="途中離脱" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" edge="1" parent="1" source="496" target="489">
+                <mxCell id="502" value="途中離脱" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=1;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="496" target="489" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="1890" y="-380"/>
@@ -1347,17 +1345,29 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="496" value="ねこプロフィール設定中" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="496" value="ねこプロフィール設定中" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1602.5" y="-409.9999999999999" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="498" value="ログイン中（各種ゲーム画面利用可能）" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="498" value="ログイン中（各種ゲーム画面利用可能）" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1602.5" y="-269.9999999999999" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="506" value="エラー画面" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="506" value="エラー画面" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1460" y="-584.9999999999999" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="508" value="ねこ状態" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+                <mxCell id="508" value="ねこ状態" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1210.5" y="-370" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="511" value="未" style="edgeStyle=none;html=1;" edge="1" parent="1" source="510" target="310">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="513" value="済み" style="edgeStyle=none;html=1;" edge="1" parent="1" source="510" target="331">
+                    <mxGeometry x="-0.8336" y="15" relative="1" as="geometry">
+                        <mxPoint x="531.6666666666667" y="-650" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="510" value="ユーザーはねこと出会う済みではないか？" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="400" y="-760" width="70" height="80" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

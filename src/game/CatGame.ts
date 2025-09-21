@@ -147,7 +147,8 @@ export default class CatGame extends Phaser.Scene {
     this.bondingDisplay = this.gameRenderer.createBondingDisplay(this);
     this.updateBondingDisplay();
 
-    this.enableDebugOverlay();
+    //デバッグ用、商用環境ではOFF
+    //this.enableDebugOverlay();
 
     // アイドルアニメーションを開始
     this.executeAnimationSequence([{
