@@ -16,7 +16,7 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 };
 
 function getCurrentLogLevel(): LogLevel {
-  const envLevel = process.env.LOG_LEVEL?.toLowerCase() as LogLevel;
+  const envLevel = process.env.APP_LOG_LEVEL?.toLowerCase() as LogLevel;
   return LOG_LEVELS[envLevel] !== undefined ? envLevel : 'info';
 }
 
