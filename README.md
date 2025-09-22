@@ -3,6 +3,8 @@
 バーチャル猫との癒しの時間を楽しむWebゲームアプリケーション
 [playはこちら](https://main.dgcstwg5n9o6c.amplifyapp.com)
 
+[English README](./README_EN.md)
+
 ![Cat Game Screenshot](./docs/images/screenshot_home_screen.png)
 
 ## プロジェクト概要
