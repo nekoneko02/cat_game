@@ -42,4 +42,4 @@ next-env.d.ts
 
 # 設計資料
 tmp.*
-docs/**/*.png
+docs/kpt/*
