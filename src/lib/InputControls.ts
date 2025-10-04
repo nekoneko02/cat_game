@@ -77,7 +77,6 @@ export class InputControls {
       );
 
       if (distance < this.config.pettingDistance) {
-        cat.petByUser();
         this.sessionManager.recordAction(SessionAction.petCat(pointer.x, pointer.y));
 
         if (onPetCat) {

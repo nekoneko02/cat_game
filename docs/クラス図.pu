@@ -1,0 +1,283 @@
+@startuml クラス図
+'エサ、好み、成功体験は未実装のため、コメントアウト中'
+package "ユーザー" as package_ユーザー {
+  class ユーザーアカウント <<User>> {
+    ユーザーid: id
+    初回サインアップ日時
+  }
+}
+
+package Global {
+  class GlobalRegistry {
+    + getInstance(): GlobalRegistry
+    + getGameTimeManager(): GameTimeManager
+    + setMockTimeManager(mock: GameTimeManager)
+  }
+  class GameTimeManager {
+    gt: ゲーム内時間（フレーム数/FPS）
+    rt: 実時間（初回サインアップ時間からの経過時間）
+  }
+  GlobalRegistry --> GameTimeManager
+}
+
+package アイテム {
+  /'package "エサ" {
+    class エサ {
+    }
+  
+    エサ --> package_ユーザー.所有エサ
+  }'/
+
+  package "おもちゃ" {
+    class おもちゃ <<Toy>> {
+      名前: key
+      イラストid
+    }
+    /'class おもちゃマスタ {
+      名前
+      色
+      見た目（形）
+      音
+      素材
+    }'/
+
+    おもちゃ *-- package_ユーザー.ユーザーアカウント
+    /'おもちゃ --> おもちゃマスタ'/
+  }
+}
+
+
+package "ねこ" {
+  class ねこ <<Cat>> {
+    名前: name
+    + action(external_state): update(delta)
+    + getBondingLevel()
+    + getPosition()
+  }
+  class ねこマスタ {
+    名前
+  }
+  ねこ --> ねこAI.ねこAI
+  ねこ --> ねこマスタ
+  ユーザーアカウント --> ねこ.ねこ
+
+  package ねこ外部状態 {
+    class ねこ位置 <<Cat.externalState>> {
+      x
+      y
+    }
+    abstract ねこ位置変化 {
+      x
+      y
+    }
+    ねこ位置 ..> ねこ位置変化
+    ねこ.ねこ --> ねこ位置
+  }
+
+  package "ねこAI" {
+    class ねこAI <<None>> {
+      action(external_state): update(delta)
+      getBondingLevel()
+      - switchCatActionByBondingLevel()
+    }
+
+    package "感情システム" {
+      class 快適度 <<InternalState.emotions.valence>> {
+        value: 0~1
+      }
+
+      class 覚醒度 <<InternalState.emotions.arousal>> {
+        value: 0~1
+      }
+
+      class 安全安心度 <<InternalState.emotions.safety>> {
+        value: 0~1
+      }
+
+      class 親和性 <<InternalState.emotions.social>> {
+        value: 0~1
+      }
+
+      class 身体的不快感 <<InternalState.emotions.discomfort>> {
+        value: 0~1
+      }
+
+      /'class "好み・成功体験to感情" {
+      }'/
+
+      class 感情 <<InternalState>> {
+        get()
+        update(delta): applyStateChanges(changes)
+        applyExternalInfluence(externalState)
+      }
+      abstract 感情変化 {
+        快適度変化
+        覚醒度変化
+        安全安心度変化
+        親和性変化
+        身体的不快感変化
+      }
+
+      感情 --> 快適度
+      感情 --> 覚醒度
+      感情 --> 安全安心度
+      感情 --> 親和性
+      感情 --> 身体的不快感
+      感情 ..> 感情変化
+      /'感情 --> "好み・成功体験to感情"'/
+    }
+
+    package なつき {
+      abstract なつき度変化 {
+        なつきゲージ変化
+      }
+      class なつき度 <<InternalState.bonding>> {
+        get()
+        updateBonding(change)
+      }
+      class なつきLv {
+        int value: 1~10
+      }
+      class なつきゲージ {
+        double value
+      }
+
+      なつき度 --> なつきLv
+      なつき度 --> なつきゲージ
+      なつき度 ..> なつき度変化
+    }
+
+    package ねこアクション {
+      interface ねこアクション {
+        action(external_state): execute(context)
+      }
+      
+      class "ねこアクション（なつき度毎）" {
+      }
+      
+      /'class 成功体験toねこアクション {
+      }'/
+
+      interface ねこアクション実行 <<CatAction>> {
+        action(external_state): execute(context)
+      }
+      class ねこアクション毎の具象クラス <<各Action具象クラス>> {
+        名前: name
+      }
+      class ねこアクション内容 <<ActionResult>> {
+        イラストId: animationKey
+      }
+      class ねこ位置変化 <<ActionMovement>> {
+        x
+        y
+      }
+      class ねこ感情変化 <<InternalStateChange>> {
+      }
+
+      class ねこアクション選択 {
+        select(emotion)
+      }
+
+      class 実行中ねこアクション <<Cat.currentAction>> {
+        開始時間gt
+        実行時間gt
+        isInProgress()
+        action(external_state)
+      }
+
+      ねこアクション ..> ねこアクション実行
+      ねこアクション選択 --* ねこアクション実行
+      ねこアクション選択 --> 実行中ねこアクション
+      ねこアクション毎の具象クラス ..|> ねこアクション実行
+      ねこアクション毎の具象クラス --> ねこアクション内容
+      ねこアクション内容 --> ねこ位置変化
+      ねこアクション内容 --> ねこ感情変化
+      ねこ感情変化 --|> ねこ.ねこAI.感情システム.感情変化
+      /'ねこアクション選択 --> 成功体験toねこアクション'/
+      "ねこアクション（なつき度毎）" --> ねこ.ねこAI.なつき.なつきLv
+      "ねこアクション（なつき度毎）" --> ねこアクション選択
+      "ねこアクション（なつき度毎）" ..|> ねこアクション
+      実行中ねこアクション --> ねこアクション実行
+      ねこ.ねこAI.ねこアクション.ねこ位置変化 --|> ねこ.ねこ外部状態.ねこ位置変化
+    }
+
+
+    /'class おもちゃ好み {
+      色
+      見た目（形）
+      音
+      素材
+      動き
+    }'/
+
+    /'class 成功体験 {
+      get()
+      update(info)
+    }'/
+
+    ねこAI --> 感情
+    ねこAI --> なつき.なつき度
+    /'ねこAI --> おもちゃ好み'/
+    /'ねこAI --> 成功体験'/
+    ねこAI --> ねこアクション.ねこアクション
+  }
+}
+
+package ゲームロジック {
+  class "Scene" <<CatGame>> {
+    init()
+    preload()
+    create()
+    update()
+  }
+  class ユーザー操作 <<InputControls>> {
+    move(x,y): handlePointerMove(x, y)
+    placeToy(x,y): handlePointerDown(x, y)
+    feed()
+  }
+  class なつき度UI <<Renderer>> {
+    updateBondingDisplay(level, value)
+  }
+
+  "Scene" --> ねこ.ねこ
+  "Scene" --> ユーザー操作
+  "Scene" --> なつき度UI
+  "Scene" --> ゲームロジック.環境.外部状態
+
+  package 環境 {
+    class 外部状態 <<ExternalState>> {
+      update(delta): updateToy/updateUser/updatePlayingState
+    }
+
+    class ユーザー位置 <<ExternalState.userPresence>> {
+      isExist: userPresence
+      x
+      y
+    }
+    class おもちゃ位置 <<ExternalState.toyPresence/toyDistance>> {
+      isExist: toyPresence
+      x
+      y
+    }
+
+
+    abstract 外部状態変化 {
+      ユーザー位置変化
+      おもちゃ位置変化
+    }
+
+    外部状態 --> ユーザー位置
+    外部状態 --> おもちゃ位置
+    外部状態 ..> 外部状態変化
+  }
+
+}
+
+package アクター{
+  abstract ユーザー <<actor>> <<User>> {
+
+  }
+  ユーザー --> ユーザーアカウント
+  ユーザー --> ユーザー操作
+}
+@enduml

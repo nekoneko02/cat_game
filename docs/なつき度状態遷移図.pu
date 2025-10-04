@@ -1,0 +1,35 @@
+@startuml なつき度状態遷移図
+
+[*] --> Lv1 : ゲーム開始
+
+state "Lv.1" as Lv1
+
+note left
+  * Lv: なつき度0~10
+  * gt: ゲーム内時間(game time)
+  * rt: 実時間(real time)
+end note
+
+state "Lv.2" as Lv2
+state "Lv.3" as Lv3
+state "Lv.4" as Lv4
+state "Lv.5" as Lv5
+state "Lv.6" as Lv6
+state "Lv.7" as Lv7
+state "Lv.8" as Lv8
+state "Lv.9" as Lv9
+state "Lv.10" as Lv10
+
+Lv1 --> Lv2 : 60秒gt
+Lv2 --> Lv3 : 2分gt経過(合計3分gt)
+Lv3 --> Lv4 : 合計10分gt経過 \n& 3回以上おもちゃへの興味 \n or \n 3600rt~半日rt経過(gt経過時間, おもちゃへの興味により変動)
+Lv4 --> Lv5 : 合計1時間rt経過\n & ???
+Lv5 --> Lv6
+Lv6 --> Lv7
+Lv7 --> Lv8
+Lv8 --> Lv9
+Lv9 --> Lv10
+
+Lv10 --> [*] : 最大レベル到達
+
+@enduml

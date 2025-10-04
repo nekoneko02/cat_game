@@ -1,0 +1,130 @@
+@startuml ゲームライフサイクルシーケンス図
+
+title ゲームライフサイクル（init → preload → create → update → 破棄）
+
+actor ユーザー
+participant CatGame
+participant Cat
+database "DB\n(イラスト)" as ImageDB
+database "DB\n(ねこ状態)" as StateDB
+
+== ゲーム開始 ==
+
+ユーザー -> CatGame: ゲーム開始
+activate CatGame
+
+== init フェーズ ==
+
+CatGame -> StateDB: ねこ状態を読み込み
+activate StateDB
+StateDB --> CatGame: 内部状態\n(bonding, playfulness, fear)
+deactivate StateDB
+
+CatGame -> Cat: <<create>>\n(内部状態, 外部状態, 性格, 好み)
+activate Cat
+Cat --> CatGame: cat instance
+
+== preload フェーズ ==
+
+CatGame -> ImageDB: イラスト・アニメーションを読み込み
+activate ImageDB
+note right
+  ねこスプライト
+  アニメーション定義
+  背景・UI素材
+end note
+ImageDB --> CatGame: アセット読み込み完了
+deactivate ImageDB
+
+== create フェーズ ==
+
+CatGame -> CatGame: ゲーム世界を初期化
+note right
+  物理演算設定
+  カメラ設定
+  ねこスプライト生成
+  入力設定
+  なつき度UI作成
+  初期アニメーション開始
+end note
+
+== update ループ（毎フレーム実行） ==
+
+loop 毎フレーム
+  CatGame -> CatGame: 外部状態を構築
+  note right
+    おもちゃの有無・距離
+    ユーザーの存在
+    遊び中かどうか
+  end note
+
+  CatGame -> Cat: update(外部状態, ねこ位置, おもちゃ位置)
+
+  Cat -> Cat: 内部状態を時間経過で更新
+  note right
+    遊び欲求の自然減衰
+    外部状態による影響
+  end note
+
+  Cat -> Cat: アクション選択
+  note right
+    感情を計算
+    アクション確率を計算
+    確率的にアクションを選択
+  end note
+
+  Cat --> CatGame: アクション結果\n(移動方向, アニメーション)
+
+  CatGame -> CatGame: ねこを動かす
+  note right
+    速度設定
+    向き反転
+    アニメーション再生
+  end note
+
+  CatGame -> Cat: なつき度を取得
+  Cat --> CatGame: なつき度 (0-10)
+
+  CatGame -> CatGame: なつき度UIを更新
+end
+
+== おもちゃ追加（ユーザー操作） ==
+
+ユーザー -> CatGame: おもちゃ選択
+
+alt おもちゃイラストが未読み込み
+  CatGame -> ImageDB: おもちゃイラストを読み込み
+  activate ImageDB
+  ImageDB --> CatGame: イラスト読み込み完了
+  deactivate ImageDB
+end
+
+CatGame -> CatGame: おもちゃスプライト生成
+note right
+  おもちゃ位置設定
+  ドラッグ可能に設定
+end note
+
+== ゲーム終了 ==
+
+ユーザー -> CatGame: ゲーム終了
+
+CatGame -> Cat: 現在の内部状態を取得
+Cat --> CatGame: 内部状態\n(bonding, playfulness, fear)
+
+CatGame -> StateDB: ねこ状態を保存
+activate StateDB
+StateDB --> CatGame: 保存完了
+deactivate StateDB
+
+CatGame -> CatGame: リソースを破棄
+note right
+  スプライト削除
+  イベントリスナー解除
+  物理演算停止
+end note
+
+deactivate Cat
+deactivate CatGame
+
+@enduml

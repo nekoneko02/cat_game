@@ -26,13 +26,13 @@ export class RunAwayAction extends CatAction {
     let targetCorner;
     
     if (context.hasToy()) {
-      // おもちゃがある場合：最も遠いコーナーを選択
+      // おもちゃがある場合：おもちゃから最も遠いコーナーを選択
       const toyX = context.toyX!;
       const toyY = context.toyY!;
-      
+
       let maxDistance = -1;
       targetCorner = corners[0]; // デフォルト
-      
+
       corners.forEach(corner => {
         const distance = Math.sqrt(
           Math.pow(corner.x - toyX, 2) + Math.pow(corner.y - toyY, 2)
@@ -43,16 +43,16 @@ export class RunAwayAction extends CatAction {
         }
       });
     } else {
-      // おもちゃがない場合：現在位置から最も遠いコーナーを選択
-      let maxDistance = -1;
+      // おもちゃがない場合：現在位置から最も近いコーナーを選択
+      let minDistance = Infinity;
       targetCorner = corners[0]; // デフォルト
-      
+
       corners.forEach(corner => {
         const distance = Math.sqrt(
           Math.pow(corner.x - context.currentX, 2) + Math.pow(corner.y - context.currentY, 2)
         );
-        if (distance > maxDistance) {
-          maxDistance = distance;
+        if (distance < minDistance) {
+          minDistance = distance;
           targetCorner = corner;
         }
       });

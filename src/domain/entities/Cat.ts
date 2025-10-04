@@ -169,34 +169,6 @@ export class Cat {
 
 
   /**
-   * ユーザーからなでられた時の処理（ステップ1仕様）
-   */
-  petByUser(intensity: number = 1.0): void {
-    const emotions = this.getCurrentEmotions();
-    
-    // 感情に応じた反応（valence: 快適度で判定）
-    const valence = emotions.valence || 0;
-    const fear = this.internalState.fear;
-    
-    if (fear > 0.5) {
-      // 恐怖度が高い場合は撫でられても怖がる
-      if (Math.random() < 0.7) {
-        this.internalState = this.internalState.updateBonding(-0.02 * intensity);
-      }
-    } else if (valence >= -0.1) {
-      // より寛容な条件でなつき度上昇
-      // 基本的に撫でられると嬉しい（恐怖度が高くない限り）
-      const bondingIncrease = Math.min(0.08 * intensity, 0.1); // 最大0.1まで上昇
-      this.internalState = this.internalState.updateBonding(bondingIncrease);
-    } else {
-      // 非常にネガティブな状態でも、小さな変化
-      if (Math.random() < 0.5) {
-        this.internalState = this.internalState.updateBonding(0.01 * intensity);
-      }
-    }
-  }
-
-  /**
    * 時間経過による内部状態の変化
    */
   private updateInternalStateByTime(deltaTime: number): void {

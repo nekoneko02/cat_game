@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/tools/notify.py \"Claude Codeが許可を求めています\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/tools/notify.py \"Claude Codeが処理を終了しました\""
+          }
+        ]
+      }
+    ]
+  }
+}
