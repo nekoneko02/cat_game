@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
-import { Cat } from '@/domain/entities/Cat';
-import { ExternalState } from '@/domain/valueObjects/ExternalState';
+import { Cat } from '@/domain/cat/Cat';
+import { ExternalState } from '@/domain/gameLogic/environment/ExternalState';
 
 /**
  * デバッグ用オーバーレイ
@@ -64,9 +64,7 @@ export class DebugOverlay {
     // 既存のテキストオブジェクトをクリア
     this.clearTexts();
 
-    const internalState = cat.getInternalState();
-    const emotions = cat.getCurrentEmotions();
-    const bondingLevel = cat.getBondingLevel();
+    const bonding = cat.getBonding();
     const currentAction = cat.getCurrentAction();
 
     let yOffset = 25;
@@ -78,18 +76,21 @@ export class DebugOverlay {
     yOffset += lineHeight * 1.5;
 
     // なつき度（目立つように表示）
-    this.addText(`Bonding Level: ${bondingLevel}/10`, leftMargin, yOffset, '#ffff00', '16px');
+    this.addText(`Bonding Level: ${bonding.getLevel()}/10`, leftMargin, yOffset, '#ffff00', '16px');
+    yOffset += lineHeight * 1.5;
+    this.addText(`Bonding Gauge: ${bonding.getGauge().toFixed(3)}`, leftMargin, yOffset, '#ffff00', '14px');
     yOffset += lineHeight * 1.5;
 
     // 現在のアクション
     this.addText('--- Current Action ---', leftMargin, yOffset, '#00ffff');
     yOffset += lineHeight;
     if (currentAction) {
-      this.addText(`Action: ${currentAction.name}`, leftMargin, yOffset, '#ffffff');
+      this.addText(`Action: ${currentAction.getActionName()}`, leftMargin, yOffset, '#ffffff');
       yOffset += lineHeight;
-      if (currentAction.duration) {
-        const elapsed = Date.now() - currentAction.startTime;
-        const remaining = Math.max(0, currentAction.duration - elapsed);
+      const duration = currentAction.getDuration();
+      if (duration) {
+        const elapsed = Date.now() - currentAction.getStartTime();
+        const remaining = Math.max(0, duration - elapsed);
         this.addText(`Remaining: ${(remaining / 1000).toFixed(1)}s`, leftMargin, yOffset, '#ffffff');
         yOffset += lineHeight;
       }
@@ -97,34 +98,6 @@ export class DebugOverlay {
       this.addText('Action: none', leftMargin, yOffset, '#888888');
       yOffset += lineHeight;
     }
-    yOffset += lineHeight * 0.5;
-
-    // 感情状態
-    this.addText('--- Emotions ---', leftMargin, yOffset, '#00ffff');
-    yOffset += lineHeight;
-    
-    Object.entries(emotions).forEach(([key, value]) => {
-      const colorValue = this.getValueColor(value, -1, 1);
-      this.addText(`${key}: ${value.toFixed(3)}`, leftMargin, yOffset, colorValue);
-      yOffset += lineHeight;
-    });
-    yOffset += lineHeight * 0.5;
-
-    // 内部状態
-    this.addText('--- Internal State ---', leftMargin, yOffset, '#00ffff');
-    yOffset += lineHeight;
-
-    const internalStateEntries = [
-      ['bonding', internalState.bonding],
-      ['playfulness', internalState.playfulness],
-      ['fear', internalState.fear]
-    ];
-
-    internalStateEntries.forEach(([key, value]) => {
-      const colorValue = this.getValueColor(value as number, -1, 1);
-      this.addText(`${key}: ${(value as number).toFixed(3)}`, leftMargin, yOffset, colorValue);
-      yOffset += lineHeight;
-    });
     yOffset += lineHeight * 0.5;
 
     // 外部状態

@@ -18,7 +18,7 @@ import { apiClient } from '@/lib/ApiClient';
 import { StateSaver } from '@/lib/StateSaver';
 import { GameManager } from '@/lib/GameManager';
 import { useNavigationGuard } from '@/lib/NavigationGuard';
-import { Personality, Preferences } from '@/domain/entities/Cat';
+import { Personality, Preferences } from '@/domain/cat/Cat';
 import { GameIcon } from '@/components/GameIcon';
 import { ToyImage } from '@/components/ToyImage';
 import { IMAGE_IDS } from '@/constants/images';
@@ -59,8 +59,6 @@ function PlayPageContent() {
       if (currentState) {
         const catStateToSave: CatState = {
           bonding: currentState.bonding,
-          playfulness: currentState.playfulness,
-          fear: currentState.fear,
           personality: currentState.personality,
           preferences: currentState.preferences
         };

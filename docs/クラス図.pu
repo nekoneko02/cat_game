@@ -11,13 +11,24 @@ package Global {
   class GlobalRegistry {
     + getInstance(): GlobalRegistry
     + getGameTimeManager(): GameTimeManager
+    + getAssetConfig(): AssetConfig
     + setMockTimeManager(mock: GameTimeManager)
   }
   class GameTimeManager {
-    gt: ゲーム内時間（フレーム数/FPS）
-    rt: 実時間（初回サインアップ時間からの経過時間）
+    + gt: ゲーム内時間（フレーム数/FPS）
+    + rt: 実時間（初回サインアップ時間からの経過時間）
+    + updateOneFrame()
+  }
+  note right of GameTimeManager
+    【updateOneFrame()の利用規約】
+    - CatGameのupdate()で必ず呼び出すこと
+    - CatGameのupdate()以外での利用禁止
+  end note
+  class AssetConfig {
+    + getAssetPath(assetName: string): string
   }
   GlobalRegistry --> GameTimeManager
+  GlobalRegistry --> AssetConfig
 }
 
 package アイテム {
@@ -48,10 +59,15 @@ package アイテム {
 
 
 package "ねこ" {
+  interface なつき度View {
+    + getLevel(): int
+    + getGauge(): double
+  }
+
   class ねこ <<Cat>> {
     名前: name
     + action(external_state): update(delta)
-    + getBondingLevel()
+    + getBonding(): なつき度View
     + getPosition()
   }
   class ねこマスタ {
@@ -77,7 +93,7 @@ package "ねこ" {
   package "ねこAI" {
     class ねこAI <<None>> {
       action(external_state): update(delta)
-      getBondingLevel()
+      getBonding(): なつき度View
       - switchCatActionByBondingLevel()
     }
 
@@ -131,72 +147,87 @@ package "ねこ" {
       abstract なつき度変化 {
         なつきゲージ変化
       }
-      class なつき度 <<InternalState.bonding>> {
+      class なつき度 <<Bonding>> {
         get()
-        updateBonding(change)
+        updateBonding(change): なつき度
       }
       class なつきLv {
-        int value: 1~10
+        int value: 0~10
       }
       class なつきゲージ {
-        double value
+        double value: -1~1
       }
 
+      なつき度 ..|> ねこ.なつき度View
       なつき度 --> なつきLv
       なつき度 --> なつきゲージ
       なつき度 ..> なつき度変化
     }
 
     package ねこアクション {
-      interface ねこアクション {
-        action(external_state): execute(context)
+      interface ねこアクション <<CatAction>> {
+        action(context): CatActionExecutor
       }
-      
-      class "ねこアクション（なつき度毎）" {
+
+      class ねこアクションRepository <<CatActionRepository>> {
+        getCatActionsByBondingLevel(level): ねこアクション
       }
-      
+
+      package なつき度毎 {
+        class ねこアクションなつき度LvN <<BondingLevelActionsLv0~Lv10>> {
+          + action(context): CatActionExecutor
+        }
+        class ねこアクション選択LvN <<ActionSelectorLv0~Lv10>> {
+          select(emotion)
+        }
+      }
       /'class 成功体験toねこアクション {
       }'/
 
-      interface ねこアクション実行 <<CatAction>> {
-        action(external_state): execute(context)
+      abstract class ねこアクション実行 <<CatActionExecutor>> {
+        + execute(context): ActionMovement
+        + createActionResult(context): ActionResult
       }
-      class ねこアクション毎の具象クラス <<各Action具象クラス>> {
+      class ねこアクション毎の具象クラス <<ShowBellyAction, PlayWithToyAction, SitAction, RunAwayAction>> {
         名前: name
       }
-      class ねこアクション内容 <<ActionResult>> {
+      interface ねこアクション内容 <<ActionResult>> {
         イラストId: animationKey
       }
-      class ねこ位置変化 <<ActionMovement>> {
+      interface ねこ位置変化 <<ActionMovement>> {
         x
         y
       }
       class ねこ感情変化 <<InternalStateChange>> {
       }
-
-      class ねこアクション選択 {
-        select(emotion)
+      class ねこなつき度変化 {
       }
 
-      class 実行中ねこアクション <<Cat.currentAction>> {
+
+      class 実行中ねこアクション <<CurrentAction>> {
         開始時間gt
         実行時間gt
-        isInProgress()
-        action(external_state)
+        + isInProgress(): boolean
+        + action(context): ActionResult
       }
 
+      ねこ.ねこAI.ねこAI --> ねこアクションRepository
+      ねこアクションRepository --> ねこアクションなつき度LvN
       ねこアクション ..> ねこアクション実行
-      ねこアクション選択 --* ねこアクション実行
-      ねこアクション選択 --> 実行中ねこアクション
+      ねこアクション選択LvN --* ねこアクション実行
+      ねこアクション選択LvN --> 実行中ねこアクション
+      ねこアクション選択LvN --> なつきLv
       ねこアクション毎の具象クラス ..|> ねこアクション実行
       ねこアクション毎の具象クラス --> ねこアクション内容
       ねこアクション内容 --> ねこ位置変化
       ねこアクション内容 --> ねこ感情変化
+      ねこアクション内容 --> ねこなつき度変化
       ねこ感情変化 --|> ねこ.ねこAI.感情システム.感情変化
-      /'ねこアクション選択 --> 成功体験toねこアクション'/
-      "ねこアクション（なつき度毎）" --> ねこ.ねこAI.なつき.なつきLv
-      "ねこアクション（なつき度毎）" --> ねこアクション選択
-      "ねこアクション（なつき度毎）" ..|> ねこアクション
+      ねこなつき度変化 --|> ねこ.ねこAI.なつき.なつき度変化
+      /'ねこアクション選択LvN --> 成功体験toねこアクション'/
+      ねこアクションなつき度LvN --> ねこ.ねこAI.なつき.なつきLv
+      ねこアクションなつき度LvN --> ねこアクション選択LvN
+      ねこアクションなつき度LvN ..|> ねこアクション
       実行中ねこアクション --> ねこアクション実行
       ねこ.ねこAI.ねこアクション.ねこ位置変化 --|> ねこ.ねこ外部状態.ねこ位置変化
     }
@@ -238,10 +269,15 @@ package ゲームロジック {
   class なつき度UI <<Renderer>> {
     updateBondingDisplay(level, value)
   }
+  class 移動速度 <<MovementSpeed>> {
+    speedPerSecond: number
+    + getSpeedPerFrame(fps): number
+  }
 
   "Scene" --> ねこ.ねこ
   "Scene" --> ユーザー操作
   "Scene" --> なつき度UI
+  なつき度UI ..> ねこ.なつき度View
   "Scene" --> ゲームロジック.環境.外部状態
 
   package 環境 {

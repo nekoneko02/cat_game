@@ -1,11 +1,9 @@
 import { SessionOptions } from 'iron-session';
-import { Personality, Preferences } from '@/domain/entities/Cat';
+import { Personality, Preferences } from '@/domain/cat/Cat';
 import { logError } from './log';
 
 export interface CatState {
   bonding: number;
-  playfulness: number;
-  fear: number;
   personality: Personality;
   preferences: Preferences;
 }
@@ -32,9 +30,7 @@ export const sessionOptions: SessionOptions = {
 
 export function createDefaultCatState(): CatState {
   return {
-    bonding: -1,  // InternalState.createDefault()と同じ初期値
-    playfulness: 0,
-    fear: 1,
+    bonding: -1,  // Bonding.createDefault()と同じ初期値
     personality: {
       social: 0.7,
       active: 0.8,

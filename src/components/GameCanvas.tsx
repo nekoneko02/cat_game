@@ -8,6 +8,7 @@ import { apiClient } from '@/lib/ApiClient';
 import { GameIcon } from '@/components/GameIcon';
 import { IMAGE_IDS } from '@/constants/images';
 import { logDebug, logError, logInfo } from '@/lib/log';
+import { CatGameConfig } from '@/game/CatGame';
 
 interface GameCanvasProps {
   onGameReady?: (game: PhaserGame, gameManager: GameManager) => void;
@@ -34,7 +35,7 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
         logDebug('GameCanvas: Created new GameManager instance');
 
         // ゲーム開始時に最新の猫状態を取得
-        let initialCatGameConfig: CatState | undefined = undefined;
+        let initialCatGameConfig: CatGameConfig | undefined = undefined;
         try {
           logDebug('GameCanvas: Calling getCatState API...');
           const response = await apiClient.getCatState();
@@ -44,8 +45,6 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
             // CatStateをCatGameConfigに変換
             initialCatGameConfig = {
               bonding: response.data.catState.bonding,
-              playfulness: response.data.catState.playfulness,
-              fear: response.data.catState.fear,
               personality: response.data.catState.personality,
               preferences: response.data.catState.preferences
             };
