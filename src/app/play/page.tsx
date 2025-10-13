@@ -47,9 +47,10 @@ function PlayPageContent() {
     try {
       logDebug('PlayPage: Getting current cat state from game...');
       const currentState = gameManagerRef.current.getCurrentCatState() as {
-        bonding: number;
-        playfulness: number;
-        fear: number;
+        bonding: {
+          level: number;
+          gauge: number;
+        };
         personality: Personality;
         preferences: Preferences;
       } | null;

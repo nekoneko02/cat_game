@@ -3,7 +3,10 @@ import { Personality, Preferences } from '@/domain/cat/Cat';
 import { logError } from './log';
 
 export interface CatState {
-  bonding: number;
+  bonding: {
+    level: number;
+    gauge: number;
+  };
   personality: Personality;
   preferences: Preferences;
 }
@@ -30,7 +33,10 @@ export const sessionOptions: SessionOptions = {
 
 export function createDefaultCatState(): CatState {
   return {
-    bonding: -1,  // Bonding.createDefault()と同じ初期値
+    bonding: {
+      level: 0,
+      gauge: 0
+    },
     personality: {
       social: 0.7,
       active: 0.8,

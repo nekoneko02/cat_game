@@ -25,7 +25,10 @@ async function saveCatStateHandler(request: NextRequest, context: ApiContext) {
   }
 
   const validatedCatState: CatState = {
-    bonding: Math.max(-1, Math.min(1, catState.bonding || 0)),
+    bonding: {
+      level: Math.max(0, Math.min(10, Math.floor(catState.bonding?.level ?? 0))),
+      gauge: Math.max(0, Math.min(1, catState.bonding?.gauge ?? 0))
+    },
     personality: catState.personality || context.session.catState?.personality || {},
     preferences: catState.preferences || context.session.catState?.preferences || {}
   };

@@ -6,12 +6,14 @@ export class ActionContext {
   public readonly currentY: number;
   public readonly toyX?: number;
   public readonly toyY?: number;
+  public readonly flipX: boolean;
 
-  constructor(currentX: number, currentY: number, toyX?: number, toyY?: number) {
+  constructor(currentX: number, currentY: number, toyX?: number, toyY?: number, flipX: boolean = false) {
     this.currentX = currentX;
     this.currentY = currentY;
     this.toyX = toyX;
     this.toyY = toyY;
+    this.flipX = flipX;
   }
 
   /**
@@ -81,16 +83,56 @@ export class ActionContext {
   }
 
   /**
+   * おもちゃが画面上側にあるか（ねこより上にあるか）
+   */
+  isToyAboveCatOnScreen(): boolean {
+    if (!this.hasToy()) {
+      return false;
+    }
+    return this.toyY! < this.currentY;
+  }
+
+  /**
+   * おもちゃが画面下側にあるか（ねこより下にあるか）
+   */
+  isToyBelowCatOnScreen(): boolean {
+    if (!this.hasToy()) {
+      return false;
+    }
+    return this.toyY! > this.currentY;
+  }
+
+  /**
+   * おもちゃが画面右側にあるか（ねこより右にあるか）
+   */
+  isToyRightOfCatOnScreen(): boolean {
+    if (!this.hasToy()) {
+      return false;
+    }
+    return this.toyX! > this.currentX;
+  }
+
+  /**
+   * おもちゃが画面左側にあるか（ねこより左にあるか）
+   */
+  isToyLeftOfCatOnScreen(): boolean {
+    if (!this.hasToy()) {
+      return false;
+    }
+    return this.toyX! < this.currentX;
+  }
+
+  /**
    * 静的ファクトリーメソッド: おもちゃなしのコンテキスト
    */
-  static withoutToy(currentX: number, currentY: number): ActionContext {
-    return new ActionContext(currentX, currentY);
+  static withoutToy(currentX: number, currentY: number, flipX: boolean = false): ActionContext {
+    return new ActionContext(currentX, currentY, undefined, undefined, flipX);
   }
 
   /**
    * 静的ファクトリーメソッド: おもちゃありのコンテキスト
    */
-  static withToy(currentX: number, currentY: number, toyX: number, toyY: number): ActionContext {
-    return new ActionContext(currentX, currentY, toyX, toyY);
+  static withToy(currentX: number, currentY: number, toyX: number, toyY: number, flipX: boolean = false): ActionContext {
+    return new ActionContext(currentX, currentY, toyX, toyY, flipX);
   }
 }

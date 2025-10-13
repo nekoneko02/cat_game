@@ -99,11 +99,11 @@ export class Renderer {
   createBondingDisplay(scene: Phaser.Scene): Phaser.GameObjects.Group {
     const bondingDisplay = scene.add.group();
 
-    const bg = scene.add.rectangle(120, 40, 220, 60, 0x000000, 0.7);
+    const bg = scene.add.rectangle(120, 45, 220, 75, 0x000000, 0.7);
     bg.setStrokeStyle(2, 0xffffff, 0.8);
     bondingDisplay.add(bg);
 
-    const title = scene.add.text(120, 25, 'なつき度', {
+    const title = scene.add.text(120, 20, 'なつき度', {
       fontSize: '16px',
       color: '#ffffff',
       fontFamily: 'Arial'
@@ -112,12 +112,12 @@ export class Renderer {
 
     for (let i = 0; i < 10; i++) {
       if (scene.textures.exists('game_heart_small')) {
-        const heart = scene.add.image(35 + i * 17, 50, 'game_heart_small').setOrigin(0.5);
+        const heart = scene.add.image(35 + i * 17, 42, 'game_heart_small').setOrigin(0.5);
         heart.setScale(0.5);
         heart.setTint(0xff69b4);
         bondingDisplay.add(heart);
       } else {
-        const heart = scene.add.text(35 + i * 17, 50, '♡', {
+        const heart = scene.add.text(35 + i * 17, 42, '♡', {
           fontSize: '16px',
           color: '#ff69b4'
         }).setOrigin(0.5);
@@ -125,19 +125,33 @@ export class Renderer {
       }
     }
 
-    const bondingText = scene.add.text(120, 65, '1/10', {
+    const bondingText = scene.add.text(120, 60, '1/10', {
       fontSize: '14px',
       color: '#ffffff',
       fontFamily: 'Arial'
     }).setOrigin(0.5);
     bondingDisplay.add(bondingText);
 
+    // ゲージバー背景
+    const gaugeBg = scene.add.rectangle(120, 80, 200, 10, 0x333333, 0.8);
+    gaugeBg.setStrokeStyle(1, 0xffffff, 0.5);
+    gaugeBg.setData('name', 'gaugeBg');
+    bondingDisplay.add(gaugeBg);
+
+    // ゲージバー前景（初期値: 0に対応する幅）
+    const initialGauge = 0;
+    const initialWidth = initialGauge * 200;
+    const gaugeFill = scene.add.rectangle(20 + initialWidth / 2, 80, initialWidth, 10, 0xffff00, 1.0);
+    gaugeFill.setOrigin(0.5, 0.5);
+    gaugeFill.setData('name', 'gaugeFill');
+    bondingDisplay.add(gaugeFill);
+
     bondingDisplay.setDepth(1000);
 
     return bondingDisplay;
   }
 
-  updateBondingDisplay(bondingDisplay: Phaser.GameObjects.Group, bondingLevel: number): void {
+  updateBondingDisplay(bondingDisplay: Phaser.GameObjects.Group, bondingLevel: number, bondingGauge?: number): void {
     // ハート要素を取得（画像またはテキスト）
     const hearts = bondingDisplay.children.entries.filter(child => {
       if (child instanceof Phaser.GameObjects.Image && child.texture.key === 'game_heart_small') {
@@ -175,6 +189,34 @@ export class Renderer {
 
     if (bondingText) {
       bondingText.setText(`${bondingLevel}/10`);
+    }
+
+    // ゲージバーを更新
+    if (bondingGauge !== undefined) {
+      const gaugeFill = bondingDisplay.children.entries.find(child => {
+        if (child instanceof Phaser.GameObjects.Rectangle) {
+          return (child as Phaser.GameObjects.Rectangle).getData('name') === 'gaugeFill';
+        }
+        return false;
+      }) as Phaser.GameObjects.Rectangle;
+
+      if (gaugeFill) {
+        // ゲージ値を0～1から0～200pxの幅に変換
+        const width = bondingGauge * 200;
+        gaugeFill.setSize(width, 10);
+        gaugeFill.x = 20 + width / 2;
+
+        // ゲージの色を値に応じて変更
+        if (bondingGauge < 0.25) {
+          gaugeFill.setFillStyle(0xff8800); // オレンジ
+        } else if (bondingGauge < 0.5) {
+          gaugeFill.setFillStyle(0xffff00); // 黄色
+        } else if (bondingGauge < 0.75) {
+          gaugeFill.setFillStyle(0xaaff00); // 黄緑
+        } else {
+          gaugeFill.setFillStyle(0x00ff00); // 緑
+        }
+      }
     }
   }
 

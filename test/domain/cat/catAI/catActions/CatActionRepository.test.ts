@@ -10,7 +10,7 @@ describe('CatActionRepository', () => {
 
   describe('getCatActionsByBondingLevel', () => {
     it('なつき度レベル0のアクションセットを取得できる', () => {
-      const bonding = new Bonding(-1);  // レベル0
+      const bonding = new Bonding(0, 0);  // レベル0
 
       const actions = repository.getCatActionsByBondingLevel(bonding.getLevel());
 
@@ -19,7 +19,7 @@ describe('CatActionRepository', () => {
     });
 
     it('なつき度レベル5のアクションセットを取得できる', () => {
-      const bonding = new Bonding(0);  // レベル5
+      const bonding = new Bonding(5, 0);  // レベル5
 
       const actions = repository.getCatActionsByBondingLevel(bonding.getLevel());
 
@@ -28,7 +28,7 @@ describe('CatActionRepository', () => {
     });
 
     it('なつき度レベル10のアクションセットを取得できる', () => {
-      const bonding = new Bonding(1);  // レベル10
+      const bonding = new Bonding(10, 0);  // レベル10
 
       const actions = repository.getCatActionsByBondingLevel(bonding.getLevel());
 
@@ -37,8 +37,8 @@ describe('CatActionRepository', () => {
     });
 
     it('異なるなつき度レベルで異なるアクションセットを返す', () => {
-      const bonding0 = new Bonding(-1);  // レベル0
-      const bonding5 = new Bonding(0);   // レベル5
+      const bonding0 = new Bonding(0, 0);  // レベル0
+      const bonding5 = new Bonding(5, 0);  // レベル5
 
       const actions0 = repository.getCatActionsByBondingLevel(bonding0.getLevel());
       const actions5 = repository.getCatActionsByBondingLevel(bonding5.getLevel());
@@ -47,7 +47,7 @@ describe('CatActionRepository', () => {
     });
 
     it('同じなつき度レベルで同じアクションセットを返す（キャッシュ動作）', () => {
-      const bonding = new Bonding(-0.4);  // レベル3
+      const bonding = new Bonding(3, 0);  // レベル3
 
       const actions1 = repository.getCatActionsByBondingLevel(bonding.getLevel());
       const actions2 = repository.getCatActionsByBondingLevel(bonding.getLevel());
@@ -95,7 +95,7 @@ describe('CatActionRepository Integration Tests', () => {
   });
 
   it('シナリオ: なつき度レベル毎のアクションセット取得の一貫性', () => {
-    const bonding = new Bonding(0);  // レベル5
+    const bonding = new Bonding(5, 0);  // レベル5
 
     const actions1 = repository.getCatActionsByBondingLevel(bonding.getLevel());
     const actions2 = repository.getCatActionsByBondingLevel(bonding.getLevel());

@@ -52,8 +52,8 @@ export class CurrentAction {
    * アクションを実行
    * 毎フレーム呼び出され、移動方向を再計算する
    */
-  action(currentX: number, currentY: number, toyX?: number, toyY?: number): ActionResult {
-    const context = new ActionContext(currentX, currentY, toyX, toyY);
+  action(currentX: number, currentY: number, toyX?: number, toyY?: number, flipX: boolean = false): ActionResult {
+    const context = new ActionContext(currentX, currentY, toyX, toyY, flipX);
     return this.actionExecutor.createActionResult(context);
   }
 }

@@ -9,10 +9,11 @@ export class SitAction extends CatActionExecutor {
     super('sit');
   }
 
-  execute(_context: ActionContext): ActionMovement {
+  execute(context: ActionContext): ActionMovement {
     return {
       deltaX: 0,
       deltaY: 0,
+      flipX: context.flipX,
       animationCommands: [{
         animationKey: 'sit',
         repeat: -1

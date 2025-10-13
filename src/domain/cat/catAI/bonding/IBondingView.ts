@@ -16,7 +16,7 @@ export interface IBondingView {
 
   /**
    * なつきゲージ値を取得
-   * @returns なつきゲージ値 (-1~1)
+   * @returns なつきゲージ値 (0~1)
    */
   getGauge(): number;
 }

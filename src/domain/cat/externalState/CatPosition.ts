@@ -10,9 +10,34 @@ export class CatPosition {
 
   /**
    * 位置を移動した新しいインスタンスを返す
+   * @param deltaX X軸の移動量
+   * @param deltaY Y軸の移動量
+   * @param gameWidth ゲーム画面の幅（省略時は境界制御なし）
+   * @param gameHeight ゲーム画面の高さ（省略時は境界制御なし）
+   * @param margin 画面端からのマージン（省略時は境界制御なし）
    */
-  move(deltaX: number, deltaY: number): CatPosition {
-    return new CatPosition(this.x + deltaX, this.y + deltaY);
+  move(
+    deltaX: number,
+    deltaY: number,
+    gameWidth?: number,
+    gameHeight?: number,
+    margin?: number
+  ): CatPosition {
+    let newX = this.x + deltaX;
+    let newY = this.y + deltaY;
+
+    // 境界制御が有効な場合のみクランプ
+    if (gameWidth !== undefined && gameHeight !== undefined && margin !== undefined) {
+      const minX = margin;
+      const maxX = gameWidth - margin;
+      const minY = margin;
+      const maxY = gameHeight - margin;
+
+      newX = Math.max(minX, Math.min(maxX, newX));
+      newY = Math.max(minY, Math.min(maxY, newY));
+    }
+
+    return new CatPosition(newX, newY);
   }
 
   /**

@@ -21,6 +21,15 @@ import { ActionSelector as ActionSelectorLv7 } from './bondingLevel/Lv7/ActionSe
 import { ActionSelector as ActionSelectorLv8 } from './bondingLevel/Lv8/ActionSelectorLv8';
 import { ActionSelector as ActionSelectorLv9 } from './bondingLevel/Lv9/ActionSelectorLv9';
 import { ActionSelector as ActionSelectorLv10 } from './bondingLevel/Lv10/ActionSelectorLv10';
+import { CatActionExecutor } from './CatActionExecutor';
+import { SitAction } from './SitAction';
+import { ShowBellyAction } from './ShowBellyAction';
+import { PlayWithToyAction } from './PlayWithToyAction';
+import { RunAwayAction } from './RunAwayAction';
+import { RunAwayShortAction } from './RunAwayShortAction';
+import { WatchCautiouslyAction } from './WatchCautiouslyAction';
+import { WatchToyAction } from './WatchToyAction';
+import { WatchWithTailWagAction } from './WatchWithTailWagAction';
 
 /**
  * ねこアクションRepository
@@ -29,9 +38,11 @@ import { ActionSelector as ActionSelectorLv10 } from './bondingLevel/Lv10/Action
  */
 export class CatActionRepository {
   private readonly levelActionsMap: Map<number, BondingLevelActions>;
+  private readonly actionInstancesMap: Map<string, CatActionExecutor>;
 
   constructor() {
     this.levelActionsMap = new Map();
+    this.actionInstancesMap = new Map();
 
     // なつき度レベル毎のアクションセットを初期化（各レベルのActionSelectorを使用）
     this.levelActionsMap.set(0, new BondingLevelActionsLv0(new ActionSelectorLv0()));
@@ -45,6 +56,20 @@ export class CatActionRepository {
     this.levelActionsMap.set(8, new BondingLevelActionsLv8(new ActionSelectorLv8()));
     this.levelActionsMap.set(9, new BondingLevelActionsLv9(new ActionSelectorLv9()));
     this.levelActionsMap.set(10, new BondingLevelActionsLv10(new ActionSelectorLv10()));
+
+    // デバッグ用: 全アクションのインスタンスを登録
+    this.registerAction(new SitAction());
+    this.registerAction(new ShowBellyAction());
+    this.registerAction(new PlayWithToyAction());
+    this.registerAction(new RunAwayAction());
+    this.registerAction(new RunAwayShortAction());
+    this.registerAction(new WatchCautiouslyAction());
+    this.registerAction(new WatchToyAction());
+    this.registerAction(new WatchWithTailWagAction());
+  }
+
+  private registerAction(action: CatActionExecutor): void {
+    this.actionInstancesMap.set(action.getName(), action);
   }
 
   /**
@@ -58,5 +83,21 @@ export class CatActionRepository {
       throw new Error(`Invalid bonding level: ${level}. Level must be between 0 and 10.`);
     }
     return actions;
+  }
+
+  /**
+   * デバッグ用: 全てのアクション名の一覧を取得
+   * @internal デバッグ専用
+   */
+  getAllActionNames(): string[] {
+    return Array.from(this.actionInstancesMap.keys());
+  }
+
+  /**
+   * デバッグ用: アクション名からアクションExecutorを取得
+   * @internal デバッグ専用
+   */
+  getActionByName(name: string): CatActionExecutor | undefined {
+    return this.actionInstancesMap.get(name);
   }
 }

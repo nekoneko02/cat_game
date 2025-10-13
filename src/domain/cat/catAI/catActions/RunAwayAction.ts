@@ -10,92 +10,105 @@ export class RunAwayAction extends CatActionExecutor {
   }
 
   execute(context: ActionContext): ActionMovement {
-    // ゲーム画面サイズ（CatGame.tsと合わせる）
     const gameWidth = 800;
     const gameHeight = 600;
-    const margin = 50; // 壁から少し離れた位置
-    
-    // 4つのコーナー座標を定義
-    const corners = [
-      { x: margin, y: margin },                    // 左上
-      { x: gameWidth - margin, y: margin },        // 右上
-      { x: margin, y: gameHeight - margin },       // 左下
-      { x: gameWidth - margin, y: gameHeight - margin } // 右下
-    ];
-    
-    let targetCorner;
-    
-    if (context.hasToy()) {
-      // おもちゃがある場合：おもちゃから最も遠いコーナーを選択
-      const toyX = context.toyX!;
-      const toyY = context.toyY!;
+    const margin = 50;
+    const escapeDistance = 150; // 離れたい距離
+    const arrivalThreshold = 30; // 到着判定の閾値
+    const userCloseDistance = 100; // ユーザーが近いと判定する距離
 
-      let maxDistance = -1;
-      targetCorner = corners[0]; // デフォルト
-
-      corners.forEach(corner => {
-        const distance = Math.sqrt(
-          Math.pow(corner.x - toyX, 2) + Math.pow(corner.y - toyY, 2)
-        );
-        if (distance > maxDistance) {
-          maxDistance = distance;
-          targetCorner = corner;
-        }
-      });
-    } else {
-      // おもちゃがない場合：現在位置から最も近いコーナーを選択
-      let minDistance = Infinity;
-      targetCorner = corners[0]; // デフォルト
-
-      corners.forEach(corner => {
-        const distance = Math.sqrt(
-          Math.pow(corner.x - context.currentX, 2) + Math.pow(corner.y - context.currentY, 2)
-        );
-        if (distance < minDistance) {
-          minDistance = distance;
-          targetCorner = corner;
-        }
-      });
-    }
-    
-    // コーナーまでの距離を計算
-    const dx = targetCorner.x - context.currentX;
-    const dy = targetCorner.y - context.currentY;
-    const distanceToCorner = Math.sqrt(dx * dx + dy * dy);
-    const arrivalDistance = 30; // コーナーに到着したと判定する距離
-    
-    if (distanceToCorner <= arrivalDistance) {
-      // コーナーに到着：scaredアニメーションで停止
+    if (!context.hasToy()) {
+      // おもちゃ(=ユーザー)がない場合は動作しない
       return {
         deltaX: 0,
         deltaY: 0,
         speed: 0,
-        flipX: this.shouldFlipX(0),
+        flipX: false,
         animationCommands: [{
-          animationKey: 'scared',
+          animationKey: 'idle',
           repeat: -1
         }]
       };
-    } else {
-      // まだコーナーに到着していない：escapeアニメーションで一定速度で移動
-      // 方向ベクトルを正規化
-      const directionX = dx / distanceToCorner;
-      const directionY = dy / distanceToCorner;
-      
-      // 1秒あたりの移動速度（ピクセル/秒）
-      const speedPerSecond = 150;
-      
+    }
+
+    const toyX = context.toyX!;
+    const toyY = context.toyY!;
+
+    // ユーザーとの距離
+    const distanceToUser = Math.sqrt(
+      Math.pow(context.currentX - toyX, 2) + Math.pow(context.currentY - toyY, 2)
+    );
+
+    // ユーザーから離れる方向ベクトルを計算
+    const dx = context.currentX - toyX;
+    const dy = context.currentY - toyY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance === 0) {
+      // ユーザーと同じ位置にいる場合はデフォルト方向（右）に逃げる
       return {
-        deltaX: directionX * speedPerSecond, // 1秒あたりの移動量
-        deltaY: directionY * speedPerSecond,
-        speed: speedPerSecond,
-        flipX: this.shouldFlipX(directionX),
+        deltaX: 150,
+        deltaY: 0,
+        speed: 150,
+        flipX: true,
         animationCommands: [{
           animationKey: 'escape',
-          repeat: -1  // 逃げている間は継続
+          repeat: -1
         }]
       };
     }
+
+    // 正規化した方向ベクトル
+    const directionX = dx / distance;
+    const directionY = dy / distance;
+
+    // 1. ユーザーから一定距離離れた理想的な目標地点を計算
+    const idealTargetX = context.currentX + directionX * escapeDistance;
+    const idealTargetY = context.currentY + directionY * escapeDistance;
+
+    // 2. 目標地点を画面内にクランプ
+    const targetX = Math.max(margin, Math.min(gameWidth - margin, idealTargetX));
+    const targetY = Math.max(margin, Math.min(gameHeight - margin, idealTargetY));
+
+    // 3. 目標地点までの距離とベクトルを計算
+    const toTargetX = targetX - context.currentX;
+    const toTargetY = targetY - context.currentY;
+    const distanceToTarget = Math.sqrt(toTargetX * toTargetX + toTargetY * toTargetY);
+
+    // 4. 目標地点に到着したか判定
+    if (distanceToTarget <= arrivalThreshold) {
+      // 目標地点に到着 AND ユーザーが遠い(>100px) → scared
+      if (distanceToUser > userCloseDistance) {
+        return {
+          deltaX: 0,
+          deltaY: 0,
+          speed: 0,
+          flipX: this.shouldFlipX(directionX),
+          animationCommands: [{
+            animationKey: 'scared',
+            repeat: -1
+          }]
+        };
+      }
+      // 到着したがユーザーが近い → 新しい目標を計算して逃げ続ける
+      // （次のフレームで再計算される）
+    }
+
+    // 5. 目標地点に向かって移動
+    const moveDirectionX = toTargetX / distanceToTarget;
+    const moveDirectionY = toTargetY / distanceToTarget;
+    const speedPerSecond = 150;
+
+    return {
+      deltaX: moveDirectionX * speedPerSecond,
+      deltaY: moveDirectionY * speedPerSecond,
+      speed: speedPerSecond,
+      flipX: this.shouldFlipX(moveDirectionX),
+      animationCommands: [{
+        animationKey: 'escape',
+        repeat: -1
+      }]
+    };
   }
 
   /**

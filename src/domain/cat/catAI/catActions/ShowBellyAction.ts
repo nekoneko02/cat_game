@@ -9,10 +9,11 @@ export class ShowBellyAction extends CatActionExecutor {
     super('showBelly');
   }
 
-  execute(_context: ActionContext): ActionMovement {
+  execute(context: ActionContext): ActionMovement {
     return {
       deltaX: 0,
       deltaY: 0,
+      flipX: context.flipX,
       animationCommands: [{
         animationKey: 'showBelly',
         repeat: -1  // 1回のみ実行

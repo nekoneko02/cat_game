@@ -1,14 +1,11 @@
 import { Bonding } from './bonding/Bonding';
 import { ExternalState } from '../../gameLogic/environment/ExternalState';
 import { IBondingView } from './bonding/IBondingView';
-import { ActionSelector } from './catActions/bondingLevel/Lv0/ActionSelectorLv0';
+import { IActionSelector } from './catActions/bondingLevel/IActionSelector';
 import { CurrentAction } from './catActions/CurrentAction';
 import { CatActionExecutor, ActionResult } from './catActions/CatActionExecutor';
 import { GameTimeManager } from '@/game/GameTimeManager';
-import { ShowBellyAction } from './catActions/ShowBellyAction';
-import { PlayWithToyAction } from './catActions/PlayWithToyAction';
-import { SitAction } from './catActions/SitAction';
-import { RunAwayAction } from './catActions/RunAwayAction';
+import { CatActionRepository } from './catActions/CatActionRepository';
 
 /**
  * ねこAI (クラス図の「ねこAI」に対応)
@@ -18,9 +15,11 @@ import { RunAwayAction } from './catActions/RunAwayAction';
  */
 export class CatAI {
   private bonding: Bonding;
-  private readonly actionSelector: ActionSelector;
+  private actionSelector: IActionSelector;
   private currentAction: CurrentAction | null = null;
   private readonly gameTimeManager: GameTimeManager;
+  private readonly actionRepository: CatActionRepository;
+  private currentBondingLevel: number;
 
   constructor(
     initialBonding: Bonding,
@@ -28,7 +27,10 @@ export class CatAI {
   ) {
     this.bonding = initialBonding;
     this.gameTimeManager = gameTimeManager;
-    this.actionSelector = new ActionSelector();
+    this.actionRepository = new CatActionRepository();
+    this.currentBondingLevel = this.bonding.getLevel();
+    const bondingLevelActions = this.actionRepository.getCatActionsByBondingLevel(this.currentBondingLevel);
+    this.actionSelector = bondingLevelActions.getActionSelector();
   }
 
   /**
@@ -40,21 +42,25 @@ export class CatAI {
     currentX: number,
     currentY: number,
     toyX?: number,
-    toyY?: number
+    toyY?: number,
+    flipX: boolean = false
   ): ActionResult | null {
     const currentTime = this.gameTimeManager.getTotalTime();
+
+    this.updateBondingByTime();
+    this.switchCatActionByBondingLevel();
 
     // 現在のアクションが実行中かチェック
     if (this.currentAction && this.currentAction.isInProgress()) {
       // アクション継続中: 移動方向のみ再計算し、なつき度変化を適用
-      return this.updateCurrentAction(currentX, currentY, toyX, toyY);
+      return this.updateCurrentAction(currentX, currentY, toyX, toyY, flipX);
     }
 
     // アクション完了または初回実行: 新しいアクションを選択
     this.currentAction = null;
-    const selectedActionName = this.actionSelector.select(this.bonding, externalState);
+    const selectedActionExecutor = this.actionSelector.select(this.bonding, externalState);
 
-    return this.executeAction(selectedActionName, currentX, currentY, toyX, toyY, currentTime);
+    return this.executeAction(selectedActionExecutor, currentX, currentY, toyX, toyY, currentTime, flipX);
   }
 
   /**
@@ -76,12 +82,50 @@ export class CatAI {
   }
 
   /**
-   * なつき度に応じた行動切り替え (未実装)
+   * 時間経過によるなつき度自動上昇
+   * なつきやすいシナリオ:
+   * - 0～1分: Lv.1 → Lv.2 (ゲージ 0 → 1)
+   * - 1～3分: Lv.2 → Lv.3 (ゲージ 0 → 1)
+   * - 3分以降: Lv.3で固定 (ゲージ 0)
+   */
+  private updateBondingByTime(): void {
+    const totalTimeMs = this.gameTimeManager.getTotalTime();
+    const totalTimeSec = totalTimeMs / 1000;
+
+    let targetLevel: number;
+    let targetGauge: number;
+
+    if (totalTimeSec < 60) {
+      // 0~1分: Lv1 → Lv2への進捗
+      targetLevel = 1;
+      targetGauge = totalTimeSec / 60;
+    } else if (totalTimeSec < 180) {
+      // 1~3分: Lv2 → Lv3への進捗
+      targetLevel = 2;
+      targetGauge = (totalTimeSec - 60) / 120;
+    } else {
+      // 3分以降: Lv3で固定
+      targetLevel = 3;
+      targetGauge = 0;
+    }
+
+    this.bonding = new Bonding(targetLevel, targetGauge);
+  }
+
+  /**
+   * なつき度に応じた行動切り替え
    * クラス図の switchCatActionByBondingLevel() に対応
    */
   private switchCatActionByBondingLevel(): void {
-    // TODO: なつき度に応じた行動パターンの切り替えロジック
-    // ステップ2以降で実装予定
+    const newLevel = this.bonding.getLevel();
+
+    if (newLevel !== this.currentBondingLevel) {
+      this.currentBondingLevel = newLevel;
+      const bondingLevelActions = this.actionRepository.getCatActionsByBondingLevel(newLevel);
+      this.actionSelector = bondingLevelActions.getActionSelector();
+
+      this.currentAction = null;
+    }
   }
 
   /**
@@ -91,11 +135,12 @@ export class CatAI {
     currentX: number,
     currentY: number,
     toyX?: number,
-    toyY?: number
+    toyY?: number,
+    flipX: boolean = false
   ): ActionResult | null {
     if (!this.currentAction) return null;
 
-    const result = this.currentAction.action(currentX, currentY, toyX, toyY);
+    const result = this.currentAction.action(currentX, currentY, toyX, toyY, flipX);
 
     // 毎フレームのなつき度変化を適用
     if (result.internalStateChange?.bonding !== undefined) {
@@ -112,17 +157,18 @@ export class CatAI {
    * 新しいアクションを実行
    */
   private executeAction(
-    actionName: string,
+    actionExecutor: CatActionExecutor,
     currentX: number,
     currentY: number,
     toyX: number | undefined,
     toyY: number | undefined,
-    currentTime: number
+    currentTime: number,
+    flipX: boolean = false
   ): ActionResult | null {
-    const actionExecutor = this.createActionExecutor(actionName);
+    const actionName = actionExecutor.getName();
     const actionConfig = this.actionSelector.getActionConfig(actionName);
 
-    if (!actionExecutor || !actionConfig) {
+    if (!actionConfig) {
       return null;
     }
 
@@ -135,24 +181,35 @@ export class CatAI {
     );
 
     // ActionResultを生成
-    return this.currentAction.action(currentX, currentY, toyX, toyY);
+    return this.currentAction.action(currentX, currentY, toyX, toyY, flipX);
   }
 
   /**
-   * アクション名からCatActionExecutorインスタンスを作成
+   * デバッグ用: 利用可能なアクション名の一覧を取得
+   * @internal デバッグ専用
    */
-  private createActionExecutor(actionName: string): CatActionExecutor | null {
-    switch (actionName) {
-      case 'showBelly':
-        return new ShowBellyAction();
-      case 'playWithToy':
-        return new PlayWithToyAction();
-      case 'sit':
-        return new SitAction();
-      case 'runAway':
-        return new RunAwayAction();
-      default:
-        return null;
+  debugGetAvailableActions(): string[] {
+    return this.actionRepository.getAllActionNames();
+  }
+
+  /**
+   * デバッグ用: アクションを強制実行
+   * @internal デバッグ専用
+   * @param actionName - アクション名 (例: "watchCautiously", "sit")
+   * @param duration - 実行時間（ミリ秒）
+   */
+  debugForceAction(actionName: string, duration: number): void {
+    const actionExecutor = this.actionRepository.getActionByName(actionName);
+    if (!actionExecutor) {
+      throw new Error(`Action not found: ${actionName}`);
     }
+
+    const currentTime = this.gameTimeManager.getTotalTime();
+    this.currentAction = new CurrentAction(
+      actionExecutor,
+      currentTime,
+      duration,
+      this.gameTimeManager
+    );
   }
 }

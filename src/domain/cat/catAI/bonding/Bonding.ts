@@ -10,43 +10,44 @@ import type { IBondingView } from './IBondingView';
  */
 export class Bonding implements IBondingView {
   /**
-   * なつきゲージ値 (-1~1)
-   * - -1: 完全に警戒している状態
-   * -  0: 中立
-   * -  1: 完全になついている状態
+   * なつき度レベル (0~10の整数)
+   */
+  private readonly level: number;
+
+  /**
+   * なつきゲージ値 (0~1の実数)
+   * 次のレベルまでの進捗を表す
    */
   private readonly gauge: number;
 
   /**
    * コンストラクタ
-   * @param gauge なつきゲージ値 (-1~1)
-   * @throws {Error} ゲージ値が範囲外の場合
+   * @param level なつき度レベル (0~10)
+   * @param gauge なつきゲージ値 (0~1)
+   * @throws {Error} レベルまたはゲージ値が範囲外の場合
    */
-  constructor(gauge: number) {
-    if (gauge < -1 || gauge > 1) {
-      throw new Error(`Bonding gauge must be between -1 and 1, got ${gauge}`);
+  constructor(level: number, gauge: number) {
+    if (level < 0 || level > 10) {
+      throw new Error(`Bonding level must be between 0 and 10, got ${level}`);
     }
+    if (gauge < 0 || gauge > 1) {
+      throw new Error(`Bonding gauge must be between 0 and 1, got ${gauge}`);
+    }
+    this.level = Math.floor(level);
     this.gauge = gauge;
   }
 
   /**
    * なつきレベルを取得
-   *
-   * ゲージ値 (-1~1) を 0~10 のレベルに変換する。
-   * - ゲージ -1.0 → レベル 0
-   * - ゲージ  0.0 → レベル 5
-   * - ゲージ  1.0 → レベル 10
-   *
    * @returns なつきレベル (0~10)
    */
   getLevel(): number {
-    const scaledValue = (this.gauge + 1) * 5;
-    return Math.floor(Math.max(0, Math.min(10, scaledValue)));
+    return this.level;
   }
 
   /**
    * なつきゲージ値を取得
-   * @returns なつきゲージ値 (-1~1)
+   * @returns なつきゲージ値 (0~1)
    */
   getGauge(): number {
     return this.gauge;
@@ -56,24 +57,43 @@ export class Bonding implements IBondingView {
    * なつき度を更新
    *
    * 現在のなつき度に変化量を適用した新しいインスタンスを返す。
-   * 値は -1~1 の範囲にクランプされる。
+   * ゲージが1以上になるとレベルアップし、ゲージは0にリセットされる。
+   * ゲージが0未満になるとレベルダウンし、ゲージは1からの相対値になる。
    *
-   * @param change 変化量（1秒あたりの変化量として設計）
+   * @param change ゲージの変化量（1秒あたりの変化量として設計）
    * @returns 更新後の新しいなつき度インスタンス
    */
   updateBonding(change: number): Bonding {
-    const newGauge = Math.max(-1, Math.min(1, this.gauge + change));
-    return new Bonding(newGauge);
+    let newGauge = this.gauge + change;
+    let newLevel = this.level;
+
+    // レベルアップ処理
+    while (newGauge >= 1.0 && newLevel < 10) {
+      newGauge -= 1.0;
+      newLevel += 1;
+    }
+
+    // レベルダウン処理
+    while (newGauge < 0 && newLevel > 0) {
+      newGauge += 1.0;
+      newLevel -= 1;
+    }
+
+    // 範囲クランプ
+    newGauge = Math.max(0, Math.min(1, newGauge));
+    newLevel = Math.max(0, Math.min(10, newLevel));
+
+    return new Bonding(newLevel, newGauge);
   }
 
   /**
    * デフォルトのなつき度を作成
    *
-   * 初期状態（完全に警戒している）のなつき度を生成する。
+   * 初期状態（レベル0、ゲージ0）のなつき度を生成する。
    *
-   * @returns ゲージ値 -1 のなつき度インスタンス
+   * @returns レベル0、ゲージ0のなつき度インスタンス
    */
   static createDefault(): Bonding {
-    return new Bonding(-1);
+    return new Bonding(0, 0);
   }
 }

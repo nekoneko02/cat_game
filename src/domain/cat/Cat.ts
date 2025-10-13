@@ -35,6 +35,7 @@ export class Cat {
   private readonly catAI: CatAI;
   private _gameTimeManager: GameTimeManager | null = null;
   private position: CatPosition;
+  private flipX: boolean = false;
 
   constructor(
     public readonly id: string,
@@ -108,8 +109,8 @@ export class Cat {
     // 外部状態を更新
     this.externalState = newExternalState;
 
-    // CatAIに処理を委譲（現在位置を渡す）
-    const actionResult = this.catAI.action(this.externalState, this.position.x, this.position.y, toyX, toyY);
+    // CatAIに処理を委譲（現在位置とflipXを渡す）
+    const actionResult = this.catAI.action(this.externalState, this.position.x, this.position.y, toyX, toyY, this.flipX);
 
     // ActionMovementに基づいて位置を更新
     // deltaX/deltaYは1秒あたりの移動量なので、deltaTime（1フレームの時間）を掛けて1フレーム分に変換
@@ -117,7 +118,17 @@ export class Cat {
       const deltaX = actionResult.movement.deltaX || 0;
       const deltaY = actionResult.movement.deltaY || 0;
       const deltaTime = this.getGameTimeManager().getDeltaTime() / 1000; // ミリ秒→秒
-      this.position = this.position.move(deltaX * deltaTime, deltaY * deltaTime);
+
+      // 境界制御を有効にして位置を更新
+      const gameWidth = 800;
+      const gameHeight = 600;
+      const margin = 50;
+      this.position = this.position.move(deltaX * deltaTime, deltaY * deltaTime, gameWidth, gameHeight, margin);
+
+      // flipXの状態を更新
+      if (actionResult.movement.flipX !== undefined) {
+        this.flipX = actionResult.movement.flipX;
+      }
     }
 
     return actionResult;
@@ -157,5 +168,23 @@ export class Cat {
       gameTimeManager,
       Bonding.createDefault()
     );
+  }
+
+  /**
+   * デバッグ用: 利用可能なアクション名の一覧を取得
+   * @internal デバッグ専用
+   */
+  debugGetAvailableActions(): string[] {
+    return this.catAI.debugGetAvailableActions();
+  }
+
+  /**
+   * デバッグ用: アクションを強制実行
+   * @internal デバッグ専用
+   * @param actionName - アクション名 (例: "watchCautiously", "sit")
+   * @param duration - 実行時間（ミリ秒）
+   */
+  debugForceAction(actionName: string, duration: number): void {
+    this.catAI.debugForceAction(actionName, duration);
   }
 }

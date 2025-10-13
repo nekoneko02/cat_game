@@ -184,25 +184,33 @@ package "ねこ" {
       /'class 成功体験toねこアクション {
       }'/
 
-      abstract class ねこアクション実行 <<CatActionExecutor>> {
-        + execute(context): ActionMovement
-        + createActionResult(context): ActionResult
+      package ねこアクション実行package{
+        abstract class ねこアクション実行 <<CatActionExecutor>> {
+          + execute(context): ActionMovement
+          + createActionResult(context): ActionResult
+        }
+        class ねこアクション毎の具象クラス <<ShowBellyAction, PlayWithToyAction, SitAction, RunAwayAction>> {
+          名前: name
+        }
+        interface ねこアクション内容 <<ActionResult>> {
+          イラストId: animationKey
+        }
+        class ねこ位置変化 <<ActionMovement>> {
+          x
+          y
+        }
+        class ねこ感情変化 <<InternalStateChange>> {
+        }
+        class ねこなつき度変化 {
+        }
+        
+        ねこアクション毎の具象クラス ..|> ねこアクション実行
+        ねこアクション毎の具象クラス --> ねこアクション内容
+        ねこアクション内容 --> ねこ位置変化
+        ねこアクション内容 --> ねこ感情変化
+        ねこアクション内容 --> ねこなつき度変化
+        ねこ位置変化 --|> ねこ.ねこ外部状態.ねこ位置変化
       }
-      class ねこアクション毎の具象クラス <<ShowBellyAction, PlayWithToyAction, SitAction, RunAwayAction>> {
-        名前: name
-      }
-      interface ねこアクション内容 <<ActionResult>> {
-        イラストId: animationKey
-      }
-      interface ねこ位置変化 <<ActionMovement>> {
-        x
-        y
-      }
-      class ねこ感情変化 <<InternalStateChange>> {
-      }
-      class ねこなつき度変化 {
-      }
-
 
       class 実行中ねこアクション <<CurrentAction>> {
         開始時間gt
@@ -214,14 +222,9 @@ package "ねこ" {
       ねこ.ねこAI.ねこAI --> ねこアクションRepository
       ねこアクションRepository --> ねこアクションなつき度LvN
       ねこアクション ..> ねこアクション実行
-      ねこアクション選択LvN --* ねこアクション実行
+      ねこアクション選択LvN --* ねこアクション実行毎の具象クラス
       ねこアクション選択LvN --> 実行中ねこアクション
       ねこアクション選択LvN --> なつきLv
-      ねこアクション毎の具象クラス ..|> ねこアクション実行
-      ねこアクション毎の具象クラス --> ねこアクション内容
-      ねこアクション内容 --> ねこ位置変化
-      ねこアクション内容 --> ねこ感情変化
-      ねこアクション内容 --> ねこなつき度変化
       ねこ感情変化 --|> ねこ.ねこAI.感情システム.感情変化
       ねこなつき度変化 --|> ねこ.ねこAI.なつき.なつき度変化
       /'ねこアクション選択LvN --> 成功体験toねこアクション'/
@@ -229,7 +232,6 @@ package "ねこ" {
       ねこアクションなつき度LvN --> ねこアクション選択LvN
       ねこアクションなつき度LvN ..|> ねこアクション
       実行中ねこアクション --> ねこアクション実行
-      ねこ.ねこAI.ねこアクション.ねこ位置変化 --|> ねこ.ねこ外部状態.ねこ位置変化
     }
 
 

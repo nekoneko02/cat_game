@@ -26,6 +26,34 @@
       "description": "ユーザーから離れて隠れる",
       "inputs": ["valence", "safety"],
       "weights": [-0.5, -0.5, 0],
+      "duration": 5000
+    },
+    "runAwayShort": {
+      "name": "少し離れたところに逃げる",
+      "description": "少し距離を取って逃げる",
+      "inputs": ["valence", "safety"],
+      "weights": [-0.3, -0.3, 0],
+      "duration": 5000
+    },
+    "watchCautiously": {
+      "name": "警戒しながら様子を見る",
+      "description": "警戒しつつ観察する",
+      "inputs": [],
+      "weights": [0],
+      "duration": 2000
+    },
+    "watchWithTailWag": {
+      "name": "しっぽを揺らしながら、様子を見る",
+      "description": "興味を示しながら観察する",
+      "inputs": [],
+      "weights": [0],
+      "duration": 2000
+    },
+    "watchToy": {
+      "name": "おもちゃに興味を持つ（見るだけ）",
+      "description": "おもちゃを見て興味を示す",
+      "inputs": [],
+      "weights": [0],
       "duration": 3000
     }
   },

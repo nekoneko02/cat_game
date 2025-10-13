@@ -616,12 +616,12 @@ Phaser (ゲーム実行層)
 
 #### 1. 基本ビルドチェック
 ```bash
-npm run build --no-lint
+NEXT_BUILD_DIR=.next_tmp npm run build --no-lint
 ```
 
 #### 2. 型チェック付きビルド
 ```bash
-npm run build
+NEXT_BUILD_DIR=.next_tmp npm run build
 ```
 
 #### 3. テスト実行

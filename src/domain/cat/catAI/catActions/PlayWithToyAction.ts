@@ -45,6 +45,7 @@ export class PlayWithToyAction extends CatActionExecutor {
     return {
       deltaX: 0,
       deltaY: 0,
+      flipX: context.flipX,
       animationCommands: [{
         animationKey: 'idle',
         repeat: -1

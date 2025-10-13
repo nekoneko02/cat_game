@@ -1,39 +1,53 @@
 import { Bonding } from '../../../bonding/Bonding';
 import { ExternalState } from '../../../../../gameLogic/environment/ExternalState';
-import { ActionProbabilityCalculator } from '../../../../../global/config/ActionProbabilityCalculator';
 import { IActionSelector } from '../IActionSelector';
+import { CatActionExecutor } from '../../CatActionExecutor';
+import { RunAwayAction } from '../../RunAwayAction';
+import { RunAwayShortAction } from '../../RunAwayShortAction';
+import { WatchCautiouslyAction } from '../../WatchCautiouslyAction';
+import actionConfig from '../../../../../global/config/actionConfig.json';
 
 /**
- * ねこアクション選択 (クラス図の「ねこアクション選択」に対応)
- * なつき度に基づいて適切なアクションを選択する
+ * なつき度Lv.2用のアクション選択クラス
+ * Lv.2: 少し近づく素振りを見せる。こちらの動きに敏感で、すぐ逃げる
+ * - 隅っこに逃げる: 50% × 5秒
+ * - 少し離れたところに逃げる: 40% × 5秒
+ * - 警戒しながら様子を見る: 10% × 2秒
  *
  * @package ねこ.ねこAI.ねこアクション
  */
 export class ActionSelector implements IActionSelector {
-  private readonly calculator: ActionProbabilityCalculator;
+  private readonly runAwayAction: CatActionExecutor;
+  private readonly runAwayShortAction: CatActionExecutor;
+  private readonly watchCautiouslyAction: CatActionExecutor;
+  private actionConfigs: Record<string, { duration: number }>;
 
   constructor() {
-    this.calculator = new ActionProbabilityCalculator();
+    this.runAwayAction = new RunAwayAction();
+    this.runAwayShortAction = new RunAwayShortAction();
+    this.watchCautiouslyAction = new WatchCautiouslyAction();
+    this.actionConfigs = actionConfig.stepOneActions as Record<string, { duration: number }>;
   }
 
   /**
    * なつき度と外部状態に基づいてアクションを選択
-   * @param bonding なつき度
-   * @param externalState 外部状態
-   * @returns 選択されたアクション名
    */
-  select(bonding: Bonding, externalState: ExternalState): string {
-    const probabilities = this.calculator.calculateActionProbabilities(
-      bonding,
-      externalState
-    );
-    return this.calculator.selectAction(probabilities);
+  select(_bonding: Bonding, _externalState: ExternalState): CatActionExecutor {
+    const random = Math.random();
+
+    if (random < 0.5) {
+      return this.runAwayAction;
+    } else if (random < 0.9) {
+      return this.runAwayShortAction;
+    } else {
+      return this.watchCautiouslyAction;
+    }
   }
 
   /**
    * アクション設定を取得（実行時間など）
    */
   getActionConfig(actionName: string) {
-    return this.calculator.getActionConfig(actionName);
+    return this.actionConfigs[actionName];
   }
 }

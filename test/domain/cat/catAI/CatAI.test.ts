@@ -84,18 +84,18 @@ describe('CatAI', () => {
       expect(level).toBeLessThanOrEqual(10);
     });
 
-    it('should return 0 when internal bonding is -1', () => {
+    it('should return 0 when bonding level is 0', () => {
       const aiWithMinBonding = new CatAI(
-        new Bonding(-1),
+        new Bonding(0, 0),
         mockGameTimeManager
       );
 
       expect(aiWithMinBonding.getBonding().getLevel()).toBe(0);
     });
 
-    it('should return 10 when internal bonding is 1', () => {
+    it('should return 10 when bonding level is 10', () => {
       const aiWithMaxBonding = new CatAI(
-        new Bonding(1),
+        new Bonding(10, 0),
         mockGameTimeManager
       );
 
@@ -109,6 +109,41 @@ describe('CatAI', () => {
       const currentAction = catAI.getCurrentAction();
 
       expect(currentAction).toBeDefined();
+    });
+  });
+
+  describe('Debug methods', () => {
+    describe('debugGetAvailableActions', () => {
+      it('should return list of available action names', () => {
+        const actions = catAI.debugGetAvailableActions();
+
+        expect(Array.isArray(actions)).toBe(true);
+        expect(actions.length).toBeGreaterThan(0);
+        expect(typeof actions[0]).toBe('string');
+      });
+    });
+
+    describe('debugForceAction', () => {
+      it('should force execute specified action', () => {
+        const actions = catAI.debugGetAvailableActions();
+        const actionName = actions[0];
+
+        catAI.debugForceAction(actionName, 3000);
+
+        const currentAction = catAI.getCurrentAction();
+        expect(currentAction).toBeDefined();
+        expect(currentAction?.getActionName()).toBe(actionName);
+      });
+
+      it('should set action duration', () => {
+        const actions = catAI.debugGetAvailableActions();
+        const actionName = actions[0];
+
+        catAI.debugForceAction(actionName, 5000);
+
+        const currentAction = catAI.getCurrentAction();
+        expect(currentAction?.getDuration()).toBe(5000);
+      });
     });
   });
 });

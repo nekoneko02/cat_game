@@ -89,7 +89,7 @@ describe('Cat', () => {
       expect(level).toBeLessThanOrEqual(10);
     });
 
-    it('内部状態が-1の場合、レベル0を返す', () => {
+    it('レベル0の場合、レベル0を返す', () => {
       const lowBondingCat = new Cat(
         'test-id',
         'テスト猫',
@@ -98,13 +98,13 @@ describe('Cat', () => {
         cat.preferences,
         0,
         mockGameTimeManager,
-        new Bonding(-1)
+        new Bonding(0, 0)
       );
 
       expect(lowBondingCat.getBonding().getLevel()).toBe(0);
     });
 
-    it('内部状態が1の場合、レベル10を返す', () => {
+    it('レベル10の場合、レベル10を返す', () => {
       const highBondingCat = new Cat(
         'test-id',
         'テスト猫',
@@ -113,13 +113,13 @@ describe('Cat', () => {
         cat.preferences,
         0,
         mockGameTimeManager,
-        new Bonding(1)
+        new Bonding(10, 0)
       );
 
       expect(highBondingCat.getBonding().getLevel()).toBe(10);
     });
 
-    it('内部状態が0の場合、レベル5を返す', () => {
+    it('レベル5の場合、レベル5を返す', () => {
       const midBondingCat = new Cat(
         'test-id',
         'テスト猫',
@@ -128,7 +128,7 @@ describe('Cat', () => {
         cat.preferences,
         0,
         mockGameTimeManager,
-        new Bonding(0)
+        new Bonding(5, 0)
       );
 
       expect(midBondingCat.getBonding().getLevel()).toBe(5);
@@ -193,7 +193,7 @@ describe('Cat Integration Tests', () => {
       },
       0,
       mockGameTimeManager,
-      new Bonding(0)
+      new Bonding(5, 0)
     );
 
     const initialBonding = cat.getBonding();
@@ -205,5 +205,64 @@ describe('Cat Integration Tests', () => {
 
     const finalBonding = cat.getBonding();
     expect(finalBonding).toBeDefined();
+  });
+});
+
+describe('Cat Debug methods', () => {
+  let cat: Cat;
+  let mockGameTimeManager: MockGameTimeManager;
+
+  beforeEach(() => {
+    mockGameTimeManager = new MockGameTimeManager();
+    mockGameTimeManager.setDeltaTime(16.67);
+    mockGameTimeManager.setTotalTime(0);
+    cat = Cat.createDefault('テスト猫', mockGameTimeManager);
+  });
+
+  describe('debugGetAvailableActions', () => {
+    it('should return list of available action names', () => {
+      const actions = cat.debugGetAvailableActions();
+
+      expect(Array.isArray(actions)).toBe(true);
+      expect(actions.length).toBeGreaterThan(0);
+      expect(typeof actions[0]).toBe('string');
+    });
+
+    it('should include common action names', () => {
+      const actions = cat.debugGetAvailableActions();
+
+      expect(actions).toContain('sit');
+      expect(actions).toContain('showBelly');
+      expect(actions).toContain('watchCautiously');
+    });
+  });
+
+  describe('debugForceAction', () => {
+    it('should force execute specified action', () => {
+      const actions = cat.debugGetAvailableActions();
+      const actionName = actions[0];
+
+      cat.debugForceAction(actionName, 4000);
+
+      const currentAction = cat.getCurrentAction();
+      expect(currentAction).toBeDefined();
+      expect(currentAction?.getActionName()).toBe(actionName);
+    });
+
+    it('should set action duration', () => {
+      const actions = cat.debugGetAvailableActions();
+      const actionName = actions[0];
+
+      cat.debugForceAction(actionName, 6000);
+
+      const currentAction = cat.getCurrentAction();
+      expect(currentAction?.getDuration()).toBe(6000);
+    });
+
+    it('should throw error for invalid action name', () => {
+      expect(() => {
+        cat.debugForceAction('invalidActionName', 3000);
+      }).toThrow();
+    });
   });
 });

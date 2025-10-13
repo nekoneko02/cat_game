@@ -55,12 +55,15 @@ describe('SitAction', () => {
       expect(result.speed).toBeUndefined();
     });
 
-    it('flipXプロパティを持たない', () => {
-      const context = new ActionContext(100, 100);
+    it('flipXプロパティはcontext.flipXを継承する', () => {
+      const contextWithoutFlip = new ActionContext(100, 100, undefined, undefined, false);
+      const contextWithFlip = new ActionContext(100, 100, undefined, undefined, true);
 
-      const result = action.execute(context);
+      const resultWithoutFlip = action.execute(contextWithoutFlip);
+      const resultWithFlip = action.execute(contextWithFlip);
 
-      expect(result.flipX).toBeUndefined();
+      expect(resultWithoutFlip.flipX).toBe(false);
+      expect(resultWithFlip.flipX).toBe(true);
     });
   });
 

@@ -19,7 +19,10 @@ import assetsConfig from '../../public/config/assets.json';
 import { logDebug, logError, logWarn, logInfo } from '@/lib/log';
 
 export interface CatGameConfig {
-  bonding: number;
+  bonding: {
+    level: number;
+    gauge: number;
+  };
   personality: Personality;
   preferences: Preferences;
   catName?: string;
@@ -74,7 +77,7 @@ export default class CatGame extends Phaser.Scene {
   }
 
   private createCatFromConfig(config: CatGameConfig, catName?: string): Cat {
-    const bonding = new Bonding(config.bonding);
+    const bonding = new Bonding(config.bonding.level, config.bonding.gauge);
     const externalState = ExternalState.createDefault();
     const initialPosition = CatPosition.create(400, 300);
 
@@ -159,8 +162,6 @@ export default class CatGame extends Phaser.Scene {
   }
 
   update() {
-    const currentTime = Date.now();
-
     // Catの現在位置を取得
     const catPosition = this.cat.getPosition();
 
@@ -189,9 +190,11 @@ export default class CatGame extends Phaser.Scene {
     const newPosition = this.cat.getPosition();
     this.catSprite.setPosition(newPosition.x, newPosition.y);
 
+    // なつき度UIを毎フレーム更新（ゲージは常に変化する可能性があるため）
+    this.updateBondingDisplay();
+
     const bondingLevel = this.cat.getBonding().getLevel();
     if (bondingLevel !== this.lastBondingLevel) {
-      this.updateBondingDisplay();
       this.lastBondingLevel = bondingLevel;
     }
 
@@ -321,7 +324,10 @@ export default class CatGame extends Phaser.Scene {
   public getCurrentCatState(): CatGameConfig {
     const bonding = this.cat.getBonding();
     const currentState = {
-      bonding: bonding.getGauge(),
+      bonding: {
+        level: bonding.getLevel(),
+        gauge: bonding.getGauge()
+      },
       personality: this.cat.personality,
       preferences: this.cat.preferences
     };
@@ -344,20 +350,16 @@ export default class CatGame extends Phaser.Scene {
   private updateBondingDisplay(): void {
     if (!this.bondingDisplay) return;
 
-    const bondingLevel = this.cat.getBonding().getLevel();
-    this.gameRenderer.updateBondingDisplay(this.bondingDisplay, bondingLevel);
+    const bonding = this.cat.getBonding();
+    const bondingLevel = bonding.getLevel();
+    const bondingGauge = bonding.getGauge();
+    this.gameRenderer.updateBondingDisplay(this.bondingDisplay, bondingLevel, bondingGauge);
   }
 
   private enableDebugOverlay(): void {
     if (!this.debugOverlay) {
-      this.debugOverlay = new DebugOverlay(this);
-
-      this.input.keyboard?.on('keydown-D', () => {
-        if (this.debugOverlay) {
-          this.debugOverlay.toggle();
-        }
-      });
-
+      this.debugOverlay = new DebugOverlay(this, this.cat);
+      // キーボード制御は全てDebugOverlay内で完結
       this.debugOverlay.setVisible(true);
     }
   }

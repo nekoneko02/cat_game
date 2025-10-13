@@ -1,39 +1,38 @@
 import { Bonding } from '../../../bonding/Bonding';
 import { ExternalState } from '../../../../../gameLogic/environment/ExternalState';
-import { ActionProbabilityCalculator } from '../../../../../global/config/ActionProbabilityCalculator';
 import { IActionSelector } from '../IActionSelector';
+import { CatActionExecutor } from '../../CatActionExecutor';
+import { RunAwayAction } from '../../RunAwayAction';
+import actionConfig from '../../../../../global/config/actionConfig.json';
 
 /**
- * ねこアクション選択 (クラス図の「ねこアクション選択」に対応)
- * なつき度に基づいて適切なアクションを選択する
+ * なつき度Lv.1用のアクション選択クラス
+ * Lv.1: 完全に警戒、近づかない、隅で耳を動かす
+ * - 隅っこに逃げる: 100% × 5秒
  *
  * @package ねこ.ねこAI.ねこアクション
  */
 export class ActionSelector implements IActionSelector {
-  private readonly calculator: ActionProbabilityCalculator;
+  private readonly runAwayAction: CatActionExecutor;
+  private actionConfigs: Record<string, { duration: number }>;
 
   constructor() {
-    this.calculator = new ActionProbabilityCalculator();
+    this.runAwayAction = new RunAwayAction();
+    this.actionConfigs = actionConfig.stepOneActions as Record<string, { duration: number }>;
   }
 
   /**
    * なつき度と外部状態に基づいてアクションを選択
-   * @param bonding なつき度
-   * @param externalState 外部状態
-   * @returns 選択されたアクション名
+   * Lv.1では常にrunAwayActionを返す
    */
-  select(bonding: Bonding, externalState: ExternalState): string {
-    const probabilities = this.calculator.calculateActionProbabilities(
-      bonding,
-      externalState
-    );
-    return this.calculator.selectAction(probabilities);
+  select(_bonding: Bonding, _externalState: ExternalState): CatActionExecutor {
+    return this.runAwayAction;
   }
 
   /**
    * アクション設定を取得（実行時間など）
    */
   getActionConfig(actionName: string) {
-    return this.calculator.getActionConfig(actionName);
+    return this.actionConfigs[actionName];
   }
 }
