@@ -185,6 +185,16 @@
       "frameWidth": 528,
       "frameHeight": 396,
       "frameRate": 4
+    },
+    {
+      "key": "walk",
+      "frames": [
+        "/assets/cats/running_1.png",
+        "/assets/cats/running_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 4
     }
   ],
   "ui": [

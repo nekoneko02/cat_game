@@ -25,6 +25,8 @@ export { ShowBellyAction } from './ShowBellyAction';
 export { PlayWithToyAction } from './PlayWithToyAction';
 export { SitAction } from './SitAction';
 export { RunAwayAction } from './RunAwayAction';
+export { ApproachAction } from './ApproachAction';
+export { MoveAwayAction } from './MoveAwayAction';
 
 // アクション選択・実行中アクション・コンテキスト
 export { ActionSelector } from './bondingLevel/Lv0/ActionSelectorLv0';

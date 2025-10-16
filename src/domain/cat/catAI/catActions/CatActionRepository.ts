@@ -30,6 +30,8 @@ import { RunAwayShortAction } from './RunAwayShortAction';
 import { WatchCautiouslyAction } from './WatchCautiouslyAction';
 import { WatchToyAction } from './WatchToyAction';
 import { WatchWithTailWagAction } from './WatchWithTailWagAction';
+import { ApproachAction } from './ApproachAction';
+import { MoveAwayAction } from './MoveAwayAction';
 
 /**
  * ねこアクションRepository
@@ -66,6 +68,8 @@ export class CatActionRepository {
     this.registerAction(new WatchCautiouslyAction());
     this.registerAction(new WatchToyAction());
     this.registerAction(new WatchWithTailWagAction());
+    this.registerAction(new ApproachAction());
+    this.registerAction(new MoveAwayAction());
   }
 
   private registerAction(action: CatActionExecutor): void {

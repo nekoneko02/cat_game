@@ -20,6 +20,7 @@ export class CatAI {
   private readonly gameTimeManager: GameTimeManager;
   private readonly actionRepository: CatActionRepository;
   private currentBondingLevel: number;
+  private watchToyActionCount: number = 0;
 
   constructor(
     initialBonding: Bonding,
@@ -86,7 +87,10 @@ export class CatAI {
    * なつきやすいシナリオ:
    * - 0～1分: Lv.1 → Lv.2 (ゲージ 0 → 1)
    * - 1～3分: Lv.2 → Lv.3 (ゲージ 0 → 1)
-   * - 3分以降: Lv.3で固定 (ゲージ 0)
+   * - 3分以降: Lv.3 → Lv.4への進捗
+   *   - ゲージ上限 = (watchToyActionCount + 1) / 4
+   *   - 45秒で0.25増加（3分で1.0）
+   *   - ゲージは時間経過で自動上昇、watchToyは上限値のみ変更
    */
   private updateBondingByTime(): void {
     const totalTimeMs = this.gameTimeManager.getTotalTime();
@@ -104,9 +108,25 @@ export class CatAI {
       targetLevel = 2;
       targetGauge = (totalTimeSec - 60) / 120;
     } else {
-      // 3分以降: Lv3で固定
-      targetLevel = 3;
-      targetGauge = 0;
+      // 3分以降: Lv.3 → Lv.4への進捗
+      const currentGaugeCap = Math.min((this.watchToyActionCount + 1) / 4, 1.0);
+
+      // 3分経過後の経過時間を計算
+      const timeAfter3Min = totalTimeSec - 180;
+
+      // 45秒で0.25増加するレート（3分で1.0）
+      const gaugeFromTime = (timeAfter3Min / 45) * 0.25;
+
+      // 現在のゲージ = 時間経過分（ただし上限を超えない）
+      targetGauge = Math.min(gaugeFromTime, currentGaugeCap);
+
+      // ゲージが1.0に達したらLv.4へ（浮動小数点誤差を考慮して0.999以上で判定）
+      if (targetGauge >= 0.999) {
+        targetLevel = 4;
+        targetGauge = 0;
+      } else {
+        targetLevel = 3;
+      }
     }
 
     this.bonding = new Bonding(targetLevel, targetGauge);
@@ -172,6 +192,12 @@ export class CatAI {
       return null;
     }
 
+    // おもちゃに興味を持つアクションのカウント（Lv3→Lv4移行条件）
+    // watchToyアクションは上限値を上げるだけで、ゲージは時間経過で上昇
+    if (actionName === 'watchToy' && this.currentBondingLevel === 3) {
+      this.watchToyActionCount++;
+    }
+
     // 現在のアクション状態を設定
     this.currentAction = new CurrentAction(
       actionExecutor,
@@ -202,6 +228,15 @@ export class CatAI {
     const actionExecutor = this.actionRepository.getActionByName(actionName);
     if (!actionExecutor) {
       throw new Error(`Action not found: ${actionName}`);
+    }
+
+    // レベル更新を先に実行してからカウント判定
+    this.updateBondingByTime();
+    this.switchCatActionByBondingLevel();
+
+    // watchToyアクションのカウント処理（executeActionと同じロジック）
+    if (actionName === 'watchToy' && this.currentBondingLevel === 3) {
+      this.watchToyActionCount++;
     }
 
     const currentTime = this.gameTimeManager.getTotalTime();

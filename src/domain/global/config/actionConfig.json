@@ -12,7 +12,7 @@
       "description": "おもちゃに向かって遊ぶ",
       "inputs": ["valence", "arousal"],
       "weights": [0.5, 0.5 , 0],
-      "duration": 3000
+      "duration": 2000
     },
     "sit": {
       "name": "お座り",
@@ -40,21 +40,35 @@
       "description": "警戒しつつ観察する",
       "inputs": [],
       "weights": [0],
-      "duration": 2000
+      "duration": 5000
     },
     "watchWithTailWag": {
       "name": "しっぽを揺らしながら、様子を見る",
       "description": "興味を示しながら観察する",
       "inputs": [],
       "weights": [0],
-      "duration": 2000
+      "duration": 3000
     },
     "watchToy": {
       "name": "おもちゃに興味を持つ（見るだけ）",
       "description": "おもちゃを見て興味を示す",
       "inputs": [],
       "weights": [0],
-      "duration": 3000
+      "duration": 2000
+    },
+    "approach": {
+      "name": "こちらに近づいてくる",
+      "description": "ユーザーに向かって歩いて近づく",
+      "inputs": [],
+      "weights": [0],
+      "duration": 1000
+    },
+    "moveAway": {
+      "name": "遠ざかる",
+      "description": "ユーザーから離れる方向に歩く",
+      "inputs": [],
+      "weights": [0],
+      "duration": 1000
     }
   },
   "emotionCalculation": {
