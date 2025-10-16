@@ -27,6 +27,9 @@ package Global {
   class AssetConfig {
     + getAssetPath(assetName: string): string
   }
+  class GameConfig {
+    + getGameScreenSize(): (width, height)
+  }
   GlobalRegistry --> GameTimeManager
   GlobalRegistry --> AssetConfig
 }
@@ -73,8 +76,12 @@ package "ねこ" {
   class ねこマスタ {
     名前
   }
+  class ねこRepository <<CatRepository>> {
+    + getCatByUserId(userId): Cat
+  }
   ねこ --> ねこAI.ねこAI
   ねこ --> ねこマスタ
+  ねこRepository --> ねこ
   ユーザーアカウント --> ねこ.ねこ
 
   package ねこ外部状態 {
@@ -147,10 +154,15 @@ package "ねこ" {
       abstract なつき度変化 {
         なつきゲージ変化
       }
-      class なつき度 <<Bonding>> {
-        get()
-        updateBonding(change): なつき度
+      interface なつき度 <<Bonding>> {
+        + getLevel(): なつきLv
+        + getGauge(): なつきゲージ
+        + update(change): なつき度
+        + updateByTime(): なつき度
       }
+      note right of なつき度
+        なつき度Level upのとき、なつき度LvN+1のクラスを返す
+      end note
       class なつきLv {
         int value: 0~10
       }
@@ -158,10 +170,21 @@ package "ねこ" {
         double value: -1~1
       }
 
+      package なつき度毎 {
+        class なつき度LvN <<BondingLv0~Lv10>> {
+        }
+      }
+
+      class なつき度Factory <<BondingFactory>> {
+        + getBonding(context): Bonding
+      }
+
       なつき度 ..|> ねこ.なつき度View
+      なつき度LvN --|> なつき度
       なつき度 --> なつきLv
       なつき度 --> なつきゲージ
       なつき度 ..> なつき度変化
+      なつき度Factory --> なつき度LvN
     }
 
     package ねこアクション {

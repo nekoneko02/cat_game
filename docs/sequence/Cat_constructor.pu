@@ -1,0 +1,82 @@
+@startuml Cat::action()
+
+participant "利用者" as Client
+entity CatRepository
+participant "api/cat" as API
+database CatDB
+note right of CatDB
+  現在はIronSessionを簡易DBとして利用
+end note
+entity Global.GameConfig
+entity Cat
+entity Position
+entity CatAI as AI
+entity BondingFactory
+entity Bonding
+entity CatActionRepository as ActionRepository
+entity CatAction as Action
+
+Client -> CatRepository: getCatByUserId(user_id)
+activate CatRepository
+CatRepository -> API: get
+activate API
+API -> CatDB: query
+activate CatDB
+CatDB --> API: cat_data
+deactivate CatDB
+API --> CatRepository: cat_data
+deactivate API
+
+CatRepository -> Global.GameConfig: getGameScreenSize()
+activate Global.GameConfig
+Global.GameConfig --> CatRepository: (max_width, max_height)
+deactivate Global.GameConfig
+CatRepository -> Cat: new Cat(context)
+note right of CatRepository
+  context:
+  - position
+  - catAi
+    - bonding
+      - level
+      - gauge
+end note
+note right of CatRepository
+  position = (max_width/2, max_height/2)
+end note
+activate Cat
+Cat -> Position: new Position(context.position)
+activate Position
+Position --> Cat
+deactivate Position
+
+Cat -> AI: new CatAI(context.catAi)
+activate AI
+AI -> BondingFactory: getBonding(context.bonding)
+activate BondingFactory
+BondingFactory --> Bonding: new ConcreteBonding(bonding.bonding_gauge)
+note right of Bonding
+  bonding.bonding_levelに応じたConcreteBondingを生成
+end note
+Bonding --> BondingFactory
+BondingFactory --> AI
+deactivate BondingFactory
+
+AI -> ActionRepository: getCatActionsByBondingLevel(bonding.bonding_level)
+activate ActionRepository
+ActionRepository --> Action: new ConcreteCatAction()
+note right of Action
+  bonding.bonding_levelに応じたConcreteCatActionを生成
+end note
+activate Action
+Action --> ActionRepository
+deactivate Action
+ActionRepository --> AI
+deactivate ActionRepository
+AI --> Cat
+deactivate AI
+Cat --> CatRepository
+deactivate Cat
+CatRepository --> Client: cat
+deactivate CatRepository
+
+@enduml

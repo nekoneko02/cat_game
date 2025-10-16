@@ -1,4 +1,5 @@
 import { Bonding } from './bonding/Bonding';
+import { BondingFactory } from './bonding/BondingFactory';
 import { ExternalState } from '../../gameLogic/environment/ExternalState';
 import { IBondingView } from './bonding/IBondingView';
 import { IActionSelector } from './catActions/bondingLevel/IActionSelector';
@@ -23,10 +24,11 @@ export class CatAI {
   private watchToyActionCount: number = 0;
 
   constructor(
-    initialBonding: Bonding,
+    bondingContext: { level: number; gauge: number },
     gameTimeManager: GameTimeManager
   ) {
-    this.bonding = initialBonding;
+    // シーケンス図に従い、BondingFactoryでBondingを生成
+    this.bonding = BondingFactory.getBonding(bondingContext);
     this.gameTimeManager = gameTimeManager;
     this.actionRepository = new CatActionRepository();
     this.currentBondingLevel = this.bonding.getLevel();
@@ -129,7 +131,7 @@ export class CatAI {
       }
     }
 
-    this.bonding = new Bonding(targetLevel, targetGauge);
+    this.bonding = BondingFactory.getBonding({ level: targetLevel, gauge: targetGauge });
   }
 
   /**

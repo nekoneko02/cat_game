@@ -1,5 +1,6 @@
 import { CatAI } from '@/domain/cat/catAI/CatAI';
 import { Bonding } from '@/domain/cat/catAI/bonding/Bonding';
+import { BondingFactory } from '@/domain/cat/catAI/bonding/BondingFactory';
 import { ExternalState } from '@/domain/gameLogic/environment/ExternalState';
 import { GameTimeManager } from '@/game/GameTimeManager';
 
@@ -39,7 +40,7 @@ describe('CatAI', () => {
     mockGameTimeManager = new MockGameTimeManager();
     mockGameTimeManager.setDeltaTime(16.67);
     mockGameTimeManager.setTotalTime(0);
-    bonding = Bonding.createDefault();
+    bonding = BondingFactory.createDefault();
     externalState = ExternalState.createDefault();
     catAI = new CatAI(bonding, mockGameTimeManager);
   });
@@ -86,7 +87,7 @@ describe('CatAI', () => {
 
     it('should return 0 when bonding level is 0', () => {
       const aiWithMinBonding = new CatAI(
-        new Bonding(0, 0),
+        BondingFactory.getBonding({ level: 0, gauge: 0 }),
         mockGameTimeManager
       );
 
@@ -95,7 +96,7 @@ describe('CatAI', () => {
 
     it('should return 10 when bonding level is 10', () => {
       const aiWithMaxBonding = new CatAI(
-        new Bonding(10, 0),
+        BondingFactory.getBonding({ level: 10, gauge: 0 }),
         mockGameTimeManager
       );
 

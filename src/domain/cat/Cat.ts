@@ -1,31 +1,9 @@
-import { Bonding } from './catAI/bonding/Bonding';
 import { IBondingView } from './catAI/bonding/IBondingView';
 import { ExternalState } from '../gameLogic/environment/ExternalState';
 import { CatPosition } from './externalState/CatPosition';
 import { ActionResult } from './catAI/catActions';
 import { GameTimeManager } from '../../game/GameTimeManager';
 import { CatAI } from './catAI/CatAI';
-
-/**
- * ねこの性格特性
- */
-export interface Personality {
-  social: number;      // 社交的 (0-1)
-  active: number;      // 活発 (0-1)
-  bold: number;        // 大胆 (0-1)
-  dependent: number;   // 甘えん坊 (0-1)
-  friendly: number;    // 人懐っこい (0-1)
-}
-
-/**
- * ねこの好み
- */
-export interface Preferences {
-  toyTypes: string[];           // 好きなおもちゃの種類
-  movementSpeed: number;        // 好む移動速度 (0-1)
-  movementDirections: string[]; // 好む移動方向
-  randomness: number;           // ランダムさの好み (0-1)
-}
 
 /**
  * ねこエンティティ
@@ -41,18 +19,17 @@ export class Cat {
     public readonly id: string,
     public readonly name: string,
     private externalState: ExternalState,
-    public readonly personality: Personality,
-    public readonly preferences: Preferences,
     private lastUpdateTime: number = 0,
     gameTimeManager?: GameTimeManager,
-    initialBonding?: Bonding,
+    bondingContext?: { level: number; gauge: number },
     initialPosition?: CatPosition
   ) {
     if (gameTimeManager) {
       this._gameTimeManager = gameTimeManager;
     }
-    const bonding = initialBonding || Bonding.createDefault();
-    this.catAI = new CatAI(bonding, this.getGameTimeManager());
+    // シーケンス図に従い、bondingContextをCatAIに渡す
+    // CatAI内でBondingFactoryを使用してBondingを生成
+    this.catAI = new CatAI(bondingContext || { level: 0, gauge: 0 }, this.getGameTimeManager());
     this.position = initialPosition || CatPosition.createDefault();
   }
 
@@ -151,22 +128,9 @@ export class Cat {
       'cat-' + performance.now(),
       name,
       ExternalState.createDefault(),
-      {
-        social: 0.7,
-        active: 0.8,
-        bold: 0.6,
-        dependent: 0.5,
-        friendly: 0.8
-      },
-      {
-        toyTypes: ['ball', 'feather', 'mouse'],
-        movementSpeed: 0.7,
-        movementDirections: ['horizontal', 'vertical'],
-        randomness: 0.6
-      },
-      0,
+      0, // lastUpdateTime
       gameTimeManager,
-      Bonding.createDefault()
+      { level: 0, gauge: 0 } // bondingContext
     );
   }
 

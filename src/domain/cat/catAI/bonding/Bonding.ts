@@ -1,24 +1,25 @@
-import type { IBondingView } from './IBondingView';
+import type { IBonding } from './IBonding';
 
 /**
- * なつき度クラス
+ * なつき度抽象クラス
  *
  * 猫とユーザーの親密度を表す値オブジェクト。
  * 不変オブジェクトとして実装され、更新時は新しいインスタンスを返す。
+ * レベル別の具象クラス（BondingLv0~BondingLv10）の基底クラス。
  *
  * @package ねこ.ねこAI.なつき
  */
-export class Bonding implements IBondingView {
+export abstract class Bonding implements IBonding {
   /**
    * なつき度レベル (0~10の整数)
    */
-  private readonly level: number;
+  protected readonly level: number;
 
   /**
    * なつきゲージ値 (0~1の実数)
    * 次のレベルまでの進捗を表す
    */
-  private readonly gauge: number;
+  protected readonly gauge: number;
 
   /**
    * コンストラクタ
@@ -26,7 +27,7 @@ export class Bonding implements IBondingView {
    * @param gauge なつきゲージ値 (0~1)
    * @throws {Error} レベルまたはゲージ値が範囲外の場合
    */
-  constructor(level: number, gauge: number) {
+  protected constructor(level: number, gauge: number) {
     if (level < 0 || level > 10) {
       throw new Error(`Bonding level must be between 0 and 10, got ${level}`);
     }
@@ -83,17 +84,9 @@ export class Bonding implements IBondingView {
     newGauge = Math.max(0, Math.min(1, newGauge));
     newLevel = Math.max(0, Math.min(10, newLevel));
 
-    return new Bonding(newLevel, newGauge);
-  }
-
-  /**
-   * デフォルトのなつき度を作成
-   *
-   * 初期状態（レベル0、ゲージ0）のなつき度を生成する。
-   *
-   * @returns レベル0、ゲージ0のなつき度インスタンス
-   */
-  static createDefault(): Bonding {
-    return new Bonding(0, 0);
+    // BondingFactoryを使用して新しいレベルの具象クラスを生成
+    // 循環参照を避けるため、遅延import
+    const { BondingFactory } = require('./BondingFactory');
+    return BondingFactory.getBonding({ level: newLevel, gauge: newGauge });
   }
 }

@@ -4,7 +4,7 @@ import * as Phaser from 'phaser';
 import { Cat, Personality, Preferences } from '@/domain/cat/Cat';
 import { Toy } from '@/domain/items/toys/Toy';
 import { ExternalState } from '@/domain/gameLogic/environment/ExternalState';
-import { Bonding } from '@/domain/cat/catAI/bonding/Bonding';
+import { BondingFactory } from '@/domain/cat/catAI/bonding/BondingFactory';
 import { CatPosition } from '@/domain/cat/externalState/CatPosition';
 import { UserSessionManager } from '@/lib/UserSessionManager';
 import { SessionAction } from '@/domain/user/User';
@@ -77,7 +77,7 @@ export default class CatGame extends Phaser.Scene {
   }
 
   private createCatFromConfig(config: CatGameConfig, catName?: string): Cat {
-    const bonding = new Bonding(config.bonding.level, config.bonding.gauge);
+    const bonding = BondingFactory.getBonding(config.bonding);
     const externalState = ExternalState.createDefault();
     const initialPosition = CatPosition.create(400, 300);
 

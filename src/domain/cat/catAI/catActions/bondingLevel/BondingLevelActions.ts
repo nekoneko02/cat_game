@@ -2,7 +2,7 @@ import { CatAction } from '../CatAction';
 import { ActionContext } from '../ActionContext';
 import { CatActionExecutor } from '../CatActionExecutor';
 import { IActionSelector } from './IActionSelector';
-import { Bonding } from '../../bonding/Bonding';
+import { BondingFactory } from '../../bonding/BondingFactory';
 import { ExternalState } from '../../../../gameLogic/environment/ExternalState';
 
 /**
@@ -25,7 +25,7 @@ export class BondingLevelActions implements CatAction {
    * @returns 選択されたアクション実行インスタンス
    */
   action(context: ActionContext): CatActionExecutor {
-    const bonding = new Bonding(this.bondingLevel, 0);
+    const bonding = BondingFactory.getBonding({ level: this.bondingLevel, gauge: 0 });
 
     const externalState = context.hasToy()
       ? new ExternalState(true, 0, true, false)
