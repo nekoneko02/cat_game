@@ -1,92 +1,96 @@
-import type { IBonding } from './IBonding';
+import type { IBondingView } from './IBondingView';
+import { BondingLevel } from './BondingLevel';
+import { BondingGauge } from './BondingGauge';
+import type { IBondingUpdater } from './IBondingUpdater';
+import type { BondingUpdateNotification } from './BondingUpdateNotification';
+import { BondingUpdaterFactory } from './BondingUpdaterFactory';
 
 /**
- * なつき度抽象クラス
+ * なつき度（境界オブジェクト）
  *
- * 猫とユーザーの親密度を表す値オブジェクト。
- * 不変オブジェクトとして実装され、更新時は新しいインスタンスを返す。
- * レベル別の具象クラス（BondingLv0~BondingLv10）の基底クラス。
+ * 猫とユーザーの親密度を表すドメインオブジェクト
+ * なつきLv、なつきゲージ、なつき度更新を保持し、
+ * 外部からのなつき度更新リクエストを受け付ける
  *
  * @package ねこ.ねこAI.なつき
  */
-export abstract class Bonding implements IBonding {
-  /**
-   * なつき度レベル (0~10の整数)
-   */
-  protected readonly level: number;
+export class Bonding implements IBondingView {
+  private level: BondingLevel;
+  private gauge: BondingGauge;
+  private updater: IBondingUpdater;
 
   /**
-   * なつきゲージ値 (0~1の実数)
-   * 次のレベルまでの進捗を表す
+   * @package コンストラクタは外部非公開（package private）
+   * @internal ファクトリメソッドまたはリポジトリからのみ生成されるべき
    */
-  protected readonly gauge: number;
-
-  /**
-   * コンストラクタ
-   * @param level なつき度レベル (0~10)
-   * @param gauge なつきゲージ値 (0~1)
-   * @throws {Error} レベルまたはゲージ値が範囲外の場合
-   */
-  protected constructor(level: number, gauge: number) {
-    if (level < 0 || level > 10) {
-      throw new Error(`Bonding level must be between 0 and 10, got ${level}`);
-    }
-    if (gauge < 0 || gauge > 1) {
-      throw new Error(`Bonding gauge must be between 0 and 1, got ${gauge}`);
-    }
-    this.level = Math.floor(level);
-    this.gauge = gauge;
+  constructor(level: number, gauge: number) {
+    this.level = new BondingLevel(level);
+    this.gauge = new BondingGauge(gauge);
+    this.updater = BondingUpdaterFactory.getUpdater(level, gauge);
   }
 
   /**
    * なつきレベルを取得
-   * @returns なつきレベル (0~10)
    */
   getLevel(): number {
-    return this.level;
+    return this.level.getValue();
   }
 
   /**
    * なつきゲージ値を取得
-   * @returns なつきゲージ値 (0~1)
    */
   getGauge(): number {
-    return this.gauge;
+    return this.gauge.getValue();
   }
 
   /**
-   * なつき度を更新
+   * アクション実行によるなつき度更新
    *
-   * 現在のなつき度に変化量を適用した新しいインスタンスを返す。
-   * ゲージが1以上になるとレベルアップし、ゲージは0にリセットされる。
-   * ゲージが0未満になるとレベルダウンし、ゲージは1からの相対値になる。
-   *
-   * @param change ゲージの変化量（1秒あたりの変化量として設計）
-   * @returns 更新後の新しいなつき度インスタンス
+   * @param notification なつき度更新通知
    */
-  updateBonding(change: number): Bonding {
-    let newGauge = this.gauge + change;
-    let newLevel = this.level;
+  update(notification: BondingUpdateNotification): void {
+    this.gauge = this.updater.update(this.level, this.gauge, notification);
+  }
 
-    // レベルアップ処理
-    while (newGauge >= 1.0 && newLevel < 10) {
-      newGauge -= 1.0;
-      newLevel += 1;
-    }
+  /**
+   * 時間経過によるなつき度更新（ゲージのみ更新）
+   *
+   * CatAIから呼び出され、ゲージが1.0に達した場合は
+   * CatAIがlevelUp()を呼び出す
+   */
+  updateByTime(): void {
+    this.gauge = this.updater.updateByTime(this.level, this.gauge);
+  }
 
-    // レベルダウン処理
-    while (newGauge < 0 && newLevel > 0) {
-      newGauge += 1.0;
-      newLevel -= 1;
-    }
+  /**
+   * レベルアップ処理
+   *
+   * レベルを1つ上げ、ゲージを0にリセットし、
+   * 新しいレベルに対応するBondingUpdaterを取得する
+   */
+  levelUp(): void {
+    this.level = this.level.levelUp();
+    this.gauge = BondingGauge.reset();
+    this.updater = BondingUpdaterFactory.getUpdater(this.level.getValue(), 0);
+  }
 
-    // 範囲クランプ
-    newGauge = Math.max(0, Math.min(1, newGauge));
-    newLevel = Math.max(0, Math.min(10, newLevel));
+  /**
+   * ゲージが満タンか判定
+   *
+   * CatAIがレベルアップ判定に使用
+   */
+  isGaugeFull(): boolean {
+    return this.gauge.isFull();
+  }
 
-    // BondingFactoryを使用して新しいレベルの具象クラスを生成
-    // 循環参照を避けるため、遅延import
-    const { BondingFactory } = require('./BondingFactory');
-    return BondingFactory.getBonding({ level: newLevel, gauge: newGauge });
+  /**
+   * デバッグ用: なつき度レベルを直接設定
+   * @internal デバッグ専用
+   * @param targetLevel - 設定するなつき度レベル（0-10）
+   */
+  debugSetLevel(targetLevel: number): void {
+    this.level = new BondingLevel(targetLevel);
+    this.gauge = BondingGauge.reset();
+    this.updater = BondingUpdaterFactory.getUpdater(targetLevel, 0);
   }
 }

@@ -2,33 +2,36 @@ import { IBondingView } from './catAI/bonding/IBondingView';
 import { ExternalState } from '../gameLogic/environment/ExternalState';
 import { CatPosition } from './externalState/CatPosition';
 import { ActionResult } from './catAI/catActions';
+import { ActionContext } from './catAI/catActions/ActionContext';
 import { GameTimeManager } from '../../game/GameTimeManager';
 import { CatAI } from './catAI/CatAI';
+import { GlobalRegistry } from '../global/GlobalRegistry';
 
 /**
  * ねこエンティティ
  * 「実際のねこ」を表現するドメインエンティティ
+ *
+ * @package ねこ
  */
 export class Cat {
   private readonly catAI: CatAI;
-  private _gameTimeManager: GameTimeManager | null = null;
   private position: CatPosition;
   private flipX: boolean = false;
+  private externalState: ExternalState;
+  private lastUpdateTime: number;
 
+  /**
+   * @package コンストラクタは外部非公開（package private）
+   * @internal CatRepositoryからのみ生成されるべき
+   */
   constructor(
     public readonly id: string,
     public readonly name: string,
-    private externalState: ExternalState,
-    private lastUpdateTime: number = 0,
-    gameTimeManager?: GameTimeManager,
     bondingContext?: { level: number; gauge: number },
     initialPosition?: CatPosition
   ) {
-    if (gameTimeManager) {
-      this._gameTimeManager = gameTimeManager;
-    }
-    // シーケンス図に従い、bondingContextをCatAIに渡す
-    // CatAI内でBondingFactoryを使用してBondingを生成
+    this.externalState = ExternalState.createDefault();
+    this.lastUpdateTime = 0;
     this.catAI = new CatAI(bondingContext || { level: 0, gauge: 0 }, this.getGameTimeManager());
     this.position = initialPosition || CatPosition.createDefault();
   }
@@ -37,10 +40,7 @@ export class Cat {
    * GameTimeManagerを取得（lazy初期化）
    */
   private getGameTimeManager(): GameTimeManager {
-    if (!this._gameTimeManager) {
-      this._gameTimeManager = new GameTimeManager();
-    }
-    return this._gameTimeManager;
+    return GlobalRegistry.getInstance().getGameTimeManager();
   }
 
   /**
@@ -80,14 +80,26 @@ export class Cat {
    * 状態を更新（ステップ1仕様）
    */
   action(newExternalState: ExternalState, toyX?: number, toyY?: number): ActionResult | null {
-    const currentTime = this.getGameTimeManager().getTotalTime();
+    const currentTime = this.getGameTimeManager().getGameTime();
     this.lastUpdateTime = currentTime;
 
     // 外部状態を更新
     this.externalState = newExternalState;
 
-    // CatAIに処理を委譲（現在位置とflipXを渡す）
-    const actionResult = this.catAI.action(this.externalState, this.position.x, this.position.y, toyX, toyY, this.flipX);
+    // ActionContext を作成
+    const context = new ActionContext({
+      currentX: this.position.x,
+      currentY: this.position.y,
+      toyX,
+      toyY,
+      flipX: this.flipX,
+      toyPresence: this.externalState.toyPresence,
+      userPresence: this.externalState.userPresence,
+      isPlaying: this.externalState.isPlaying
+    });
+
+    // CatAIに処理を委譲
+    const actionResult = this.catAI.action(context);
 
     // ActionMovementに基づいて位置を更新
     // deltaX/deltaYは1秒あたりの移動量なので、deltaTime（1フレームの時間）を掛けて1フレーム分に変換
@@ -123,14 +135,11 @@ export class Cat {
   /**
    * デフォルトねこを作成
    */
-  static createDefault(name: string = 'たぬきねこ', gameTimeManager?: GameTimeManager): Cat {
+  static createDefault(name: string = 'たぬきねこ'): Cat {
     return new Cat(
       'cat-' + performance.now(),
       name,
-      ExternalState.createDefault(),
-      0, // lastUpdateTime
-      gameTimeManager,
-      { level: 0, gauge: 0 } // bondingContext
+      { level: 0, gauge: 0 }
     );
   }
 
@@ -150,5 +159,13 @@ export class Cat {
    */
   debugForceAction(actionName: string, duration: number): void {
     this.catAI.debugForceAction(actionName, duration);
+  }
+
+  /**
+   * デバッグ用: なつき度レベルを直接設定
+   * @internal デバッグ専用
+   */
+  debugSetBondingLevel(targetLevel: number): void {
+    this.catAI.debugSetBondingLevel(targetLevel);
   }
 }

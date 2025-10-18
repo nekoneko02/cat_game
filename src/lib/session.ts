@@ -1,5 +1,4 @@
 import { SessionOptions } from 'iron-session';
-import { Personality, Preferences } from '@/domain/cat/Cat';
 import { logError } from './log';
 
 export interface CatState {
@@ -7,8 +6,6 @@ export interface CatState {
     level: number;
     gauge: number;
   };
-  personality: Personality;
-  preferences: Preferences;
 }
 
 
@@ -34,21 +31,8 @@ export const sessionOptions: SessionOptions = {
 export function createDefaultCatState(): CatState {
   return {
     bonding: {
-      level: 0,
+      level: 1,
       gauge: 0
-    },
-    personality: {
-      social: 0.7,
-      active: 0.8,
-      bold: 0.6,
-      dependent: 0.5,
-      friendly: 0.8
-    },
-    preferences: {
-      toyTypes: ['ball', 'feather', 'mouse'],
-      movementSpeed: 0.7,
-      movementDirections: ['horizontal', 'vertical'],
-      randomness: 0.6
     }
   };
 }

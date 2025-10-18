@@ -17,7 +17,7 @@ describe('WatchToyAction', () => {
   describe('execute', () => {
     describe('おもちゃがない場合', () => {
       it('sitアニメーションを返す', () => {
-        const context = new ActionContext(100, 100);
+        const context = ActionContext.withoutToy(100, 100, false, false);
 
         const result = action.execute(context);
 
@@ -31,7 +31,7 @@ describe('WatchToyAction', () => {
       });
 
       it('context.flipXを継承する', () => {
-        const context = new ActionContext(100, 100, undefined, undefined, true);
+        const context = ActionContext.withoutToy(100, 100, false, false, true);
 
         const result = action.execute(context);
 
@@ -42,7 +42,7 @@ describe('WatchToyAction', () => {
 
     describe('おもちゃがある場合', () => {
       it('おもちゃが左にある場合、flipX=falseでwatchToyアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 100, 200);
+        const context = ActionContext.withToy(200, 200, 100, 200, false, false);
 
         const result = action.execute(context);
 
@@ -56,7 +56,7 @@ describe('WatchToyAction', () => {
       });
 
       it('おもちゃが右にある場合、flipX=trueでwatchToyアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 300, 200);
+        const context = ActionContext.withToy(200, 200, 300, 200, false, false);
 
         const result = action.execute(context);
 
@@ -70,7 +70,7 @@ describe('WatchToyAction', () => {
       });
 
       it('おもちゃが真上にある場合（dx=0）、flipX=falseを返す', () => {
-        const context = new ActionContext(200, 200, 200, 100);
+        const context = ActionContext.withToy(200, 200, 200, 100, false, false);
 
         const result = action.execute(context);
 
@@ -79,7 +79,7 @@ describe('WatchToyAction', () => {
       });
 
       it('おもちゃが真下にある場合（dx=0）、flipX=falseを返す', () => {
-        const context = new ActionContext(200, 200, 200, 300);
+        const context = ActionContext.withToy(200, 200, 200, 300, false, false);
 
         const result = action.execute(context);
 
@@ -88,7 +88,7 @@ describe('WatchToyAction', () => {
       });
 
       it('おもちゃが斜め左上にある場合、flipX=falseを返す', () => {
-        const context = new ActionContext(200, 200, 100, 100);
+        const context = ActionContext.withToy(200, 200, 100, 100, false, false);
 
         const result = action.execute(context);
 
@@ -97,7 +97,7 @@ describe('WatchToyAction', () => {
       });
 
       it('おもちゃが斜め右下にある場合、flipX=trueを返す', () => {
-        const context = new ActionContext(200, 200, 300, 300);
+        const context = ActionContext.withToy(200, 200, 300, 300, false, false);
 
         const result = action.execute(context);
 
@@ -132,7 +132,7 @@ describe('WatchToyAction Integration Tests', () => {
   });
 
   it('シナリオ: おもちゃがないときは座る', () => {
-    const context = new ActionContext(200, 200);
+    const context = ActionContext.withoutToy(200, 200, false, false);
 
     const result = action.execute(context);
     const stateChange = action.getInternalStateChange();
@@ -144,7 +144,7 @@ describe('WatchToyAction Integration Tests', () => {
   });
 
   it('シナリオ: おもちゃがあるときは見つめる', () => {
-    const context = new ActionContext(200, 200, 300, 200);
+    const context = ActionContext.withToy(200, 200, 300, 200, false, false);
 
     const result = action.execute(context);
     const stateChange = action.getInternalStateChange();
@@ -157,7 +157,7 @@ describe('WatchToyAction Integration Tests', () => {
   });
 
   it('シナリオ: createActionResultで完全な結果を取得', () => {
-    const context = new ActionContext(100, 100, 200, 150);
+    const context = ActionContext.withToy(100, 100, 200, 150, false, false);
 
     const actionResult = action.createActionResult(context);
 
@@ -172,7 +172,7 @@ describe('WatchToyAction Integration Tests', () => {
   });
 
   it('シナリオ: 複数回実行しても同じ結果を返す（冪等性）', () => {
-    const context = new ActionContext(150, 150, 250, 200);
+    const context = ActionContext.withToy(150, 150, 250, 200, false, false);
 
     const result1 = action.execute(context);
     const result2 = action.execute(context);
@@ -186,8 +186,8 @@ describe('WatchToyAction Integration Tests', () => {
     const catX = 200;
     const catY = 200;
 
-    const leftResult = action.execute(new ActionContext(catX, catY, 100, 200));
-    const rightResult = action.execute(new ActionContext(catX, catY, 300, 200));
+    const leftResult = action.execute(ActionContext.withToy(catX, catY, 100, 200, false, false));
+    const rightResult = action.execute(ActionContext.withToy(catX, catY, 300, 200, false, false));
 
     expect(leftResult.flipX).toBe(false);
     expect(rightResult.flipX).toBe(true);

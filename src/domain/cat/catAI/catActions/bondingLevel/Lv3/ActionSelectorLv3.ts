@@ -1,6 +1,6 @@
-import { Bonding } from '../../../bonding/Bonding';
-import { ExternalState } from '../../../../../gameLogic/environment/ExternalState';
+
 import { IActionSelector } from '../IActionSelector';
+import { ActionContext } from '../../ActionContext';
 import { CatActionExecutor } from '../../CatActionExecutor';
 import { RunAwayShortAction } from '../../RunAwayShortAction';
 import { WatchCautiouslyAction } from '../../WatchCautiouslyAction';
@@ -36,8 +36,8 @@ export class ActionSelector implements IActionSelector {
   /**
    * なつき度と外部状態に基づいてアクションを選択
    */
-  select(_bonding: Bonding, externalState: ExternalState): CatActionExecutor {
-    const hasToy = externalState.toyPresence;
+  select(context: ActionContext): CatActionExecutor {
+    const hasToy = context.toyPresence;
     let random = Math.random();
 
     if (hasToy) {

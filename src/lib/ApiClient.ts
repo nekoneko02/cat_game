@@ -19,9 +19,9 @@ export interface ToyData {
 
 export class ApiClient {
   private static instance: ApiClient | null = null;
-  private baseUrl: string;
+  protected baseUrl: string;
 
-  private constructor() {
+  constructor() {
     this.baseUrl = '';
   }
 

@@ -2,6 +2,18 @@ import * as Phaser from 'phaser';
 import { Cat } from '@/domain/cat/Cat';
 import { ExternalState } from '@/domain/gameLogic/environment/ExternalState';
 
+const numberKeys = [
+  Phaser.Input.Keyboard.KeyCodes.ZERO,
+  Phaser.Input.Keyboard.KeyCodes.ONE,
+  Phaser.Input.Keyboard.KeyCodes.TWO,
+  Phaser.Input.Keyboard.KeyCodes.THREE,
+  Phaser.Input.Keyboard.KeyCodes.FOUR,
+  Phaser.Input.Keyboard.KeyCodes.FIVE,
+  Phaser.Input.Keyboard.KeyCodes.SIX,
+  Phaser.Input.Keyboard.KeyCodes.SEVEN,
+  Phaser.Input.Keyboard.KeyCodes.EIGHT,
+  Phaser.Input.Keyboard.KeyCodes.NINE,
+];
 /**
  * デバッグ用オーバーレイ
  * 管理者向け機能として、ねこの内部状態・外部状態・感情・なつき度を可視化
@@ -133,6 +145,35 @@ export class DebugOverlay {
         this.hideActionSelector();
       }
     });
+
+    // +キー: なつき度レベルを1上げる（最大10）
+    keyboard.on('keydown-PLUS', (event: KeyboardEvent) => {
+      if (!this.isVisible || !this.cat) return;
+      event.preventDefault();
+      const currentLevel = this.cat.getBonding().getLevel();
+      if (currentLevel < 10) {
+        this.cat.debugSetBondingLevel(currentLevel + 1);
+      }
+    });
+
+    // -キー: なつき度レベルを1下げる（最小0）
+    keyboard.on('keydown-MINUS', (event: KeyboardEvent) => {
+      if (!this.isVisible || !this.cat) return;
+      event.preventDefault();
+      const currentLevel = this.cat.getBonding().getLevel();
+      if (currentLevel > 0) {
+        this.cat.debugSetBondingLevel(currentLevel - 1);
+      }
+    });
+
+    numberKeys.forEach((code, i) => {
+      const key = keyboard.addKey(code);
+      key.on('down', (event: KeyboardEvent) => {
+        if (!this.isVisible || !this.cat) return;
+        this.cat.debugSetBondingLevel(i);
+      });
+    });
+
   }
 
   /**
@@ -334,6 +375,10 @@ export class DebugOverlay {
     this.addText('D: Toggle Debug', leftMargin, yOffset, '#888888', '11px');
     yOffset += lineHeight * 0.9;
     this.addText('A: Action Selector', leftMargin, yOffset, '#888888', '11px');
+    yOffset += lineHeight * 0.9;
+    this.addText('+/-: Level Up/Down', leftMargin, yOffset, '#888888', '11px');
+    yOffset += lineHeight * 0.9;
+    this.addText('0-9: Set Level', leftMargin, yOffset, '#888888', '11px');
   }
 
   /**

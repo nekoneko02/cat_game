@@ -151,40 +151,52 @@ package "ねこ" {
     }
 
     package なつき {
-      abstract なつき度変化 {
-        なつきゲージ変化
+      class なつき度 <<Bonding>> {
+        + getLevel(): int
+        + getGauge(): double
+        + update(なつき度更新通知): void
+        + levelUp(): void
       }
-      interface なつき度 <<Bonding>> {
-        + getLevel(): なつきLv
-        + getGauge(): なつきゲージ
-        + update(change): なつき度
-        + updateByTime(): なつき度
-      }
-      note right of なつき度
-        なつき度Level upのとき、なつき度LvN+1のクラスを返す
-      end note
+
       class なつきLv {
         int value: 0~10
       }
       class なつきゲージ {
-        double value: -1~1
+        double value: 0~1
       }
 
-      package なつき度毎 {
-        class なつき度LvN <<BondingLv0~Lv10>> {
+      class なつき度更新通知 <<BondingUpdateNotification>> {
+        ねこアクション名: string
+      }
+
+      interface なつき度更新 <<BondingUpdater>> {
+        ねこアクション名: string
+        + update(なつきLv, なつきゲージ, なつき度更新通知): なつきゲージ
+        + updateByTime(なつきLv, なつきゲージ): なつきゲージ
+      }
+      note right of なつき度更新
+        update()とupdateByTime()は、なつきゲージのみ更新（最大1）
+        ゲージが1に達した場合のレベルアップ処理はCatAIで行う
+      end note
+
+      package なつき度更新毎 {
+        class なつき度更新LvN <<BondingUpdaterLv0~Lv10>> {
+          ねこアクション名: string
         }
       }
 
-      class なつき度Factory <<BondingFactory>> {
-        + getBonding(context): Bonding
+      class なつき度更新Factory <<BondingUpdaterFactory>> {
+        + getUpdater(level): BondingUpdater
       }
 
       なつき度 ..|> ねこ.なつき度View
-      なつき度LvN --|> なつき度
       なつき度 --> なつきLv
       なつき度 --> なつきゲージ
-      なつき度 ..> なつき度変化
-      なつき度Factory --> なつき度LvN
+      なつき度 --> なつき度更新
+      なつき度 ..> なつき度更新通知
+      なつき度 ..> なつき度更新Factory
+      なつき度更新LvN ..|> なつき度更新
+      なつき度更新Factory --> なつき度更新LvN
     }
 
     package ねこアクション {
@@ -224,14 +236,12 @@ package "ねこ" {
         }
         class ねこ感情変化 <<InternalStateChange>> {
         }
-        class ねこなつき度変化 {
-        }
-        
+
         ねこアクション毎の具象クラス ..|> ねこアクション実行
         ねこアクション毎の具象クラス --> ねこアクション内容
         ねこアクション内容 --> ねこ位置変化
         ねこアクション内容 --> ねこ感情変化
-        ねこアクション内容 --> ねこなつき度変化
+        ねこアクション内容 --> なつき.なつき度更新通知
         ねこ位置変化 --|> ねこ.ねこ外部状態.ねこ位置変化
       }
 
@@ -249,7 +259,6 @@ package "ねこ" {
       ねこアクション選択LvN --> 実行中ねこアクション
       ねこアクション選択LvN --> なつきLv
       ねこ感情変化 --|> ねこ.ねこAI.感情システム.感情変化
-      ねこなつき度変化 --|> ねこ.ねこAI.なつき.なつき度変化
       /'ねこアクション選択LvN --> 成功体験toねこアクション'/
       ねこアクションなつき度LvN --> ねこ.ねこAI.なつき.なつきLv
       ねこアクションなつき度LvN --> ねこアクション選択LvN

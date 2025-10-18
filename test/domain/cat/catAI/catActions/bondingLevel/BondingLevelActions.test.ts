@@ -1,19 +1,13 @@
 import { BondingLevelActions } from '@/domain/cat/catAI/catActions/bondingLevel/BondingLevelActions';
-import { ActionSelector } from '@/domain/cat/catAI/catActions/bondingLevel/Lv0/ActionSelectorLv0';
+import { ActionSelector } from '@/domain/cat/catAI/catActions/bondingLevel/Lv1/ActionSelectorLv1';
 import { ActionContext } from '@/domain/cat/catAI/catActions/ActionContext';
 import { Bonding } from '@/domain/cat/catAI/bonding/Bonding';
-import { ExternalState } from '@/domain/gameLogic/environment/ExternalState';
 
 describe('BondingLevelActions', () => {
-  let externalState: ExternalState;
-
-  beforeEach(() => {
-    externalState = new ExternalState();
-  });
 
   describe('constructor', () => {
     it('なつき度レベルとアクション選択器で初期化される', () => {
-      const bonding = new Bonding(0, 0);  // レベル0
+      const bonding = new Bonding(0, 0);
       const selector = new ActionSelector();
 
       const actions = new BondingLevelActions(bonding.getLevel(), selector);
@@ -22,8 +16,8 @@ describe('BondingLevelActions', () => {
     });
 
     it('異なるなつき度レベルで初期化できる', () => {
-      const bonding1 = new Bonding(0, 0);  // レベル0
-      const bonding2 = new Bonding(5, 0);  // レベル5
+      const bonding1 = new Bonding(0, 0);
+      const bonding2 = new Bonding(5, 0);
       const selector = new ActionSelector();
 
       const actions1 = new BondingLevelActions(bonding1.getLevel(), selector);
@@ -36,10 +30,10 @@ describe('BondingLevelActions', () => {
 
   describe('action', () => {
     it('ActionSelectorを使用してアクションを選択し、CatActionExecutorを返す', () => {
-      const bonding = new Bonding(0, 0);  // レベル0
+      const bonding = new Bonding(0, 0);
       const selector = new ActionSelector();
       const actions = new BondingLevelActions(bonding.getLevel(), selector);
-      const context = new ActionContext(100, 100);
+      const context = ActionContext.withoutToy(100, 100, false, false);
 
       const executor = actions.action(context);
 
@@ -49,10 +43,10 @@ describe('BondingLevelActions', () => {
     });
 
     it('なつき度レベルとコンテキストに応じた適切なアクションを選択する', () => {
-      const bonding = new Bonding(5, 0);  // レベル5
+      const bonding = new Bonding(5, 0);
       const selector = new ActionSelector();
       const actions = new BondingLevelActions(bonding.getLevel(), selector);
-      const context = new ActionContext(100, 100);
+      const context = ActionContext.withoutToy(100, 100, false, false);
 
       const executor1 = actions.action(context);
       const executor2 = actions.action(context);
@@ -64,7 +58,7 @@ describe('BondingLevelActions', () => {
 
   describe('getBondingLevel', () => {
     it('なつき度レベルを返す', () => {
-      const bonding = new Bonding(3, 0);  // レベル3
+      const bonding = new Bonding(3, 0);
       const selector = new ActionSelector();
       const actions = new BondingLevelActions(bonding.getLevel(), selector);
 
@@ -74,17 +68,12 @@ describe('BondingLevelActions', () => {
 });
 
 describe('BondingLevelActions Integration Tests', () => {
-  let externalState: ExternalState;
-
-  beforeEach(() => {
-    externalState = new ExternalState();
-  });
 
   it('シナリオ: なつき度0のアクションセットから適切なアクションを選択', () => {
-    const bonding = new Bonding(0, 0);  // レベル0
+    const bonding = new Bonding(0, 0);
     const selector = new ActionSelector();
     const actions = new BondingLevelActions(bonding.getLevel(), selector);
-    const context = new ActionContext(100, 100);
+    const context = ActionContext.withoutToy(100, 100, false, false);
 
     const executor = actions.action(context);
 
@@ -93,10 +82,10 @@ describe('BondingLevelActions Integration Tests', () => {
   });
 
   it('シナリオ: なつき度5のアクションセットから適切なアクションを選択', () => {
-    const bonding = new Bonding(5, 0);  // レベル5
+    const bonding = new Bonding(5, 0);
     const selector = new ActionSelector();
     const actions = new BondingLevelActions(bonding.getLevel(), selector);
-    const context = new ActionContext(100, 100);
+    const context = ActionContext.withoutToy(100, 100, false, false);
 
     const executor = actions.action(context);
 
@@ -105,10 +94,10 @@ describe('BondingLevelActions Integration Tests', () => {
   });
 
   it('シナリオ: 同じなつき度でも異なるアクションが選択される可能性がある', () => {
-    const bonding = new Bonding(5, 0);  // レベル5
+    const bonding = new Bonding(5, 0);
     const selector = new ActionSelector();
     const actions = new BondingLevelActions(bonding.getLevel(), selector);
-    const context = new ActionContext(100, 100);
+    const context = ActionContext.withoutToy(100, 100, false, false);
 
     const executors = new Set<string>();
     for (let i = 0; i < 50; i++) {

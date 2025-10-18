@@ -16,7 +16,7 @@ describe('SitAction', () => {
 
   describe('execute', () => {
     it('移動せずsitアニメーションを返す', () => {
-      const context = new ActionContext(100, 100);
+      const context = ActionContext.withoutToy(100, 100, false, false);
 
       const result = action.execute(context);
 
@@ -28,7 +28,7 @@ describe('SitAction', () => {
     });
 
     it('おもちゃがある場合も同じ動作をする', () => {
-      const context = new ActionContext(100, 100, 200, 200);
+      const context = ActionContext.withToy(100, 100, 200, 200, false, false);
 
       const result = action.execute(context);
 
@@ -38,8 +38,8 @@ describe('SitAction', () => {
     });
 
     it('異なる位置でも同じ動作をする', () => {
-      const context1 = new ActionContext(0, 0);
-      const context2 = new ActionContext(500, 500);
+      const context1 = ActionContext.withoutToy(0, 0, false, false);
+      const context2 = ActionContext.withoutToy(500, 500, false, false);
 
       const result1 = action.execute(context1);
       const result2 = action.execute(context2);
@@ -48,7 +48,7 @@ describe('SitAction', () => {
     });
 
     it('speedプロパティを持たない', () => {
-      const context = new ActionContext(100, 100);
+      const context = ActionContext.withoutToy(100, 100, false, false);
 
       const result = action.execute(context);
 
@@ -56,8 +56,8 @@ describe('SitAction', () => {
     });
 
     it('flipXプロパティはcontext.flipXを継承する', () => {
-      const contextWithoutFlip = new ActionContext(100, 100, undefined, undefined, false);
-      const contextWithFlip = new ActionContext(100, 100, undefined, undefined, true);
+      const contextWithoutFlip = ActionContext.withoutToy(100, 100, false, false);
+      const contextWithFlip = ActionContext.withoutToy(100, 100, false, false, true);
 
       const resultWithoutFlip = action.execute(contextWithoutFlip);
       const resultWithFlip = action.execute(contextWithFlip);
@@ -101,7 +101,7 @@ describe('SitAction Integration Tests', () => {
   });
 
   it('シナリオ: リラックスしてお座りする', () => {
-    const context = new ActionContext(150, 150);
+    const context = ActionContext.withoutToy(150, 150, false, false);
 
     const result = action.execute(context);
     const stateChange = action.getInternalStateChange();
@@ -114,7 +114,7 @@ describe('SitAction Integration Tests', () => {
   });
 
   it('シナリオ: createActionResultで完全な結果を取得', () => {
-    const context = new ActionContext(200, 200);
+    const context = ActionContext.withoutToy(200, 200, false, false);
 
     const actionResult = action.createActionResult(context);
 
@@ -130,7 +130,7 @@ describe('SitAction Integration Tests', () => {
   });
 
   it('シナリオ: 複数回実行しても同じ結果を返す（冪等性）', () => {
-    const context = new ActionContext(100, 100);
+    const context = ActionContext.withoutToy(100, 100, false, false);
 
     const result1 = action.execute(context);
     const result2 = action.execute(context);
@@ -141,7 +141,7 @@ describe('SitAction Integration Tests', () => {
   });
 
   it('シナリオ: ShowBellyActionとの違いを確認', () => {
-    const context = new ActionContext(100, 100);
+    const context = ActionContext.withoutToy(100, 100, false, false);
 
     const sitResult = action.execute(context);
     const sitStateChange = action.getInternalStateChange();

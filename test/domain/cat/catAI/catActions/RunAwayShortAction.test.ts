@@ -17,7 +17,7 @@ describe('RunAwayShortAction', () => {
   describe('execute', () => {
     describe('ユーザー位置(toy)から離れる方向に移動', () => {
       it('ユーザーが左にいる場合、右方向に逃げる', () => {
-        const context = new ActionContext(400, 300, 350, 300);
+        const context = ActionContext.withToy(400, 300, 350, 300, false, false);
 
         const result = action.execute(context);
 
@@ -28,7 +28,7 @@ describe('RunAwayShortAction', () => {
       });
 
       it('ユーザーが右にいる場合、左方向に逃げる', () => {
-        const context = new ActionContext(400, 300, 450, 300);
+        const context = ActionContext.withToy(400, 300, 450, 300, false, false);
 
         const result = action.execute(context);
 
@@ -39,7 +39,7 @@ describe('RunAwayShortAction', () => {
       });
 
       it('ユーザーが上にいる場合、下方向に逃げる', () => {
-        const context = new ActionContext(400, 300, 400, 250);
+        const context = ActionContext.withToy(400, 300, 400, 250, false, false);
 
         const result = action.execute(context);
 
@@ -49,7 +49,7 @@ describe('RunAwayShortAction', () => {
       });
 
       it('ユーザーが下にいる場合、上方向に逃げる', () => {
-        const context = new ActionContext(400, 300, 400, 350);
+        const context = ActionContext.withToy(400, 300, 400, 350, false, false);
 
         const result = action.execute(context);
 
@@ -62,7 +62,7 @@ describe('RunAwayShortAction', () => {
     describe('ユーザーとの距離による動作', () => {
       it('ユーザーとの距離が300px以下の場合: escapeで逃げる', () => {
         // 距離80px
-        const context = new ActionContext(400, 300, 320, 300);
+        const context = ActionContext.withToy(400, 300, 320, 300, false, false);
 
         const result = action.execute(context);
 
@@ -72,7 +72,7 @@ describe('RunAwayShortAction', () => {
 
       it('ユーザーとの距離がちょうど300pxの場合: escapeで逃げる', () => {
         // 距離300px
-        const context = new ActionContext(400, 300, 100, 300);
+        const context = ActionContext.withToy(400, 300, 100, 300, false, false);
 
         const result = action.execute(context);
 
@@ -82,7 +82,7 @@ describe('RunAwayShortAction', () => {
 
       it('ユーザーとの距離が301pxの場合: shrinkBackで停止', () => {
         // 距離301px
-        const context = new ActionContext(400, 300, 99, 300);
+        const context = ActionContext.withToy(400, 300, 99, 300, false, false);
 
         const result = action.execute(context);
 
@@ -94,7 +94,7 @@ describe('RunAwayShortAction', () => {
 
       it('ユーザーとの距離が400pxの場合: shrinkBackで停止', () => {
         // 距離400px（画面端近く）
-        const context = new ActionContext(600, 300, 200, 300);
+        const context = ActionContext.withToy(600, 300, 200, 300, false, false);
 
         const result = action.execute(context);
 
@@ -107,7 +107,7 @@ describe('RunAwayShortAction', () => {
 
     describe('flipX判定', () => {
       it('右向き移動の場合flipX=true', () => {
-        const context = new ActionContext(400, 300, 350, 300);
+        const context = ActionContext.withToy(400, 300, 350, 300, false, false);
 
         const result = action.execute(context);
 
@@ -116,7 +116,7 @@ describe('RunAwayShortAction', () => {
       });
 
       it('左向き移動の場合flipX=false', () => {
-        const context = new ActionContext(400, 300, 450, 300);
+        const context = ActionContext.withToy(400, 300, 450, 300, false, false);
 
         const result = action.execute(context);
 
@@ -126,7 +126,7 @@ describe('RunAwayShortAction', () => {
 
       it('停止時のflipX判定: 右方向から逃げて停止', () => {
         // ユーザー(50, 300)から距離350pxで停止
-        const context = new ActionContext(400, 300, 50, 300);
+        const context = ActionContext.withToy(400, 300, 50, 300, false, false);
 
         const result = action.execute(context);
 
@@ -136,7 +136,7 @@ describe('RunAwayShortAction', () => {
 
       it('停止時のflipX判定: 左方向から逃げて停止', () => {
         // ユーザー(750, 300)から距離350pxで停止
-        const context = new ActionContext(400, 300, 750, 300);
+        const context = ActionContext.withToy(400, 300, 750, 300, false, false);
 
         const result = action.execute(context);
 
@@ -173,7 +173,7 @@ describe('RunAwayShortAction Integration Tests', () => {
 
   it('シナリオ: ユーザーから逃げて縮こまる完全な流れ', () => {
     // 開始: ユーザー(200, 300)から近い位置(300, 300)で逃げ始める (距離100px)
-    const context1 = new ActionContext(300, 300, 200, 300);
+    const context1 = ActionContext.withToy(300, 300, 200, 300, false, false);
     const result1 = action.execute(context1);
 
     expect(result1.speed).toBe(120);
@@ -181,14 +181,14 @@ describe('RunAwayShortAction Integration Tests', () => {
     expect(result1.deltaX).toBeGreaterThan(0); // 右方向
 
     // 移動中: ユーザーとの距離が200px
-    const context2 = new ActionContext(400, 300, 200, 300);
+    const context2 = ActionContext.withToy(400, 300, 200, 300, false, false);
     const result2 = action.execute(context2);
 
     expect(result2.speed).toBe(120);
     expect(result2.animationCommands[0].animationKey).toBe('escape');
 
     // 到着: ユーザーとの距離が350pxで停止・縮こまる
-    const context3 = new ActionContext(550, 300, 200, 300);
+    const context3 = ActionContext.withToy(550, 300, 200, 300, false, false);
     const result3 = action.execute(context3);
 
     expect(result3.deltaX).toBe(0);
@@ -199,14 +199,14 @@ describe('RunAwayShortAction Integration Tests', () => {
 
   it('シナリオ: ユーザーが追いかけてきたら再び逃げる', () => {
     // 距離350pxで縮こまっている
-    const context1 = new ActionContext(550, 300, 200, 300);
+    const context1 = ActionContext.withToy(550, 300, 200, 300, false, false);
     const result1 = action.execute(context1);
 
     expect(result1.speed).toBe(0);
     expect(result1.animationCommands[0].animationKey).toBe('shrinkBack');
 
     // ユーザーが近づいてきた(距離250px)
-    const context2 = new ActionContext(550, 300, 300, 300);
+    const context2 = ActionContext.withToy(550, 300, 300, 300, false, false);
     const result2 = action.execute(context2);
 
     expect(result2.speed).toBe(120);
@@ -215,20 +215,20 @@ describe('RunAwayShortAction Integration Tests', () => {
 
   it('シナリオ: ユーザーの位置が変わると逃げる方向も変わる', () => {
     // ユーザーが左にいる
-    const context1 = new ActionContext(400, 300, 350, 300);
+    const context1 = ActionContext.withToy(400, 300, 350, 300, false, false);
     const result1 = action.execute(context1);
 
     expect(result1.deltaX).toBeGreaterThan(0);
 
     // ユーザーが右に移動
-    const context2 = new ActionContext(400, 300, 450, 300);
+    const context2 = ActionContext.withToy(400, 300, 450, 300, false, false);
     const result2 = action.execute(context2);
 
     expect(result2.deltaX).toBeLessThan(0);
   });
 
   it('シナリオ: createActionResultで完全な結果を取得', () => {
-    const context = new ActionContext(400, 300, 350, 300);
+    const context = ActionContext.withToy(400, 300, 350, 300, false, false);
 
     const actionResult = action.createActionResult(context);
 
@@ -243,7 +243,7 @@ describe('RunAwayShortAction Integration Tests', () => {
   });
 
   it('シナリオ: 他のアクションとの比較（内部状態変化なし）', () => {
-    const context = new ActionContext(400, 300, 350, 300);
+    const context = ActionContext.withToy(400, 300, 350, 300, false, false);
 
     const actionResult = action.createActionResult(context);
     const stateChange = action.getInternalStateChange();

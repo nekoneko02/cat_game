@@ -1,6 +1,6 @@
-import { Bonding } from '../../../bonding/Bonding';
-import { ExternalState } from '../../../../../gameLogic/environment/ExternalState';
+
 import { IActionSelector } from '../IActionSelector';
+import { ActionContext } from '../../ActionContext';
 import { CatActionExecutor } from '../../CatActionExecutor';
 import { RunAwayAction } from '../../RunAwayAction';
 import actionConfig from '../../../../../global/config/actionConfig.json';
@@ -25,7 +25,7 @@ export class ActionSelector implements IActionSelector {
    * なつき度と外部状態に基づいてアクションを選択
    * Lv.1では常にrunAwayActionを返す
    */
-  select(_bonding: Bonding, _externalState: ExternalState): CatActionExecutor {
+  select(_context: ActionContext): CatActionExecutor {
     return this.runAwayAction;
   }
 

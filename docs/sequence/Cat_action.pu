@@ -5,81 +5,144 @@ entity Cat
 entity CatAI as AI
 entity CatActionRepository as ActionRepository
 entity Bonding
-entity CatAction as Action
-entity Emotion
-entity ActionExecutor
-entity Position
+entity BondingUpdater
+entity BondingUpdaterFactory
+entity GlobalRegistry
+entity GameTimeManager
 entity ActionSelector as Selector
+entity ActionExecutor
+entity CurrentAction
+entity Position
 
 
-Client -> Cat: action(action_context)
+Client -> Cat: update(externalState, catX, catY, toyX, toyY)
 activate Cat
-Cat -> AI: action(action_context)
+Cat -> AI: action(externalState, currentX, currentY, toyX, toyY, flipX)
 activate AI
-AI -> Action: action(action_context)
-activate Action
-alt not CurrentAction.IsInprogress()
-    Action -> Selector: select(emotion)
+
+alt CurrentAction.isInProgress()
+    note right of AI
+      アクション継続中:
+      移動方向のみ再計算
+    end note
+    AI -> CurrentAction: updateMovement()
+    activate CurrentAction
+    CurrentAction --> AI: actionResult
+    deactivate CurrentAction
+else 新しいアクション選択
+    note right of AI
+      アクション完了または初回実行:
+      新しいアクションを選択
+    end note
+    AI -> Selector: select(bonding, externalState)
     activate Selector
-    Selector --> Action: action_executer = new ConcreteActionExecutor()
+    Selector --> AI: selectedActionExecutor
     deactivate Selector
-    Action -> Action: set new CurrentAction(action_executer)
-end alt
-Action --> CurrentAction: action(context)
-activate CurrentAction
-CurrentAction --> ActionExecutor: execute(action_context)
-activate ActionExecutor
-ActionExecutor --> CurrentAction: new ActionResult(xxx)
-deactivate ActionExecutor
-CurrentAction -> GameTimeManager: getCurrentTime()
-activate GameTimeManager
-GameTimeManager --> CurrentAction: game_time
-deactivate GameTimeManager 
-CurrentAction -> CurrentAction: update_status()
-CurrentAction --> Action: action_result
-deactivate CurrentAction
-Action --> AI: action_result
-deactivate Action
-AI -> Bonding: update(action_result.bonding_change)
-activate Bonding
-Bonding -> BondingFactory: create(bonding_level, bonding_gauge)
-activate BondingFactory
-BondingFactory --> Bonding: new ConcreteBonding()
-deactivate BondingFactory
-Bonding --> AI: new Bonding()
-deactivate Bonding
+
+    AI -> CurrentAction: new CurrentAction(actionExecutor, startTime)
+    activate CurrentAction
+    CurrentAction -> ActionExecutor: execute(currentX, currentY, toyX, toyY)
+    activate ActionExecutor
+    ActionExecutor --> CurrentAction: actionResult
+    deactivate ActionExecutor
+    CurrentAction --> AI: actionResult
+    deactivate CurrentAction
+
+    AI -> Bonding: update(notification)
+    note right of AI
+      アクション実行後、なつき度を更新
+      notification: アクション名を通知
+    end note
+    activate Bonding
+    Bonding -> BondingUpdater: update(level, gauge, notification)
+    activate BondingUpdater
+    BondingUpdater --> Bonding: new_gauge
+    note right of BondingUpdater
+      アクション毎の処理
+      例: Lv3でwatchToyカウント++
+    end note
+    deactivate BondingUpdater
+    Bonding -> Bonding: set gauge = new_gauge
+    Bonding --> AI
+    deactivate Bonding
+end
+
 AI -> Bonding: updateByTime()
+note right of AI
+  時間経過によるなつき度更新
+  毎フレーム呼び出される
+end note
 activate Bonding
-Bonding -> GameTimeManager: getGameTime()
+Bonding -> BondingUpdater: updateByTime(level, gauge)
+activate BondingUpdater
+BondingUpdater -> GlobalRegistry: getInstance()
+activate GlobalRegistry
+GlobalRegistry --> BondingUpdater: globalRegistry
+deactivate GlobalRegistry
+BondingUpdater -> GameTimeManager: getTotalTime()
 activate GameTimeManager
-GameTimeManager --> Bonding: game_time
+GameTimeManager --> BondingUpdater: currentTimeMs
 deactivate GameTimeManager
-Bonding -> Bonding: calc delta
-Bonding -> BondingFactory: create(bonding_level, bonding_gauge)
-activate BondingFactory
-BondingFactory --> Bonding: new_bonding = new ConcreteBonding()
-Bonding -> Bonding: new_bonding.update(last_update_time)
-deactivate BondingFactory
-Bonding --> AI: new Bonding()
+BondingUpdater -> BondingUpdater: 増分計算でゲージ更新
+note right of BondingUpdater
+  増分計算方式:
+  1. 経過時間 = currentTimeMs - lastUpdatedAtMs
+  2. 増分 = 経過時間 / レベル毎の必要時間
+  3. newGauge = currentGaugeValue + 増分
+  4. currentGaugeValue = newGauge
+  5. lastUpdatedAtMs = currentTimeMs
+
+  重要: 保存されたゲージ値を保持
+  - セーブ/ロード時も正しく継続
+  - ゲーム時間のみカウント（実時間は無視）
+end note
+BondingUpdater --> Bonding: new_gauge
+deactivate BondingUpdater
+Bonding -> Bonding: set gauge = new_gauge
+Bonding --> AI
 deactivate Bonding
 
-alt Bonding Level Up
+alt gauge >= 1.0 (Level Up)
+  AI -> Bonding: levelUp()
+  activate Bonding
+  Bonding -> Bonding: level++, gauge = 0
+  Bonding -> BondingUpdaterFactory: getUpdater(new_level, 0)
+  note right of Bonding
+    レベルアップ時はゲージを0にリセット
+  end note
+  activate BondingUpdaterFactory
+  BondingUpdaterFactory -> GlobalRegistry: getInstance()
+  activate GlobalRegistry
+  GlobalRegistry --> BondingUpdaterFactory
+  deactivate GlobalRegistry
+  BondingUpdaterFactory -> GameTimeManager: getTotalTime()
+  activate GameTimeManager
+  GameTimeManager --> BondingUpdaterFactory: currentTimeMs
+  deactivate GameTimeManager
+  BondingUpdaterFactory --> Bonding: new_bonding_updater
+  deactivate BondingUpdaterFactory
+  Bonding -> Bonding: set bonding_updater = new_bonding_updater
+  Bonding --> AI
+  deactivate Bonding
   AI -> ActionRepository: getCatActionsByBondingLevel(new_level)
   activate ActionRepository
-  ActionRepository --> AI: new ConcreteCatAction
+  ActionRepository --> AI: bondingLevelActions
+  note right of AI
+    新しいレベルのActionSelectorと
+    CatAction群に切り替え
+  end note
   deactivate ActionRepository
-end alt
-deactivate Bonding
-AI -> Emotion: update(action_result.emotion_change)
-activate Emotion
-Emotion --> AI: new Emotion()
-deactivate Emotion
-AI -> Cat: result(ActionResult)
-Cat -> Position: move(action_result.movement)
+  AI -> Selector: actionSelector = bondingLevelActions.getActionSelector()
+end
+
+AI --> Cat: actionResult
+deactivate AI
+Cat -> Position: move(actionResult.movement)
 activate Position
 Position --> Cat: new Position()
 deactivate Position
-Cat --> Client: void
+Cat --> Client: actionResult
+
 deactivate Cat
 
 @enduml

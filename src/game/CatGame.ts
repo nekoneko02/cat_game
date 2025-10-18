@@ -1,11 +1,9 @@
 'use client';
 
 import * as Phaser from 'phaser';
-import { Cat, Personality, Preferences } from '@/domain/cat/Cat';
+import { Cat } from '@/domain/cat/Cat';
 import { Toy } from '@/domain/items/toys/Toy';
 import { ExternalState } from '@/domain/gameLogic/environment/ExternalState';
-import { BondingFactory } from '@/domain/cat/catAI/bonding/BondingFactory';
-import { CatPosition } from '@/domain/cat/externalState/CatPosition';
 import { UserSessionManager } from '@/lib/UserSessionManager';
 import { SessionAction } from '@/domain/user/User';
 import { AssetLoader } from '@/lib/AssetLoader';
@@ -15,16 +13,12 @@ import { InputControls } from '@/lib/InputControls';
 import { DebugOverlay } from './DebugOverlay';
 import { AnimationCommand } from '@/types/AnimationCommand';
 import { GameTimeManager } from './GameTimeManager';
+import { GlobalRegistry } from '@/domain/global/GlobalRegistry';
 import assetsConfig from '../../public/config/assets.json';
 import { logDebug, logError, logWarn, logInfo } from '@/lib/log';
 
 export interface CatGameConfig {
-  bonding: {
-    level: number;
-    gauge: number;
-  };
-  personality: Personality;
-  preferences: Preferences;
+  cat: Cat;
   catName?: string;
 }
 
@@ -57,16 +51,20 @@ export default class CatGame extends Phaser.Scene {
     this.inputControls = new InputControls();
   }
 
-  init(data: { initialCatState?: object; catName?: string; onGameEnd?: () => Promise<void> }) {
+  init(data: { cat?: Cat; catName?: string; onGameEnd?: () => Promise<void> }) {
     logDebug('CatGame: init() called', { data });
 
-    this.gameTimeManager = new GameTimeManager();
+    // GlobalRegistryから共通のGameTimeManagerを取得
+    const globalRegistry = GlobalRegistry.getInstance();
+    this.gameTimeManager = globalRegistry.getGameTimeManager();
     this.gameRenderer = new Renderer(this.assetLoader);
 
-    if (data?.initialCatState) {
-      logInfo('CatGame: Using initial cat state', { initialCatState: data.initialCatState });
-      this.cat = this.createCatFromConfig(data.initialCatState as CatGameConfig, data.catName);
-      logInfo('CatGame: Created cat with loaded state', { bondingLevel: this.cat.getBonding().getLevel() });
+    if (data?.cat) {
+      logInfo('CatGame: Using cat from repository', {
+        bondingLevel: data.cat.getBonding().getLevel(),
+        bondingGauge: data.cat.getBonding().getGauge()
+      });
+      this.cat = data.cat;
     } else {
       const errorMessage = 'ねこの内部状態が取得できないため、ゲームを開始できません';
       logError('CatGame: ' + errorMessage);
@@ -74,24 +72,6 @@ export default class CatGame extends Phaser.Scene {
     }
 
     this.onGameEnd = data?.onGameEnd;
-  }
-
-  private createCatFromConfig(config: CatGameConfig, catName?: string): Cat {
-    const bonding = BondingFactory.getBonding(config.bonding);
-    const externalState = ExternalState.createDefault();
-    const initialPosition = CatPosition.create(400, 300);
-
-    return new Cat(
-      'cat-' + performance.now(),
-      catName || config.catName || 'たぬきねこ',
-      externalState,
-      config.personality,
-      config.preferences,
-      0,
-      this.gameTimeManager,
-      bonding,
-      initialPosition
-    );
   }
 
   async preload() {
@@ -121,8 +101,6 @@ export default class CatGame extends Phaser.Scene {
     if (catResult.usedFallback) {
       logWarn('Using fallback cat sprite');
     }
-
-    this.gameTimeManager.reset();
 
     // Set up input controls
     this.inputControls.setupMouseControls(
@@ -322,16 +300,14 @@ export default class CatGame extends Phaser.Scene {
   }
 
   public getCurrentCatState(): CatGameConfig {
-    const bonding = this.cat.getBonding();
     const currentState = {
-      bonding: {
-        level: bonding.getLevel(),
-        gauge: bonding.getGauge()
-      },
-      personality: this.cat.personality,
-      preferences: this.cat.preferences
+      cat: this.cat,
+      catName: this.cat.name
     };
-    logDebug('CatGame: getCurrentCatState returning', { currentState });
+    logDebug('CatGame: getCurrentCatState returning', {
+      bondingLevel: this.cat.getBonding().getLevel(),
+      bondingGauge: this.cat.getBonding().getGauge()
+    });
     return currentState;
   }
 

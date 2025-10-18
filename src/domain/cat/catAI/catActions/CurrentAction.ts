@@ -43,7 +43,7 @@ export class CurrentAction {
     if (this.duration === 0) {
       return false;
     }
-    const currentTime = this.gameTimeManager.getTotalTime();
+    const currentTime = this.gameTimeManager.getGameTime();
     const elapsed = currentTime - this.startTime;
     return elapsed < this.duration;
   }
@@ -53,7 +53,9 @@ export class CurrentAction {
    * 毎フレーム呼び出され、移動方向を再計算する
    */
   action(currentX: number, currentY: number, toyX?: number, toyY?: number, flipX: boolean = false): ActionResult {
-    const context = new ActionContext(currentX, currentY, toyX, toyY, flipX);
+    const context = toyX !== undefined && toyY !== undefined
+      ? ActionContext.withToy(currentX, currentY, toyX, toyY, false, false, flipX)
+      : ActionContext.withoutToy(currentX, currentY, false, false, flipX);
     return this.actionExecutor.createActionResult(context);
   }
 }

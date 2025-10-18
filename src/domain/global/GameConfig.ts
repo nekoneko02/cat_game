@@ -9,6 +9,10 @@ export class GameConfig {
   private readonly gameWidth: number = 800;
   private readonly gameHeight: number = 600;
 
+  /**
+   * @package コンストラクタは外部非公開（package private）
+   * @internal Singletonパターン: getInstance()からのみアクセス可能
+   */
   private constructor() {}
 
   /**

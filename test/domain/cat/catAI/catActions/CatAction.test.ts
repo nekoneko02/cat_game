@@ -12,7 +12,7 @@ class TestCatActionExecutor extends CatActionExecutor {
       deltaX: 10,
       deltaY: 5,
       speed: 100,
-      animationCommands: [{ key: 'test-anim', duration: 1000 }],
+      animationCommands: [{ animationKey: 'test-anim', repeat: 0 }],
       flipX: false
     };
   }
@@ -46,7 +46,7 @@ describe('CatActionExecutor', () => {
   beforeEach(() => {
     testAction = new TestCatActionExecutor('customAction');
     minimalAction = new MinimalTestAction();
-    context = new ActionContext(100, 100, 200, 200);
+    context = ActionContext.withToy(100, 100, 200, 200, false, false);
   });
 
   describe('constructor', () => {
@@ -214,7 +214,7 @@ describe('CatActionExecutor Integration Tests', () => {
         deltaY: 0,
         speed: 150,
         animationCommands: [
-          { key: 'walk', duration: 1000 }
+          { animationKey: 'walk', repeat: 0 }
         ],
         flipX: this.shouldFlipX(deltaX)
       };
@@ -235,14 +235,14 @@ describe('CatActionExecutor Integration Tests', () => {
     const action = new CustomAction();
 
     // 猫の位置(100, 100)、おもちゃの位置(300, 100) → 右向き移動
-    const context1 = new ActionContext(100, 100, 300, 100);
+    const context1 = ActionContext.withToy(100, 100, 300, 100, false, false);
     const result1 = action.createActionResult(context1);
 
     expect(result1.movement?.deltaX).toBeGreaterThan(0);
     expect(result1.movement?.flipX).toBe(true);
 
     // 猫の位置(300, 100)、おもちゃの位置(100, 100) → 左向き移動
-    const context2 = new ActionContext(300, 100, 100, 100);
+    const context2 = ActionContext.withToy(300, 100, 100, 100, false, false);
     const result2 = action.createActionResult(context2);
 
     expect(result2.movement?.deltaX).toBeLessThan(0);
@@ -251,7 +251,7 @@ describe('CatActionExecutor Integration Tests', () => {
 
   it('シナリオ: 内部状態変化は1秒あたりの定数値を返す', () => {
     const action = new CustomAction();
-    const context = new ActionContext(100, 100, 200, 200);
+    const context = ActionContext.withToy(100, 100, 200, 200, false, false);
 
     // createActionResult()ではgetInternalStateChange()がexecute()より先に呼ばれるため
     // executionCountは0, 1, 2となる
@@ -270,7 +270,7 @@ describe('CatActionExecutor Integration Tests', () => {
 
   it('シナリオ: おもちゃがない場合は移動しない', () => {
     const action = new CustomAction();
-    const contextWithoutToy = new ActionContext(100, 100);
+    const contextWithoutToy = ActionContext.withoutToy(100, 100, false, false);
 
     const result = action.createActionResult(contextWithoutToy);
 

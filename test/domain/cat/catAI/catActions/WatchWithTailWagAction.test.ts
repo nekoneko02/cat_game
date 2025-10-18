@@ -17,7 +17,7 @@ describe('WatchWithTailWagAction', () => {
   describe('execute', () => {
     describe('おもちゃがない場合', () => {
       it('デフォルトでwatchWithTailWag_FrontLeftアニメーションを返す', () => {
-        const context = new ActionContext(100, 100);
+        const context = ActionContext.withoutToy(100, 100, false, false);
 
         const result = action.execute(context);
 
@@ -32,7 +32,7 @@ describe('WatchWithTailWagAction', () => {
 
     describe('おもちゃがある場合（flipXなし）', () => {
       it('おもちゃが正面左にある場合、watchWithTailWag_FrontLeftアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 100, 300, false);
+        const context = ActionContext.withToy(200, 200, 100, 300, false, false, false);
 
         const result = action.execute(context);
 
@@ -41,7 +41,7 @@ describe('WatchWithTailWagAction', () => {
       });
 
       it('おもちゃが正面右にある場合、watchWithTailWag_FrontRightアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 300, 300, false);
+        const context = ActionContext.withToy(200, 200, 300, 300, false, false, false);
 
         const result = action.execute(context);
 
@@ -50,7 +50,7 @@ describe('WatchWithTailWagAction', () => {
       });
 
       it('おもちゃが背面左にある場合、watchWithTailWag_BackLeftアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 100, 100, false);
+        const context = ActionContext.withToy(200, 200, 100, 100, false, false, false);
 
         const result = action.execute(context);
 
@@ -59,7 +59,7 @@ describe('WatchWithTailWagAction', () => {
       });
 
       it('おもちゃが背面右にある場合、watchWithTailWag_BackRightアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 300, 100, false);
+        const context = ActionContext.withToy(200, 200, 300, 100, false, false, false);
 
         const result = action.execute(context);
 
@@ -70,7 +70,7 @@ describe('WatchWithTailWagAction', () => {
 
     describe('おもちゃがある場合（flipXあり）', () => {
       it('おもちゃが正面左にある場合、flipXにより右向きアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 100, 300, true);
+        const context = ActionContext.withToy(200, 200, 100, 300, false, false, true);
 
         const result = action.execute(context);
 
@@ -79,7 +79,7 @@ describe('WatchWithTailWagAction', () => {
       });
 
       it('おもちゃが正面右にある場合、flipXにより左向きアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 300, 300, true);
+        const context = ActionContext.withToy(200, 200, 300, 300, false, false, true);
 
         const result = action.execute(context);
 
@@ -88,7 +88,7 @@ describe('WatchWithTailWagAction', () => {
       });
 
       it('おもちゃが背面左にある場合、flipXにより右向きアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 100, 100, true);
+        const context = ActionContext.withToy(200, 200, 100, 100, false, false, true);
 
         const result = action.execute(context);
 
@@ -97,7 +97,7 @@ describe('WatchWithTailWagAction', () => {
       });
 
       it('おもちゃが背面右にある場合、flipXにより左向きアニメーションを返す', () => {
-        const context = new ActionContext(200, 200, 300, 100, true);
+        const context = ActionContext.withToy(200, 200, 300, 100, false, false, true);
 
         const result = action.execute(context);
 
@@ -108,7 +108,7 @@ describe('WatchWithTailWagAction', () => {
 
     describe('境界値のテスト', () => {
       it('おもちゃがちょうど真横にある場合（Y座標が同じ）', () => {
-        const context = new ActionContext(200, 200, 300, 200, false);
+        const context = ActionContext.withToy(200, 200, 300, 200, false, false, false);
 
         const result = action.execute(context);
 
@@ -116,7 +116,7 @@ describe('WatchWithTailWagAction', () => {
       });
 
       it('おもちゃがちょうど真正面にある場合（X座標が同じ）', () => {
-        const context = new ActionContext(200, 200, 200, 300, false);
+        const context = ActionContext.withToy(200, 200, 200, 300, false, false, false);
 
         const result = action.execute(context);
 
@@ -150,7 +150,7 @@ describe('WatchWithTailWagAction Integration Tests', () => {
   });
 
   it('シナリオ: おもちゃに興味を示しながら尻尾を振る', () => {
-    const context = new ActionContext(200, 200, 300, 300);
+    const context = ActionContext.withToy(200, 200, 300, 300, false, false);
 
     const result = action.execute(context);
     const stateChange = action.getInternalStateChange();
@@ -162,7 +162,7 @@ describe('WatchWithTailWagAction Integration Tests', () => {
   });
 
   it('シナリオ: createActionResultで完全な結果を取得', () => {
-    const context = new ActionContext(100, 100, 50, 150);
+    const context = ActionContext.withToy(100, 100, 50, 150, false, false);
 
     const actionResult = action.createActionResult(context);
 
@@ -176,7 +176,7 @@ describe('WatchWithTailWagAction Integration Tests', () => {
   });
 
   it('シナリオ: 複数回実行しても同じ結果を返す（冪等性）', () => {
-    const context = new ActionContext(150, 150, 200, 200);
+    const context = ActionContext.withToy(150, 150, 200, 200, false, false);
 
     const result1 = action.execute(context);
     const result2 = action.execute(context);
@@ -190,10 +190,10 @@ describe('WatchWithTailWagAction Integration Tests', () => {
     const catX = 200;
     const catY = 200;
 
-    const frontLeftResult = action.execute(new ActionContext(catX, catY, 100, 300));
-    const frontRightResult = action.execute(new ActionContext(catX, catY, 300, 300));
-    const backLeftResult = action.execute(new ActionContext(catX, catY, 100, 100));
-    const backRightResult = action.execute(new ActionContext(catX, catY, 300, 100));
+    const frontLeftResult = action.execute(ActionContext.withToy(catX, catY, 100, 300, false, false));
+    const frontRightResult = action.execute(ActionContext.withToy(catX, catY, 300, 300, false, false));
+    const backLeftResult = action.execute(ActionContext.withToy(catX, catY, 100, 100, false, false));
+    const backRightResult = action.execute(ActionContext.withToy(catX, catY, 300, 100, false, false));
 
     expect(frontLeftResult.animationCommands[0].animationKey).toBe('watchWithTailWag_FrontLeft');
     expect(frontRightResult.animationCommands[0].animationKey).toBe('watchWithTailWag_FrontRight');

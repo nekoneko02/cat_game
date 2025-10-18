@@ -1,6 +1,5 @@
-import { Bonding } from '../../bonding/Bonding';
-import { ExternalState } from '../../../../gameLogic/environment/ExternalState';
 import { CatActionExecutor } from '../CatActionExecutor';
+import { ActionContext } from '../ActionContext';
 
 /**
  * ねこアクション選択インターフェース
@@ -8,13 +7,14 @@ import { CatActionExecutor } from '../CatActionExecutor';
  */
 export interface IActionSelector {
   /**
-   * なつき度と外部状態に基づいてアクションを選択
+   * アクションコンテキストに基づいてアクションを選択
    * クラス図: ねこアクション選択LvN --* ねこアクション実行（集約）
-   * @param bonding なつき度
-   * @param externalState 外部状態
+   *
+   * 注: なつき度は不要。ActionSelectorは既にBondingLevel毎に分離されている
+   * @param context アクションコンテキスト（座標・外部状態を統合）
    * @returns 選択されたアクション実行インスタンス
    */
-  select(bonding: Bonding, externalState: ExternalState): CatActionExecutor;
+  select(context: ActionContext): CatActionExecutor;
 
   /**
    * アクション設定を取得（実行時間など）

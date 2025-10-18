@@ -1,6 +1,5 @@
-import { ActionSelector } from '@/domain/cat/catAI/catActions/bondingLevel/Lv0/ActionSelectorLv0';
-import { Bonding } from '@/domain/cat/catAI/bonding/Bonding';
-import { ExternalState } from '@/domain/gameLogic/environment/ExternalState';
+import { ActionSelector } from '@/domain/cat/catAI/catActions/bondingLevel/Lv1/ActionSelectorLv1';
+import { ActionContext } from '@/domain/cat/catAI/catActions/ActionContext';
 
 describe('ActionSelector', () => {
   let actionSelector: ActionSelector;
@@ -10,37 +9,22 @@ describe('ActionSelector', () => {
   });
 
   describe('select', () => {
-    it('should select an action based on bonding and external state', () => {
-      const bonding = Bonding.createDefault();
-      const externalState = ExternalState.createDefault();
+    it('should select an action based on action context', () => {
+      const context = ActionContext.withoutToy(100, 100, false, false);
 
-      const actionExecutor = actionSelector.select(bonding, externalState);
+      const actionExecutor = actionSelector.select(context);
 
       expect(actionExecutor).toBeDefined();
       expect(typeof actionExecutor.getName()).toBe('string');
       expect(['showBelly', 'playWithToy', 'sit', 'runAway']).toContain(actionExecutor.getName());
     });
 
-    it('should select action based on bonding level (high bonding)', () => {
-      const highBonding = new Bonding(8, 0);  // レベル8
-      const externalState = ExternalState.createDefault();
+    it('should select various actions when called multiple times', () => {
+      const context = ActionContext.withoutToy(100, 100, false, false);
 
       const actions = new Set<string>();
       for (let i = 0; i < 50; i++) {
-        const actionExecutor = actionSelector.select(highBonding, externalState);
-        actions.add(actionExecutor.getName());
-      }
-
-      expect(actions.size).toBeGreaterThan(0);
-    });
-
-    it('should select action based on bonding level (low bonding)', () => {
-      const lowBonding = new Bonding(1, 0);  // レベル1
-      const externalState = ExternalState.createDefault();
-
-      const actions = new Set<string>();
-      for (let i = 0; i < 50; i++) {
-        const actionExecutor = actionSelector.select(lowBonding, externalState);
+        const actionExecutor = actionSelector.select(context);
         actions.add(actionExecutor.getName());
       }
 
@@ -48,12 +32,11 @@ describe('ActionSelector', () => {
     });
 
     it('should consider toy presence in selection', () => {
-      const bonding = new Bonding(5, 0);  // レベル5
-      const externalStateWithToy = new ExternalState(true, 50, true, false);
+      const contextWithToy = ActionContext.withToy(100, 100, 150, 150, true, false);
 
       const actions = new Set<string>();
       for (let i = 0; i < 50; i++) {
-        const actionExecutor = actionSelector.select(bonding, externalStateWithToy);
+        const actionExecutor = actionSelector.select(contextWithToy);
         actions.add(actionExecutor.getName());
       }
 
@@ -61,14 +44,14 @@ describe('ActionSelector', () => {
     });
 
     it('should always return a valid action executor', () => {
-      const randomBondings = [
-        new Bonding(Math.floor(Math.random() * 11), Math.random()),  // レベル0-10
-        new Bonding(Math.floor(Math.random() * 11), Math.random()),
-        new Bonding(Math.floor(Math.random() * 11), Math.random()),
+      const contexts = [
+        ActionContext.withoutToy(100, 100, false, false),
+        ActionContext.withToy(100, 100, 150, 150, true, false),
+        ActionContext.withoutToy(200, 200, true, true),
       ];
 
-      randomBondings.forEach(bonding => {
-        const actionExecutor = actionSelector.select(bonding, ExternalState.createDefault());
+      contexts.forEach(context => {
+        const actionExecutor = actionSelector.select(context);
         expect(['showBelly', 'playWithToy', 'sit', 'runAway']).toContain(actionExecutor.getName());
       });
     });

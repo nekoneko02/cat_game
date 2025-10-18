@@ -7,13 +7,28 @@ export class ActionContext {
   public readonly toyX?: number;
   public readonly toyY?: number;
   public readonly flipX: boolean;
+  public readonly toyPresence: boolean;
+  public readonly userPresence: boolean;
+  public readonly isPlaying: boolean;
 
-  constructor(currentX: number, currentY: number, toyX?: number, toyY?: number, flipX: boolean = false) {
-    this.currentX = currentX;
-    this.currentY = currentY;
-    this.toyX = toyX;
-    this.toyY = toyY;
-    this.flipX = flipX;
+  constructor(params: {
+    currentX: number;
+    currentY: number;
+    toyX?: number;
+    toyY?: number;
+    flipX?: boolean;
+    toyPresence: boolean;
+    userPresence: boolean;
+    isPlaying: boolean;
+  }) {
+    this.currentX = params.currentX;
+    this.currentY = params.currentY;
+    this.toyX = params.toyX;
+    this.toyY = params.toyY;
+    this.flipX = params.flipX || false;
+    this.toyPresence = params.toyPresence;
+    this.userPresence = params.userPresence;
+    this.isPlaying = params.isPlaying;
   }
 
   /**
@@ -125,14 +140,30 @@ export class ActionContext {
   /**
    * 静的ファクトリーメソッド: おもちゃなしのコンテキスト
    */
-  static withoutToy(currentX: number, currentY: number, flipX: boolean = false): ActionContext {
-    return new ActionContext(currentX, currentY, undefined, undefined, flipX);
+  static withoutToy(currentX: number, currentY: number, userPresence: boolean, isPlaying: boolean, flipX: boolean = false): ActionContext {
+    return new ActionContext({
+      currentX,
+      currentY,
+      flipX,
+      toyPresence: false,
+      userPresence,
+      isPlaying
+    });
   }
 
   /**
    * 静的ファクトリーメソッド: おもちゃありのコンテキスト
    */
-  static withToy(currentX: number, currentY: number, toyX: number, toyY: number, flipX: boolean = false): ActionContext {
-    return new ActionContext(currentX, currentY, toyX, toyY, flipX);
+  static withToy(currentX: number, currentY: number, toyX: number, toyY: number, userPresence: boolean, isPlaying: boolean, flipX: boolean = false): ActionContext {
+    return new ActionContext({
+      currentX,
+      currentY,
+      toyX,
+      toyY,
+      flipX,
+      toyPresence: true,
+      userPresence,
+      isPlaying
+    });
   }
 }

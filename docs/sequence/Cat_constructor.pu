@@ -1,4 +1,4 @@
-@startuml Cat::action()
+@startuml Cat::constructor()
 
 participant "利用者" as Client
 entity CatRepository
@@ -11,66 +11,92 @@ entity Global.GameConfig
 entity Cat
 entity Position
 entity CatAI as AI
-entity BondingFactory
 entity Bonding
+entity BondingUpdaterFactory
+entity BondingUpdater
+entity GlobalRegistry
+entity GameTimeManager
 entity CatActionRepository as ActionRepository
 entity CatAction as Action
 
 Client -> CatRepository: getCatByUserId(user_id)
 activate CatRepository
-CatRepository -> API: get
+CatRepository -> API: getCatState()
 activate API
 API -> CatDB: query
 activate CatDB
 CatDB --> API: cat_data
 deactivate CatDB
-API --> CatRepository: cat_data
+API --> CatRepository: { catName, catState }
+note right of CatRepository
+  catState.bonding:
+    - level: なつき度レベル (1-10)
+    - gauge: なつき度ゲージ (0.0-1.0)
+  APIから取得した保存値
+end note
 deactivate API
 
 CatRepository -> Global.GameConfig: getGameScreenSize()
 activate Global.GameConfig
 Global.GameConfig --> CatRepository: (max_width, max_height)
 deactivate Global.GameConfig
-CatRepository -> Cat: new Cat(context)
+CatRepository -> Cat: new Cat(id, name, externalState, lastUpdateTime, gameTimeManager, bondingContext, initialPosition)
 note right of CatRepository
-  context:
-  - position
-  - catAi
-    - bonding
-      - level
-      - gauge
-end note
-note right of CatRepository
+  bondingContext = { level, gauge }
   position = (max_width/2, max_height/2)
 end note
 activate Cat
-Cat -> Position: new Position(context.position)
+Cat -> Position: new CatPosition(x, y)
 activate Position
 Position --> Cat
 deactivate Position
 
-Cat -> AI: new CatAI(context.catAi)
+Cat -> AI: new CatAI(bondingContext, gameTimeManager)
 activate AI
-AI -> BondingFactory: getBonding(context.bonding)
-activate BondingFactory
-BondingFactory --> Bonding: new ConcreteBonding(bonding.bonding_gauge)
-note right of Bonding
-  bonding.bonding_levelに応じたConcreteBondingを生成
-end note
-Bonding --> BondingFactory
-BondingFactory --> AI
-deactivate BondingFactory
+AI -> Bonding: new Bonding(level, gauge)
+activate Bonding
+Bonding -> BondingUpdaterFactory: getUpdater(level, gauge)
+activate BondingUpdaterFactory
+BondingUpdaterFactory -> GlobalRegistry: getInstance()
+activate GlobalRegistry
+GlobalRegistry --> BondingUpdaterFactory: globalRegistry
+deactivate GlobalRegistry
+BondingUpdaterFactory -> GameTimeManager: getTotalTime()
+activate GameTimeManager
+GameTimeManager --> BondingUpdaterFactory: currentTimeMs
+deactivate GameTimeManager
+BondingUpdaterFactory -> BondingUpdater: new BondingUpdaterLvX(initialGauge, currentTimeMs)
+note right of BondingUpdater
+  levelに応じた具象クラスを生成
+  - BondingUpdaterLv0～Lv4
 
-AI -> ActionRepository: getCatActionsByBondingLevel(bonding.bonding_level)
+  重要: 保存されたゲージ値を保持
+  - initialGauge: APIから取得した保存ゲージ値
+  - currentTimeMs: 現在のゲーム時間
+
+  増分計算方式を採用:
+  - lastUpdatedAtMs = currentTimeMs
+  - currentGaugeValue = initialGauge
+end note
+activate BondingUpdater
+BondingUpdater --> BondingUpdaterFactory: updater
+deactivate BondingUpdater
+BondingUpdaterFactory --> Bonding: updater
+deactivate BondingUpdaterFactory
+Bonding --> AI: bonding
+deactivate Bonding
+
+AI -> ActionRepository: getCatActionsByBondingLevel(bonding.level)
 activate ActionRepository
-ActionRepository --> Action: new ConcreteCatAction()
+ActionRepository --> Action: BondingLevelActions
 note right of Action
-  bonding.bonding_levelに応じたConcreteCatActionを生成
+  なつき度レベルに応じた
+  ActionSelector + CatAction群を返す
 end note
 activate Action
 Action --> ActionRepository
 deactivate Action
-ActionRepository --> AI
+ActionRepository --> AI: bondingLevelActions
 deactivate ActionRepository
 AI --> Cat
 deactivate AI

@@ -2,10 +2,11 @@ import * as Phaser from 'phaser';
 import { PhaserGame, CatGameScene } from '@/types/game';
 import { CatState } from './session';
 import { StateSaver } from './StateSaver';
+import { Cat } from '@/domain/cat/Cat';
 import { logDebug, logError, logInfo } from './log';
 
 export interface GameConfig {
-  initialCatState?: CatState;
+  cat?: Cat;
   catName?: string;
   onGameEnd?: () => Promise<void>;
 }
@@ -67,12 +68,17 @@ export class GameManager {
 
       // Scene.init(data)でデータを渡してからstart
       const initData = {
-        initialCatState: config.initialCatState,
+        cat: config.cat,
         catName: config.catName,
         onGameEnd: this.handleGameEnd.bind(this)
       };
 
-      logDebug('GameManager: Starting scene with data', { initData });
+      logDebug('GameManager: Starting scene with data', {
+        hasCat: !!config.cat,
+        catName: config.catName,
+        bondingLevel: config.cat?.getBonding().getLevel(),
+        bondingGauge: config.cat?.getBonding().getGauge()
+      });
       sceneManager.start('CatGame', initData);
 
       this.setState(GameState.PLAYING);
@@ -164,8 +170,15 @@ export class GameManager {
 
   getCurrentCatState(): CatState | null {
     const scene = this.getGameScene();
-    if (scene && 'getCurrentCatState' in scene) {
-      return (scene as unknown as { getCurrentCatState: () => CatState }).getCurrentCatState();
+    if (scene && 'getCat' in scene) {
+      const cat = (scene as unknown as { getCat: () => Cat }).getCat();
+      const bonding = cat.getBonding();
+      return {
+        bonding: {
+          level: bonding.getLevel(),
+          gauge: bonding.getGauge()
+        }
+      };
     }
     return null;
   }

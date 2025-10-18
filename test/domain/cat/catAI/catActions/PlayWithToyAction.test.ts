@@ -17,7 +17,7 @@ describe('PlayWithToyAction', () => {
   describe('execute', () => {
     describe('おもちゃがない場合', () => {
       it('移動せずidleアニメーションを返す', () => {
-        const context = new ActionContext(100, 100);
+        const context = ActionContext.withoutToy(100, 100, false, false);
 
         const result = action.execute(context);
 
@@ -31,7 +31,7 @@ describe('PlayWithToyAction', () => {
 
     describe('おもちゃが遠い場合', () => {
       it('おもちゃに向かって移動しchaseアニメーションを返す', () => {
-        const context = new ActionContext(100, 100, 300, 200);
+        const context = ActionContext.withToy(100, 100, 300, 200, false, false);
 
         const result = action.execute(context);
 
@@ -44,7 +44,7 @@ describe('PlayWithToyAction', () => {
       });
 
       it('右方向のおもちゃに向かう場合flipX=trueになる', () => {
-        const context = new ActionContext(100, 100, 300, 100);
+        const context = ActionContext.withToy(100, 100, 300, 100, false, false);
 
         const result = action.execute(context);
 
@@ -53,7 +53,7 @@ describe('PlayWithToyAction', () => {
       });
 
       it('左方向のおもちゃに向かう場合flipX=falseになる', () => {
-        const context = new ActionContext(300, 100, 100, 100);
+        const context = ActionContext.withToy(300, 100, 100, 100, false, false);
 
         const result = action.execute(context);
 
@@ -64,7 +64,7 @@ describe('PlayWithToyAction', () => {
 
     describe('おもちゃが近い場合（60px以内）', () => {
       it('停止してplayアニメーションを返す', () => {
-        const context = new ActionContext(100, 100, 130, 100);
+        const context = ActionContext.withToy(100, 100, 130, 100, false, false);
 
         const result = action.execute(context);
 
@@ -77,7 +77,7 @@ describe('PlayWithToyAction', () => {
       });
 
       it('おもちゃの方向を向く（右側のおもちゃ）', () => {
-        const context = new ActionContext(100, 100, 150, 100);
+        const context = ActionContext.withToy(100, 100, 150, 100, false, false);
 
         const result = action.execute(context);
 
@@ -87,7 +87,7 @@ describe('PlayWithToyAction', () => {
       });
 
       it('おもちゃの方向を向く（左側のおもちゃ）', () => {
-        const context = new ActionContext(100, 100, 50, 100);
+        const context = ActionContext.withToy(100, 100, 50, 100, false, false);
 
         const result = action.execute(context);
 
@@ -97,7 +97,7 @@ describe('PlayWithToyAction', () => {
       });
 
       it('ちょうど60pxの距離でplayアニメーションになる', () => {
-        const context = new ActionContext(100, 100, 160, 100);
+        const context = ActionContext.withToy(100, 100, 160, 100, false, false);
 
         const result = action.execute(context);
 
@@ -107,7 +107,7 @@ describe('PlayWithToyAction', () => {
       });
 
       it('61pxの距離ではchaseアニメーションになる', () => {
-        const context = new ActionContext(100, 100, 161, 100);
+        const context = ActionContext.withToy(100, 100, 161, 100, false, false);
 
         const result = action.execute(context);
 
@@ -165,21 +165,21 @@ describe('PlayWithToyAction Integration Tests', () => {
 
   it('シナリオ: おもちゃを追いかけて捕まえるまでの流れ', () => {
     // 初期位置: 猫(100, 100)、おもちゃ(300, 200) - 遠い
-    const context1 = new ActionContext(100, 100, 300, 200);
+    const context1 = ActionContext.withToy(100, 100, 300, 200, false, false);
     const result1 = action.execute(context1);
 
     expect(result1.speed).toBe(200);
     expect(result1.animationCommands[0].animationKey).toBe('chase');
 
     // 移動中: 猫(200, 150)、おもちゃ(300, 200) - まだ遠い
-    const context2 = new ActionContext(200, 150, 300, 200);
+    const context2 = ActionContext.withToy(200, 150, 300, 200, false, false);
     const result2 = action.execute(context2);
 
     expect(result2.speed).toBe(200);
     expect(result2.animationCommands[0].animationKey).toBe('chase');
 
     // 到着: 猫(280, 190)、おもちゃ(300, 200) - 近い
-    const context3 = new ActionContext(280, 190, 300, 200);
+    const context3 = ActionContext.withToy(280, 190, 300, 200, false, false);
     const result3 = action.execute(context3);
 
     expect(result3.speed).toBe(0);
@@ -190,13 +190,13 @@ describe('PlayWithToyAction Integration Tests', () => {
 
   it('シナリオ: おもちゃが消えた場合の挙動', () => {
     // おもちゃがある状態
-    const context1 = new ActionContext(100, 100, 300, 200);
+    const context1 = ActionContext.withToy(100, 100, 300, 200, false, false);
     const result1 = action.execute(context1);
 
     expect(result1.animationCommands[0].animationKey).toBe('chase');
 
     // おもちゃが消えた
-    const context2 = new ActionContext(200, 150);
+    const context2 = ActionContext.withoutToy(200, 150, false, false);
     const result2 = action.execute(context2);
 
     expect(result2.deltaX).toBe(0);
@@ -206,7 +206,7 @@ describe('PlayWithToyAction Integration Tests', () => {
 
   it('シナリオ: 対角線方向のおもちゃを追いかける', () => {
     // 左上から右下へ
-    const context1 = new ActionContext(50, 50, 350, 350);
+    const context1 = ActionContext.withToy(50, 50, 350, 350, false, false);
     const result1 = action.execute(context1);
 
     expect(result1.deltaX).toBeGreaterThan(0);
@@ -214,7 +214,7 @@ describe('PlayWithToyAction Integration Tests', () => {
     expect(result1.flipX).toBe(true);
 
     // 右下から左上へ
-    const context2 = new ActionContext(350, 350, 50, 50);
+    const context2 = ActionContext.withToy(350, 350, 50, 50, false, false);
     const result2 = action.execute(context2);
 
     expect(result2.deltaX).toBeLessThan(0);

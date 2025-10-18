@@ -10,7 +10,7 @@ class MockActionExecutor extends CatActionExecutor {
 
   execute(context: ActionContext) {
     return {
-      animationKey: 'mock_animation',
+      animationCommands: [{ animationKey: 'mock_animation', repeat: 0 }],
       flipX: false,
       deltaX: 10,
       deltaY: 0
@@ -38,13 +38,12 @@ class MockGameTimeManager extends GameTimeManager {
     return this.mockDeltaTime;
   }
 
-  getTotalTime(): number {
+  getGameTime(): number {
     return this.mockTotalTime;
   }
 
-  update(deltaTime: number): void {
-    this.mockDeltaTime = deltaTime;
-    this.mockTotalTime += deltaTime;
+  update(): void {
+    // Mock implementation - does nothing
   }
 }
 
@@ -151,9 +150,10 @@ describe('CurrentAction', () => {
 
       expect(result).toBeDefined();
       expect(result.movement).toBeDefined();
-      expect(result.movement.animationKey).toBe('mock_animation');
-      expect(result.movement.deltaX).toBe(10);
-      expect(result.movement.deltaY).toBe(0);
+      expect(result.movement?.animationCommands).toHaveLength(1);
+      expect(result.movement?.animationCommands[0].animationKey).toBe('mock_animation');
+      expect(result.movement?.deltaX).toBe(10);
+      expect(result.movement?.deltaY).toBe(0);
     });
 
     it('should include internal state change in result', () => {
