@@ -42,4 +42,4 @@
 4. ドメインモデルとの整合性を維持
 5. 商用品質のコードを作成（不要な要素を除去）
 
-詳細は[DEVELOPMENT_GUIDELINES.md](./DEVELOPMENT_GUIDELINES.md)を参照してください。
+詳細は @DEVELOPMENT_GUIDELINES.md を参照してください。
