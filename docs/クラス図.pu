@@ -1,0 +1,353 @@
+@startuml クラス図
+'エサ、好み、成功体験は未実装のため、コメントアウト中'
+package "ユーザー" as package_ユーザー {
+  class ユーザーアカウント <<User>> {
+    ユーザーid: id
+    初回サインアップ日時
+  }
+}
+
+package Global {
+  class GlobalRegistry {
+    + getInstance(): GlobalRegistry
+    + getGameTimeManager(): GameTimeManager
+    + getAssetConfig(): AssetConfig
+    + setMockTimeManager(mock: GameTimeManager)
+  }
+  class GameTimeManager {
+    + gt: ゲーム内時間（フレーム数/FPS）
+    + rt: 実時間（初回サインアップ時間からの経過時間）
+    + updateOneFrame()
+  }
+  note right of GameTimeManager
+    【updateOneFrame()の利用規約】
+    - CatGameのupdate()で必ず呼び出すこと
+    - CatGameのupdate()以外での利用禁止
+  end note
+  class AssetConfig {
+    + getAssetPath(assetName: string): string
+  }
+  class GameConfig {
+    + getGameScreenSize(): (width, height)
+  }
+  GlobalRegistry --> GameTimeManager
+  GlobalRegistry --> AssetConfig
+}
+
+package アイテム {
+  /'package "エサ" {
+    class エサ {
+    }
+  
+    エサ --> package_ユーザー.所有エサ
+  }'/
+
+  package "おもちゃ" {
+    class おもちゃ <<Toy>> {
+      名前: key
+      イラストid
+    }
+    /'class おもちゃマスタ {
+      名前
+      色
+      見た目（形）
+      音
+      素材
+    }'/
+
+    おもちゃ *-- package_ユーザー.ユーザーアカウント
+    /'おもちゃ --> おもちゃマスタ'/
+  }
+}
+
+
+package "ねこ" {
+  interface なつき度View {
+    + getLevel(): int
+    + getGauge(): double
+  }
+
+  class ねこ <<Cat>> {
+    名前: name
+    + action(external_state): update(delta)
+    + getBonding(): なつき度View
+    + getPosition()
+  }
+  class ねこマスタ {
+    名前
+  }
+  class ねこRepository <<CatRepository>> {
+    + getCatByUserId(userId): Cat
+  }
+  ねこ --> ねこAI.ねこAI
+  ねこ --> ねこマスタ
+  ねこRepository --> ねこ
+  ユーザーアカウント --> ねこ.ねこ
+
+  package ねこ外部状態 {
+    class ねこ位置 <<Cat.externalState>> {
+      x
+      y
+    }
+    abstract ねこ位置変化 {
+      x
+      y
+    }
+    ねこ位置 ..> ねこ位置変化
+    ねこ.ねこ --> ねこ位置
+  }
+
+  package "ねこAI" {
+    class ねこAI <<None>> {
+      action(external_state): update(delta)
+      getBonding(): なつき度View
+      - switchCatActionByBondingLevel()
+    }
+
+    package "感情システム" {
+      class 快適度 <<InternalState.emotions.valence>> {
+        value: 0~1
+      }
+
+      class 覚醒度 <<InternalState.emotions.arousal>> {
+        value: 0~1
+      }
+
+      class 安全安心度 <<InternalState.emotions.safety>> {
+        value: 0~1
+      }
+
+      class 親和性 <<InternalState.emotions.social>> {
+        value: 0~1
+      }
+
+      class 身体的不快感 <<InternalState.emotions.discomfort>> {
+        value: 0~1
+      }
+
+      /'class "好み・成功体験to感情" {
+      }'/
+
+      class 感情 <<InternalState>> {
+        get()
+        update(delta): applyStateChanges(changes)
+        applyExternalInfluence(externalState)
+      }
+      abstract 感情変化 {
+        快適度変化
+        覚醒度変化
+        安全安心度変化
+        親和性変化
+        身体的不快感変化
+      }
+
+      感情 --> 快適度
+      感情 --> 覚醒度
+      感情 --> 安全安心度
+      感情 --> 親和性
+      感情 --> 身体的不快感
+      感情 ..> 感情変化
+      /'感情 --> "好み・成功体験to感情"'/
+    }
+
+    package なつき {
+      class なつき度 <<Bonding>> {
+        + getLevel(): int
+        + getGauge(): double
+        + update(なつき度更新通知): void
+        + levelUp(): void
+      }
+
+      class なつきLv {
+        int value: 0~10
+      }
+      class なつきゲージ {
+        double value: 0~1
+      }
+
+      class なつき度更新通知 <<BondingUpdateNotification>> {
+        ねこアクション名: string
+      }
+
+      interface なつき度更新 <<BondingUpdater>> {
+        ねこアクション名: string
+        + update(なつきLv, なつきゲージ, なつき度更新通知): なつきゲージ
+        + updateByTime(なつきLv, なつきゲージ): なつきゲージ
+      }
+      note right of なつき度更新
+        update()とupdateByTime()は、なつきゲージのみ更新（最大1）
+        ゲージが1に達した場合のレベルアップ処理はCatAIで行う
+      end note
+
+      package なつき度更新毎 {
+        class なつき度更新LvN <<BondingUpdaterLv0~Lv10>> {
+          ねこアクション名: string
+        }
+      }
+
+      class なつき度更新Factory <<BondingUpdaterFactory>> {
+        + getUpdater(level): BondingUpdater
+      }
+
+      なつき度 ..|> ねこ.なつき度View
+      なつき度 --> なつきLv
+      なつき度 --> なつきゲージ
+      なつき度 --> なつき度更新
+      なつき度 ..> なつき度更新通知
+      なつき度 ..> なつき度更新Factory
+      なつき度更新LvN ..|> なつき度更新
+      なつき度更新Factory --> なつき度更新LvN
+    }
+
+    package ねこアクション {
+      interface ねこアクション <<CatAction>> {
+        action(context): CatActionExecutor
+      }
+
+      class ねこアクションRepository <<CatActionRepository>> {
+        getCatActionsByBondingLevel(level): ねこアクション
+      }
+
+      package なつき度毎 {
+        class ねこアクションなつき度LvN <<BondingLevelActionsLv0~Lv10>> {
+          + action(context): CatActionExecutor
+        }
+        class ねこアクション選択LvN <<ActionSelectorLv0~Lv10>> {
+          select(emotion)
+        }
+      }
+      /'class 成功体験toねこアクション {
+      }'/
+
+      package ねこアクション実行package{
+        abstract class ねこアクション実行 <<CatActionExecutor>> {
+          + execute(context): ActionMovement
+          + createActionResult(context): ActionResult
+        }
+        class ねこアクション毎の具象クラス <<ShowBellyAction, PlayWithToyAction, SitAction, RunAwayAction>> {
+          名前: name
+        }
+        interface ねこアクション内容 <<ActionResult>> {
+          イラストId: animationKey
+        }
+        class ねこ位置変化 <<ActionMovement>> {
+          x
+          y
+        }
+        class ねこ感情変化 <<InternalStateChange>> {
+        }
+
+        ねこアクション毎の具象クラス ..|> ねこアクション実行
+        ねこアクション毎の具象クラス --> ねこアクション内容
+        ねこアクション内容 --> ねこ位置変化
+        ねこアクション内容 --> ねこ感情変化
+        ねこアクション内容 --> なつき.なつき度更新通知
+        ねこ位置変化 --|> ねこ.ねこ外部状態.ねこ位置変化
+      }
+
+      class 実行中ねこアクション <<CurrentAction>> {
+        開始時間gt
+        実行時間gt
+        + isInProgress(): boolean
+        + action(context): ActionResult
+      }
+
+      ねこ.ねこAI.ねこAI --> ねこアクションRepository
+      ねこアクションRepository --> ねこアクションなつき度LvN
+      ねこアクション ..> ねこアクション実行
+      ねこアクション選択LvN --* ねこアクション実行毎の具象クラス
+      ねこアクション選択LvN --> 実行中ねこアクション
+      ねこアクション選択LvN --> なつきLv
+      ねこ感情変化 --|> ねこ.ねこAI.感情システム.感情変化
+      /'ねこアクション選択LvN --> 成功体験toねこアクション'/
+      ねこアクションなつき度LvN --> ねこ.ねこAI.なつき.なつきLv
+      ねこアクションなつき度LvN --> ねこアクション選択LvN
+      ねこアクションなつき度LvN ..|> ねこアクション
+      実行中ねこアクション --> ねこアクション実行
+    }
+
+
+    /'class おもちゃ好み {
+      色
+      見た目（形）
+      音
+      素材
+      動き
+    }'/
+
+    /'class 成功体験 {
+      get()
+      update(info)
+    }'/
+
+    ねこAI --> 感情
+    ねこAI --> なつき.なつき度
+    /'ねこAI --> おもちゃ好み'/
+    /'ねこAI --> 成功体験'/
+    ねこAI --> ねこアクション.ねこアクション
+  }
+}
+
+package ゲームロジック {
+  class "Scene" <<CatGame>> {
+    init()
+    preload()
+    create()
+    update()
+  }
+  class ユーザー操作 <<InputControls>> {
+    move(x,y): handlePointerMove(x, y)
+    placeToy(x,y): handlePointerDown(x, y)
+    feed()
+  }
+  class なつき度UI <<Renderer>> {
+    updateBondingDisplay(level, value)
+  }
+  class 移動速度 <<MovementSpeed>> {
+    speedPerSecond: number
+    + getSpeedPerFrame(fps): number
+  }
+
+  "Scene" --> ねこ.ねこ
+  "Scene" --> ユーザー操作
+  "Scene" --> なつき度UI
+  なつき度UI ..> ねこ.なつき度View
+  "Scene" --> ゲームロジック.環境.外部状態
+
+  package 環境 {
+    class 外部状態 <<ExternalState>> {
+      update(delta): updateToy/updateUser/updatePlayingState
+    }
+
+    class ユーザー位置 <<ExternalState.userPresence>> {
+      isExist: userPresence
+      x
+      y
+    }
+    class おもちゃ位置 <<ExternalState.toyPresence/toyDistance>> {
+      isExist: toyPresence
+      x
+      y
+    }
+
+
+    abstract 外部状態変化 {
+      ユーザー位置変化
+      おもちゃ位置変化
+    }
+
+    外部状態 --> ユーザー位置
+    外部状態 --> おもちゃ位置
+    外部状態 ..> 外部状態変化
+  }
+
+}
+
+package アクター{
+  abstract ユーザー <<actor>> <<User>> {
+
+  }
+  ユーザー --> ユーザーアカウント
+  ユーザー --> ユーザー操作
+}
+@enduml

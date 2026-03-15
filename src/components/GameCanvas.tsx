@@ -2,9 +2,10 @@
 
 import { useLayoutEffect, useRef, useState } from 'react';
 import { PhaserGame } from '@/types/game';
-import { CatState } from '@/lib/session';
+import { Cat } from '@/domain/cat/Cat';
+import { CatRepository } from '@/domain/cat/CatRepository';
+import { GlobalRegistry } from '@/domain/global/GlobalRegistry';
 import { GameManager } from '@/lib/GameManager';
-import { apiClient } from '@/lib/ApiClient';
 import { GameIcon } from '@/components/GameIcon';
 import { IMAGE_IDS } from '@/constants/images';
 import { logDebug, logError, logInfo } from '@/lib/log';
@@ -33,34 +34,30 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
         gameManagerRef.current = new GameManager();
         logDebug('GameCanvas: Created new GameManager instance');
 
-        // ゲーム開始時に最新の猫状態を取得
-        let initialCatGameConfig: CatState | undefined = undefined;
+        // ゲーム開始時にCatRepositoryからCatインスタンスを取得
+        let cat: Cat | undefined = undefined;
         try {
-          logDebug('GameCanvas: Calling getCatState API...');
-          const response = await apiClient.getCatState();
-          logDebug('GameCanvas: getCatState response', { response });
+          logDebug('GameCanvas: Creating Cat via CatRepository...');
 
-          if (response.success && response.data?.catState) {
-            // CatStateをCatGameConfigに変換
-            initialCatGameConfig = {
-              bonding: response.data.catState.bonding,
-              playfulness: response.data.catState.playfulness,
-              fear: response.data.catState.fear,
-              personality: response.data.catState.personality,
-              preferences: response.data.catState.preferences
-            };
-            logInfo('GameCanvas: Using loaded cat state', { initialCatGameConfig });
-          } else {
-            const errorMessage = 'ねこの情報が取得できませんでした';
-            logError('GameCanvas: Cat state retrieval failed', { error: response.error });
-            if (onCatStateError) {
-              onCatStateError(errorMessage);
-              return; // ゲーム初期化を中断
-            }
-          }
+          // GlobalRegistryから共通のGameTimeManagerを取得してリセット
+          // Cat作成前に実行することで、BondingUpdaterが正しい時刻を使用する
+          const globalRegistry = GlobalRegistry.getInstance();
+          const gameTimeManager = globalRegistry.getGameTimeManager();
+          gameTimeManager.reset();
+
+          const catRepository = new CatRepository();
+
+          // TODO: userIdを適切に取得する（現在は仮実装）
+          const userId = 'current-user';
+          cat = await catRepository.getCatByUserId(userId);
+
+          logInfo('GameCanvas: Created cat via Repository', {
+            bondingLevel: cat.getBonding().getLevel(),
+            bondingGauge: cat.getBonding().getGauge()
+          });
         } catch (error) {
           const errorMessage = 'ねこの情報が取得できませんでした';
-          logError('GameCanvas: Failed to load initial cat state', { error: error instanceof Error ? error.message : String(error) });
+          logError('GameCanvas: Failed to load cat from repository', { error: error instanceof Error ? error.message : String(error) });
           if (onCatStateError) {
             onCatStateError(errorMessage);
             return; // ゲーム初期化を中断
@@ -68,8 +65,8 @@ export default function GameCanvas({ onGameReady, catName, onGameEnd, onCatState
         }
 
         const gameConfig = {
-          initialCatState: initialCatGameConfig,
-          catName: catName || undefined,
+          cat: cat,
+          catName: catName || cat?.name,
           onGameEnd: onGameEnd
         };
 

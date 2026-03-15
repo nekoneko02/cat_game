@@ -88,6 +88,113 @@
       "frameWidth": 528,
       "frameHeight": 396,
       "frameRate": 6
+    },
+    {
+      "key": "cautious_watchFrontLeft",
+      "frames": [
+        "/assets/cats/cautious_watchFrontLeft.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "cautious_watchFrontRight",
+      "frames": [
+        "/assets/cats/cautious_watchFrontRight.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "cautious_watchBackLeft",
+      "frames": [
+        "/assets/cats/cautious_watchBackLeft.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "cautious_watchBackRight",
+      "frames": [
+        "/assets/cats/cautious_watchBackRight.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "watchWithTailWag_FrontLeft",
+      "frames": [
+        "/assets/cats/watchWithTailWag_FrontLeft_1.png",
+        "/assets/cats/watchWithTailWag_FrontLeft_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "watchWithTailWag_FrontRight",
+      "frames": [
+        "/assets/cats/watchWithTailWag_FrontRight_1.png",
+        "/assets/cats/watchWithTailWag_FrontRight_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "watchWithTailWag_BackLeft",
+      "frames": [
+        "/assets/cats/watchWithTailWag_BackLeft_1.png",
+        "/assets/cats/watchWithTailWag_BackLeft_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "watchWithTailWag_BackRight",
+      "frames": [
+        "/assets/cats/watchWithTailWag_BackRight_1.png",
+        "/assets/cats/watchWithTailWag_BackRight_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "watchToy",
+      "frames": [
+        "/assets/cats/watchToy_1.png",
+        "/assets/cats/watchToy_2.png",
+        "/assets/cats/watchToy_3.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 6
+    },
+    {
+      "key": "shrinkBack",
+      "frames": [
+        "/assets/cats/shrinkBack_1.png",
+        "/assets/cats/shrinkBack_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 4
+    },
+    {
+      "key": "walk",
+      "frames": [
+        "/assets/cats/running_1.png",
+        "/assets/cats/running_2.png"
+      ],
+      "frameWidth": 528,
+      "frameHeight": 396,
+      "frameRate": 4
     }
   ],
   "ui": [

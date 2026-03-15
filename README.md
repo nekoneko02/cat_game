@@ -91,7 +91,47 @@ npm run start
 
 # ESLintによるコード検査
 npm run lint
+
+# テスト実行
+npm test
+
+# テスト実行（watchモード）
+npm run test:watch
+
+# カバレッジ付きテスト実行
+npm run test:coverage
 ```
+
+### テスト
+
+本プロジェクトでは、Jest + Testing Libraryを使用した単体テスト・結合テストを実装しています。
+
+#### テスト実行
+
+```bash
+# 全テストを実行
+npm test
+
+# watchモードでテスト実行（ファイル変更を監視）
+npm run test:watch
+
+# カバレッジレポート付きでテスト実行
+npm run test:coverage
+```
+
+#### テスト対象
+
+- **ドメインエンティティ**: Cat, User, Toyなど
+- **アクションクラス**: CatAction, PlayWithToyAction, ShowBellyAction, SitAction, RunAwayActionなど
+- **値オブジェクト**: InternalState, ExternalStateなど
+
+#### テストカバレッジ基準
+
+- **C1カバレッジ（分岐網羅）**: 最低限の分岐網羅を確保
+- **privateメソッド**: 全メソッドをテスト対象に含む
+- **結合テスト**: 主要シナリオの統合テストを実装
+
+詳細は [DEVELOPMENT_GUIDELINES.md](./DEVELOPMENT_GUIDELINES.md) の「単体テスト実装指針」を参照してください。
 
 ## ゲームの遊び方
 

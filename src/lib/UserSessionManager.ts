@@ -1,4 +1,4 @@
-import { User, PlaySession, SessionAction } from '@/domain/entities/User';
+import { User, PlaySession, SessionAction } from '@/domain/user/User';
 import { logWarn } from './log';
 
 /**

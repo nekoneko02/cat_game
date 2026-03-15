@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser';
 import { UserSessionManager } from './UserSessionManager';
-import { SessionAction } from '@/domain/entities/User';
-import { Cat } from '@/domain/entities/Cat';
-import { Toy } from '@/domain/entities/Toy';
+import { SessionAction } from '@/domain/user/User';
+import { Cat } from '@/domain/cat/Cat';
+import { Toy } from '@/domain/items/toys/Toy';
 
 export interface InputConfig {
   enablePetting: boolean;
@@ -77,7 +77,6 @@ export class InputControls {
       );
 
       if (distance < this.config.pettingDistance) {
-        cat.petByUser();
         this.sessionManager.recordAction(SessionAction.petCat(pointer.x, pointer.y));
 
         if (onPetCat) {

@@ -1,13 +1,11 @@
 import { SessionOptions } from 'iron-session';
-import { Personality, Preferences } from '@/domain/entities/Cat';
 import { logError } from './log';
 
 export interface CatState {
-  bonding: number;
-  playfulness: number;
-  fear: number;
-  personality: Personality;
-  preferences: Preferences;
+  bonding: {
+    level: number;
+    gauge: number;
+  };
 }
 
 
@@ -32,21 +30,9 @@ export const sessionOptions: SessionOptions = {
 
 export function createDefaultCatState(): CatState {
   return {
-    bonding: -1,  // InternalState.createDefault()と同じ初期値
-    playfulness: 0,
-    fear: 1,
-    personality: {
-      social: 0.7,
-      active: 0.8,
-      bold: 0.6,
-      dependent: 0.5,
-      friendly: 0.8
-    },
-    preferences: {
-      toyTypes: ['ball', 'feather', 'mouse'],
-      movementSpeed: 0.7,
-      movementDirections: ['horizontal', 'vertical'],
-      randomness: 0.6
+    bonding: {
+      level: 1,
+      gauge: 0
     }
   };
 }

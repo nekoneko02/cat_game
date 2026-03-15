@@ -1,12 +1,11 @@
 'use client';
 
 import * as Phaser from 'phaser';
-import { Cat, Personality, Preferences } from '@/domain/entities/Cat';
-import { Toy } from '@/domain/entities/Toy';
-import { ExternalState } from '@/domain/valueObjects/ExternalState';
-import { InternalState } from '@/domain/valueObjects/InternalState';
+import { Cat } from '@/domain/cat/Cat';
+import { Toy } from '@/domain/items/toys/Toy';
+import { ExternalState } from '@/domain/gameLogic/environment/ExternalState';
 import { UserSessionManager } from '@/lib/UserSessionManager';
-import { SessionAction } from '@/domain/entities/User';
+import { SessionAction } from '@/domain/user/User';
 import { AssetLoader } from '@/lib/AssetLoader';
 import { AnimationManager } from '@/lib/AnimationManager';
 import { Renderer } from '@/lib/Renderer';
@@ -14,15 +13,12 @@ import { InputControls } from '@/lib/InputControls';
 import { DebugOverlay } from './DebugOverlay';
 import { AnimationCommand } from '@/types/AnimationCommand';
 import { GameTimeManager } from './GameTimeManager';
+import { GlobalRegistry } from '@/domain/global/GlobalRegistry';
 import assetsConfig from '../../public/config/assets.json';
 import { logDebug, logError, logWarn, logInfo } from '@/lib/log';
 
 export interface CatGameConfig {
-  bonding: number;
-  playfulness: number;
-  fear: number;
-  personality: Personality;
-  preferences: Preferences;
+  cat: Cat;
   catName?: string;
 }
 
@@ -55,16 +51,20 @@ export default class CatGame extends Phaser.Scene {
     this.inputControls = new InputControls();
   }
 
-  init(data: { initialCatState?: object; catName?: string; onGameEnd?: () => Promise<void> }) {
+  init(data: { cat?: Cat; catName?: string; onGameEnd?: () => Promise<void> }) {
     logDebug('CatGame: init() called', { data });
 
-    this.gameTimeManager = new GameTimeManager();
+    // GlobalRegistryから共通のGameTimeManagerを取得
+    const globalRegistry = GlobalRegistry.getInstance();
+    this.gameTimeManager = globalRegistry.getGameTimeManager();
     this.gameRenderer = new Renderer(this.assetLoader);
 
-    if (data?.initialCatState) {
-      logInfo('CatGame: Using initial cat state', { initialCatState: data.initialCatState });
-      this.cat = this.createCatFromConfig(data.initialCatState as CatGameConfig, data.catName);
-      logInfo('CatGame: Created cat with loaded state', { bonding: this.cat.getInternalState().bonding });
+    if (data?.cat) {
+      logInfo('CatGame: Using cat from repository', {
+        bondingLevel: data.cat.getBonding().getLevel(),
+        bondingGauge: data.cat.getBonding().getGauge()
+      });
+      this.cat = data.cat;
     } else {
       const errorMessage = 'ねこの内部状態が取得できないため、ゲームを開始できません';
       logError('CatGame: ' + errorMessage);
@@ -72,22 +72,6 @@ export default class CatGame extends Phaser.Scene {
     }
 
     this.onGameEnd = data?.onGameEnd;
-  }
-
-  private createCatFromConfig(config: CatGameConfig, catName?: string): Cat {
-    const internalState = new InternalState(config.bonding, config.playfulness, config.fear);
-    const externalState = ExternalState.createDefault();
-
-    return new Cat(
-      'cat-' + performance.now(),
-      catName || config.catName || 'たぬきねこ',
-      internalState,
-      externalState,
-      config.personality,
-      config.preferences,
-      0,
-      this.gameTimeManager
-    );
   }
 
   async preload() {
@@ -118,8 +102,6 @@ export default class CatGame extends Phaser.Scene {
       logWarn('Using fallback cat sprite');
     }
 
-    this.gameTimeManager.reset();
-
     // Set up input controls
     this.inputControls.setupMouseControls(
       this,
@@ -141,14 +123,14 @@ export default class CatGame extends Phaser.Scene {
 
     this.sessionManager.startPlaySession();
 
-    this.lastBondingLevel = this.cat.getBondingLevel();
+    this.lastBondingLevel = this.cat.getBonding().getLevel();
 
     // なつき度UIを作成
     this.bondingDisplay = this.gameRenderer.createBondingDisplay(this);
     this.updateBondingDisplay();
 
     //デバッグ用、商用環境ではOFF
-    //this.enableDebugOverlay();
+    this.enableDebugOverlay();
 
     // アイドルアニメーションを開始
     this.executeAnimationSequence([{
@@ -158,13 +140,14 @@ export default class CatGame extends Phaser.Scene {
   }
 
   update() {
-    const currentTime = Date.now();
+    // Catの現在位置を取得
+    const catPosition = this.cat.getPosition();
 
     const externalState = new ExternalState(
       !!this.toy,
       this.toy ? Phaser.Math.Distance.Between(
-        this.catSprite.x,
-        this.catSprite.y,
+        catPosition.x,
+        catPosition.y,
         this.toy.x,
         this.toy.y
       ) : 0,
@@ -175,15 +158,21 @@ export default class CatGame extends Phaser.Scene {
 
     const toyX = this.toy ? this.toy.x : undefined;
     const toyY = this.toy ? this.toy.y : undefined;
-    const actionResult = this.cat.update(externalState, this.catSprite.x, this.catSprite.y, toyX, toyY);
+    const actionResult = this.cat.update(externalState, catPosition.x, catPosition.y, toyX, toyY);
 
     if (actionResult && actionResult.movement) {
       this.executeMovement(actionResult.movement);
     }
 
-    const bondingLevel = this.cat.getBondingLevel();
+    // Catの位置をスプライトに反映
+    const newPosition = this.cat.getPosition();
+    this.catSprite.setPosition(newPosition.x, newPosition.y);
+
+    // なつき度UIを毎フレーム更新（ゲージは常に変化する可能性があるため）
+    this.updateBondingDisplay();
+
+    const bondingLevel = this.cat.getBonding().getLevel();
     if (bondingLevel !== this.lastBondingLevel) {
-      this.updateBondingDisplay();
       this.lastBondingLevel = bondingLevel;
     }
 
@@ -195,25 +184,7 @@ export default class CatGame extends Phaser.Scene {
   }
 
   private executeMovement(movement: { deltaX?: number; deltaY?: number; speed?: number; animationCommands: AnimationCommand[]; flipX?: boolean }) {
-    if (movement.deltaX !== undefined && movement.deltaY !== undefined) {
-      if (movement.deltaX !== 0 || movement.deltaY !== 0) {
-        const targetX = this.catSprite.x + movement.deltaX;
-        const targetY = this.catSprite.y + movement.deltaY;
-
-        const pixelsPerSecond = movement.speed || 100;
-        const deltaTime = this.gameTimeManager.getDeltaTime();
-        const moveDistance = (pixelsPerSecond * deltaTime) / 1000;
-
-        if (moveDistance > 0) {
-          const angle = Phaser.Math.Angle.Between(this.catSprite.x, this.catSprite.y, targetX, targetY);
-          const velocityX = Math.cos(angle) * pixelsPerSecond;
-          const velocityY = Math.sin(angle) * pixelsPerSecond;
-          this.catSprite.setVelocity(velocityX, velocityY);
-        }
-      } else {
-        this.catSprite.setVelocity(0);
-      }
-    }
+    // 位置更新はCatが管理し、update()でsetPosition()されるため、ここでは不要
 
     if (movement.flipX !== undefined) {
       this.catSprite.setFlipX(movement.flipX);
@@ -320,7 +291,7 @@ export default class CatGame extends Phaser.Scene {
   }
 
   public async endGame() {
-    const finalBondingLevel = this.cat.getBondingLevel();
+    const finalBondingLevel = this.cat.getBonding().getLevel();
     this.sessionManager.endPlaySession(finalBondingLevel);
 
     if (this.onGameEnd) {
@@ -329,15 +300,14 @@ export default class CatGame extends Phaser.Scene {
   }
 
   public getCurrentCatState(): CatGameConfig {
-    const internalState = this.cat.getInternalState();
     const currentState = {
-      bonding: internalState.bonding,
-      playfulness: internalState.playfulness,
-      fear: internalState.fear,
-      personality: this.cat.personality,
-      preferences: this.cat.preferences
+      cat: this.cat,
+      catName: this.cat.name
     };
-    logDebug('CatGame: getCurrentCatState returning', { currentState });
+    logDebug('CatGame: getCurrentCatState returning', {
+      bondingLevel: this.cat.getBonding().getLevel(),
+      bondingGauge: this.cat.getBonding().getGauge()
+    });
     return currentState;
   }
 
@@ -356,20 +326,16 @@ export default class CatGame extends Phaser.Scene {
   private updateBondingDisplay(): void {
     if (!this.bondingDisplay) return;
 
-    const bondingLevel = this.cat.getBondingLevel();
-    this.gameRenderer.updateBondingDisplay(this.bondingDisplay, bondingLevel);
+    const bonding = this.cat.getBonding();
+    const bondingLevel = bonding.getLevel();
+    const bondingGauge = bonding.getGauge();
+    this.gameRenderer.updateBondingDisplay(this.bondingDisplay, bondingLevel, bondingGauge);
   }
 
   private enableDebugOverlay(): void {
     if (!this.debugOverlay) {
-      this.debugOverlay = new DebugOverlay(this);
-
-      this.input.keyboard?.on('keydown-D', () => {
-        if (this.debugOverlay) {
-          this.debugOverlay.toggle();
-        }
-      });
-
+      this.debugOverlay = new DebugOverlay(this, this.cat);
+      // キーボード制御は全てDebugOverlay内で完結
       this.debugOverlay.setVisible(true);
     }
   }

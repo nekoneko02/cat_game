@@ -18,7 +18,6 @@ import { apiClient } from '@/lib/ApiClient';
 import { StateSaver } from '@/lib/StateSaver';
 import { GameManager } from '@/lib/GameManager';
 import { useNavigationGuard } from '@/lib/NavigationGuard';
-import { Personality, Preferences } from '@/domain/entities/Cat';
 import { GameIcon } from '@/components/GameIcon';
 import { ToyImage } from '@/components/ToyImage';
 import { IMAGE_IDS } from '@/constants/images';
@@ -47,22 +46,17 @@ function PlayPageContent() {
     try {
       logDebug('PlayPage: Getting current cat state from game...');
       const currentState = gameManagerRef.current.getCurrentCatState() as {
-        bonding: number;
-        playfulness: number;
-        fear: number;
-        personality: Personality;
-        preferences: Preferences;
+        bonding: {
+          level: number;
+          gauge: number;
+        };
       } | null;
 
       logDebug('PlayPage: Current game state', { currentState });
 
       if (currentState) {
         const catStateToSave: CatState = {
-          bonding: currentState.bonding,
-          playfulness: currentState.playfulness,
-          fear: currentState.fear,
-          personality: currentState.personality,
-          preferences: currentState.preferences
+          bonding: currentState.bonding
         };
 
         logDebug('PlayPage: Saving cat state', { catStateToSave });

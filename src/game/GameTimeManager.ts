@@ -51,7 +51,7 @@ export class GameTimeManager {
   /**
    * ゲーム開始からの総経過時間（ミリ秒）
    */
-  getTotalTime(): number {
+  getGameTime(): number {
     return this.accumulatedTime;
   }
 
